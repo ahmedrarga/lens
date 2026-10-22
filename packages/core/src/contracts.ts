@@ -21,6 +21,16 @@ export interface GitProvider {
   listFiles(pr: PrRef): Promise<PrFile[]>;
   /** File contents at a commit, or null if absent / binary / too large. */
   getFile(pr: Pick<PrRef, 'owner' | 'repo'>, path: string, sha: string): Promise<string | null>;
+  /**
+   * All text files at a commit whose repo-relative path passes `filter`, in one download
+   * (repo archive, not per-file API calls). Skips files over `maxFileBytes` (default 512 KB).
+   */
+  getSourceFiles(
+    pr: Pick<PrRef, 'owner' | 'repo'>,
+    sha: string,
+    filter: (path: string) => boolean,
+    opts?: { maxFileBytes?: number },
+  ): Promise<Map<string, string>>;
 }
 
 // ---------- diff ----------

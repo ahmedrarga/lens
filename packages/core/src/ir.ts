@@ -2,6 +2,7 @@
 // See docs/plan.md §2. Change it deliberately: everything downstream depends on it.
 import { z } from 'zod';
 
+// M1 emits module, cluster, file and symbol nodes. Z3 (hunks) is rendered from `ChangeGraph.hunks`.
 export const NodeKind = z.enum(['module', 'cluster', 'file', 'symbol', 'hunk']);
 export type NodeKind = z.infer<typeof NodeKind>;
 
