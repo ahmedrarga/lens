@@ -1,0 +1,4800 @@
+{
+  "schema": 1,
+  "pr": {
+    "provider": "github",
+    "owner": "trpc",
+    "repo": "trpc",
+    "number": 7576,
+    "url": "https://github.com/trpc/trpc/pull/7576",
+    "title": "build(deps): upgrade eslint to v10",
+    "body": "Layer 5 of a stacked dependency upgrade. Stacked on #7575.\n\n| package | from | to |\n| --- | --- | --- |\n| `eslint` | ^9.26.0 | **^10.10.0** |\n| `typescript-eslint` | ^8.32 | ^8.70.0 |\n| `eslint-plugin-unicorn` | 64.0.0 | ^74.0.0 |\n| `eslint-plugin-react-hooks` | **6.0.0-rc.1** | ^7.1.1 |\n| `@eslint/compat` | ^2.0.0 | ^2.1.1 |\n\n`eslint-plugin-react` stays at 7.37.5 — there's no newer release. Note this also gets us off a release-candidate prerelease of `eslint-plugin-react-hooks`.\n\n### Config migration\n- **`reactHooks.configs.recommended` is eslintrc-shaped again in v7** and makes ESLint 10 fail outright (`A config object has a \"plugins\" key defined as an array of strings`). The flat config moved to `configs.flat.recommended`. Same fix applied to the two example configs that wire this up themselves.\n- **`react-hooks/react-compiler` no longer exists.** v7 split it into ~14 granular rules (`purity`, `immutability`, `refs`, `set-state-in-effect`, `use-memo`, …) that `flat.recommended` enables. The rule entry and two stale `eslint-disable` comments referencing it are removed.\n- **`unicorn/filename-case` gets `checkDirectories: false`.** unicorn 74 started checking directory names and flagged deliberate ones (`__tests__`, `aws-lambda`, `node-http`, `app-dir`). This keeps the rule scoped to filenames, as before.\n- **`max-params` now counts parameters of function _types_.** The single hit is `setQueriesData`, which mirrors TanStack Query's own 4-parameter signature, so it takes a targeted disable.\n\n### ⚠️ Five new React Compiler rules are switched off with a Todo\n`react-hooks/refs`, `immutability`, `set-state-in-effect`, `use-memo` and `preserve-manual-memoization` flag **32 real findings** — `subscriptionOptions` mutating refs during render, several components calling `setState` synchronously inside an effect. That's a genuine refactor of shipped code and belongs in its own PR rather than a dependency bump, so they're disabled with a comment pointing at the work. **Everything else v7 added stays on.** Happy to split those fixes out if you'd like them tracked in an issue.\n\n### Real bugs the new rules found\n- **`sse.test.ts` had `await Promise.all([await a, await b])`** — the inner awaits ran the two operations sequentially, so the `error` listener was only registered *after* the server had already restarted. A latent flake, caught by `await-thenable`.\n- **`getFetch` now returns `fetch` bound to its global.** It was already handing back an unbound method; the old `as FetchEsque` assertion just hid that from `unbound-method`. An unbound `fetch` throws `Illegal invocation` in some engines. The guards use `typeof` instead of the `isFunction` helper, which is no longer needed.\n- Two optional-chain simplifications, plus dead imports/aliases left behind by `--fix`.\n\n### Two `--fix` results were reverted\n`--fix` removed two assertions that `no-unnecessary-type-assertion` considered redundant but which were **load-bearing for inference** — typechecking broke:\n- `as ActionContext` in `create-action-hook.tsx` — without it `innerInput` became implicitly `any`. Now an explicit annotation, which is what was meant all along.\n- `yield 1 as number` in `streaming.test.ts` (×3) — it deliberately widens the yield type; removing it narrowed the union to `1 | 2 | 3` and broke a downstream assertion. Restored with a note.\n\n### Verification\n`pnpm lint` is clean across all 42 workspaces. `pnpm build`, `typecheck-packages`, `typecheck-www`, `monotest-build` and `manypkg check` pass; `pnpm test` is 1130/1131 with only the pre-existing `httpSubscriptionLink.memory.test.ts` WeakRef/GC failure.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\n\n<!-- This is an auto-generated comment: release notes by coderabbit.ai -->\n## Summary by CodeRabbit\n\n- **Bug Fixes**\n  - WebSocket typing updates now emit the initial typing-state event correctly when no previous state exists.\n  - Updated WebSocket handling in example applications for more consistent connection upgrades.\n  - Unsubscribing from HTTP links now reliably aborts the underlying request.\n\n- **Chores**\n  - Standardized linting configuration and dependency versions across the project and examples.\n  - Improved type safety and lint compatibility without changing application behavior.\n  - Consolidated shared development-tool versions for more consistent project maintenance.\n<!-- end of auto-generated comment: release notes by coderabbit.ai -->",
+    "author": "Nick-Lucas",
+    "baseSha": "b4c0c71013729b2e2e716f32a639a3d2130453e0",
+    "headSha": "c113e180632219417c513b8d1bac6c586751c176",
+    "baseRef": "deps/typescript-7",
+    "headRef": "deps/eslint-10"
+  },
+  "generatedAt": "2026-10-22T18:00:07.615Z",
+  "pipelineVersion": "m1-0.1.0",
+  "nodes": [
+    {
+      "id": "cluster:.:eslint.config.js-default",
+      "kind": "cluster",
+      "level": 1,
+      "label": "default (+2)",
+      "parent": "module:.",
+      "state": "modified",
+      "stats": {
+        "added": 24,
+        "removed": 8
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:examples/.test:examples-.test-diagnostics-big-router-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json (+1)",
+      "parent": "module:examples/.test",
+      "state": "modified",
+      "stats": {
+        "added": 2,
+        "removed": 2
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/.test/diagnostics-big-router/package.json",
+          "file:packages/tests/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:examples/.test:examples-.test-ssg-infinite-serialization-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:examples/.test",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/.test/ssg-infinite-serialization/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:examples/.test:examples-.test-ssg-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:examples/.test",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/.test/ssg/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:examples/bun:examples-bun-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:examples/bun",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/bun/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:examples/cloudflare-workers:examples-cloudflare-workers-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:examples/cloudflare-workers",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/cloudflare-workers/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:examples/express-minimal:examples-express-minimal-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:examples/express-minimal",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/express-minimal/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:examples/express-server:examples-express-server-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:examples/express-server",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/express-server/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:examples/fastify-server:examples-fastify-server-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:examples/fastify-server",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/fastify-server/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:examples/lambda-api-gateway-streaming:examples-lambda-api-gateway-streaming-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:examples/lambda-api-gateway-streaming",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/lambda-api-gateway-streaming/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:examples/lambda-api-gateway:examples-lambda-api-gateway-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:examples/lambda-api-gateway",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/lambda-api-gateway/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:examples/lambda-url:examples-lambda-url-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:examples/lambda-url",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/lambda-url/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:examples/minimal-content-types:examples-minimal-content-types-client-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:examples/minimal-content-types",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/minimal-content-types/client/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:examples/minimal-content-types:examples-minimal-content-types-server-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:examples/minimal-content-types",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/minimal-content-types/server/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:examples/minimal-react:examples-minimal-react-client-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:examples/minimal-react",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/minimal-react/client/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:examples/minimal-react:examples-minimal-react-server-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:examples/minimal-react",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/minimal-react/server/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:examples/next-big-router:examples-next-big-router-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:examples/next-big-router",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/next-big-router/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:examples/next-edge-runtime:examples-next-edge-runtime-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:examples/next-edge-runtime",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/next-edge-runtime/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:examples/next-formdata:examples-next-formdata-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:examples/next-formdata",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/next-formdata/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:examples/next-minimal-starter:examples-next-minimal-starter-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:examples/next-minimal-starter",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/next-minimal-starter/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:examples/next-prisma-starter:examples-next-prisma-starter-eslint.config.mjs-default",
+      "kind": "cluster",
+      "level": 1,
+      "label": "default (+1)",
+      "parent": "module:examples/next-prisma-starter",
+      "state": "modified",
+      "stats": {
+        "added": 9,
+        "removed": 5
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/next-prisma-starter/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:examples/next-prisma-todomvc:examples-next-prisma-todomvc-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:examples/next-prisma-todomvc",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/next-prisma-todomvc/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:examples/next-prisma-websockets-starter:examples-next-prisma-websockets-starter-eslint.config.mjs-default",
+      "kind": "cluster",
+      "level": 1,
+      "label": "default (+1)",
+      "parent": "module:examples/next-prisma-websockets-starter",
+      "state": "modified",
+      "stats": {
+        "added": 9,
+        "removed": 4
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/next-prisma-websockets-starter/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:examples/next-prisma-websockets-starter:examples-next-prisma-websockets-starter-src-server-prodServer.ts",
+      "kind": "cluster",
+      "level": 1,
+      "label": "prodServer.ts",
+      "parent": "module:examples/next-prisma-websockets-starter",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 2
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:examples/next-prisma-websockets-starter:examples-next-prisma-websockets-starter-src-server-routers-post.ts-postRouter",
+      "kind": "cluster",
+      "level": 1,
+      "label": "postRouter",
+      "parent": "module:examples/next-prisma-websockets-starter",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:examples/next-websockets-encoder:examples-next-websockets-encoder-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:examples/next-websockets-encoder",
+      "state": "modified",
+      "stats": {
+        "added": 3,
+        "removed": 3
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/next-websockets-encoder/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:examples/next-websockets-encoder:examples-next-websockets-encoder-src-server-prodServer.ts",
+      "kind": "cluster",
+      "level": 1,
+      "label": "prodServer.ts",
+      "parent": "module:examples/next-websockets-encoder",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:examples/standalone-server:examples-standalone-server-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:examples/standalone-server",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/standalone-server/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:packages/client:packages-client-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:packages/client",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:packages/client/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:packages/client:packages-client-src-getFetch.ts-getFetch",
+      "kind": "cluster",
+      "level": 1,
+      "label": "getFetch",
+      "parent": "module:packages/client",
+      "state": "modified",
+      "stats": {
+        "added": 3,
+        "removed": 2
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:packages/client:packages-client-src-links-httpSubscriptionLink.ts-httpSubscriptionLink",
+      "kind": "cluster",
+      "level": 1,
+      "label": "httpSubscriptionLink",
+      "parent": "module:packages/client",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 3
+      },
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "symbol:packages/client/src/links/httpSubscriptionLink.ts#httpSubscriptionLink"
+        ]
+      }
+    },
+    {
+      "id": "cluster:packages/next:packages-next-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:packages/next",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:packages/next/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:packages/next:packages-next-src-app-dir-create-action-hook.tsx-experimental_createActionHook",
+      "kind": "cluster",
+      "level": 1,
+      "label": "experimental_createActionHook",
+      "parent": "module:packages/next",
+      "state": "modified",
+      "stats": {
+        "added": 4,
+        "removed": 4
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:packages/openapi:packages-openapi-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:packages/openapi",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:packages/openapi/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:packages/openapi:packages-openapi-src-generate.ts-detectDiscriminatorProperty",
+      "kind": "cluster",
+      "level": 1,
+      "label": "detectDiscriminatorProperty",
+      "parent": "module:packages/openapi",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 5
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:packages/react-query:packages-react-query-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:packages/react-query",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:packages/react-query/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:packages/react-query:packages-react-query-src-internals-context.tsx-TRPCQueryUtils",
+      "kind": "cluster",
+      "level": 1,
+      "label": "TRPCQueryUtils",
+      "parent": "module:packages/react-query",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:packages/react-query:packages-react-query-src-shared-hooks-createHooksInternal.tsx",
+      "kind": "cluster",
+      "level": 1,
+      "label": "createHooksInternal.tsx",
+      "parent": "module:packages/react-query",
+      "state": "modified",
+      "stats": {
+        "added": 0,
+        "removed": 1
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:packages/server:packages-server-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:packages/server",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:packages/server/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:packages/server:packages-server-src-unstable-core-do-not-import-http-contentType.ts-getAcceptHeader",
+      "kind": "cluster",
+      "level": 1,
+      "label": "getAcceptHeader",
+      "parent": "module:packages/server",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:packages/server:tests-packages-server-src-unstable-core-do-not-import-stream",
+      "kind": "cluster",
+      "level": 1,
+      "label": "Tests: packages/server/src/unstable-core-do-not-import/stream",
+      "parent": "module:packages/server",
+      "state": "modified",
+      "stats": {
+        "added": 2,
+        "removed": 2
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:packages/tanstack-react-query:packages-tanstack-react-query-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:packages/tanstack-react-query",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:packages/tanstack-react-query/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:packages/tanstack-react-query:packages-tanstack-react-query-src-internals-Context.tsx-createTRPCContext",
+      "kind": "cluster",
+      "level": 1,
+      "label": "createTRPCContext (+2)",
+      "parent": "module:packages/tanstack-react-query",
+      "state": "modified",
+      "stats": {
+        "added": 2,
+        "removed": 6
+      },
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#trpcSubscriptionOptions",
+          "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#useSubscription"
+        ]
+      }
+    },
+    {
+      "id": "cluster:packages/tests:tests-packages-tests-server",
+      "kind": "cluster",
+      "level": 1,
+      "label": "Tests: packages/tests/server",
+      "parent": "module:packages/tests",
+      "state": "modified",
+      "stats": {
+        "added": 3,
+        "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:www:www-package.json",
+      "kind": "cluster",
+      "level": 1,
+      "label": "package.json",
+      "parent": "module:www",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:www/package.json"
+        ]
+      }
+    },
+    {
+      "id": "cluster:~collapsed:mechanical",
+      "kind": "cluster",
+      "level": 1,
+      "label": "Mechanical edits",
+      "parent": "module:~collapsed",
+      "state": "modified",
+      "stats": {
+        "added": 9,
+        "removed": 9
+      },
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "group:collapsed:mechanical:7c68e69b"
+        ]
+      }
+    },
+    {
+      "id": "file:examples/.test/diagnostics-big-router/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/.test/diagnostics-big-router/package.json",
+      "parent": "cluster:examples/.test:examples-.test-diagnostics-big-router-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"catalog:\"` at 7 sites"
+      ],
+      "kind": "file",
+      "label": "examples/.test/diagnostics-big-router/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:examples/.test/diagnostics-big-router/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:examples/.test/ssg-infinite-serialization/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/.test/ssg-infinite-serialization/package.json",
+      "parent": "cluster:examples/.test:examples-.test-ssg-infinite-serialization-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"catalog:\"` at 7 sites"
+      ],
+      "kind": "file",
+      "label": "examples/.test/ssg-infinite-serialization/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:examples/.test/ssg-infinite-serialization/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:examples/.test/ssg/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/.test/ssg/package.json",
+      "parent": "cluster:examples/.test:examples-.test-ssg-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"catalog:\"` at 7 sites"
+      ],
+      "kind": "file",
+      "label": "examples/.test/ssg/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:examples/.test/ssg/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:examples/bun/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/bun/package.json",
+      "parent": "cluster:examples/bun:examples-bun-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"catalog:\"` at 7 sites"
+      ],
+      "kind": "file",
+      "label": "examples/bun/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:examples/bun/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:examples/cloudflare-workers/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/cloudflare-workers/package.json",
+      "parent": "cluster:examples/cloudflare-workers:examples-cloudflare-workers-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"catalog:\"` at 7 sites"
+      ],
+      "kind": "file",
+      "label": "examples/cloudflare-workers/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:examples/cloudflare-workers/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:examples/express-minimal/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/express-minimal/package.json",
+      "parent": "cluster:examples/express-minimal:examples-express-minimal-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"catalog:\"` at 7 sites"
+      ],
+      "kind": "file",
+      "label": "examples/express-minimal/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:examples/express-minimal/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:examples/express-server/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/express-server/package.json",
+      "parent": "cluster:examples/express-server:examples-express-server-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"catalog:\"` at 7 sites"
+      ],
+      "kind": "file",
+      "label": "examples/express-server/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:examples/express-server/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:examples/fastify-server/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/fastify-server/package.json",
+      "parent": "cluster:examples/fastify-server:examples-fastify-server-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"catalog:\"` at 7 sites"
+      ],
+      "kind": "file",
+      "label": "examples/fastify-server/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:examples/fastify-server/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:examples/lambda-api-gateway-streaming/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/lambda-api-gateway-streaming/package.json",
+      "parent": "cluster:examples/lambda-api-gateway-streaming:examples-lambda-api-gateway-streaming-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"catalog:\"` at 7 sites"
+      ],
+      "kind": "file",
+      "label": "examples/lambda-api-gateway-streaming/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:examples/lambda-api-gateway-streaming/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:examples/lambda-api-gateway/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/lambda-api-gateway/package.json",
+      "parent": "cluster:examples/lambda-api-gateway:examples-lambda-api-gateway-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"catalog:\"` at 7 sites"
+      ],
+      "kind": "file",
+      "label": "examples/lambda-api-gateway/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:examples/lambda-api-gateway/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:examples/lambda-url/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/lambda-url/package.json",
+      "parent": "cluster:examples/lambda-url:examples-lambda-url-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"catalog:\"` at 7 sites"
+      ],
+      "kind": "file",
+      "label": "examples/lambda-url/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:examples/lambda-url/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:examples/minimal-content-types/client/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/minimal-content-types/client/package.json",
+      "parent": "cluster:examples/minimal-content-types:examples-minimal-content-types-client-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"catalog:\"` at 7 sites"
+      ],
+      "kind": "file",
+      "label": "examples/minimal-content-types/client/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:examples/minimal-content-types/client/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:examples/minimal-content-types/server/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/minimal-content-types/server/package.json",
+      "parent": "cluster:examples/minimal-content-types:examples-minimal-content-types-server-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"catalog:\"` at 7 sites"
+      ],
+      "kind": "file",
+      "label": "examples/minimal-content-types/server/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:examples/minimal-content-types/server/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:examples/minimal-react/client/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/minimal-react/client/package.json",
+      "parent": "cluster:examples/minimal-react:examples-minimal-react-client-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"catalog:\"` at 7 sites"
+      ],
+      "kind": "file",
+      "label": "examples/minimal-react/client/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:examples/minimal-react/client/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:examples/minimal-react/server/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/minimal-react/server/package.json",
+      "parent": "cluster:examples/minimal-react:examples-minimal-react-server-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"catalog:\"` at 7 sites"
+      ],
+      "kind": "file",
+      "label": "examples/minimal-react/server/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:examples/minimal-react/server/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:examples/next-big-router/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/next-big-router/package.json",
+      "parent": "cluster:examples/next-big-router:examples-next-big-router-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"catalog:\"` at 7 sites"
+      ],
+      "kind": "file",
+      "label": "examples/next-big-router/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:examples/next-big-router/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:examples/next-edge-runtime/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/next-edge-runtime/package.json",
+      "parent": "cluster:examples/next-edge-runtime:examples-next-edge-runtime-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"catalog:\"` at 7 sites"
+      ],
+      "kind": "file",
+      "label": "examples/next-edge-runtime/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:examples/next-edge-runtime/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:examples/next-formdata/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/next-formdata/package.json",
+      "parent": "cluster:examples/next-formdata:examples-next-formdata-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"catalog:\"` at 7 sites"
+      ],
+      "kind": "file",
+      "label": "examples/next-formdata/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:examples/next-formdata/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:examples/next-minimal-starter/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/next-minimal-starter/package.json",
+      "parent": "cluster:examples/next-minimal-starter:examples-next-minimal-starter-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"catalog:\"` at 7 sites"
+      ],
+      "kind": "file",
+      "label": "examples/next-minimal-starter/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:examples/next-minimal-starter/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:examples/next-prisma-starter/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/next-prisma-starter/package.json",
+      "parent": "cluster:examples/next-prisma-starter:examples-next-prisma-starter-eslint.config.mjs-default",
+      "stats": {
+        "added": 3,
+        "removed": 3
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"^10.10.0\"` at 22 sites"
+      ],
+      "kind": "file",
+      "label": "examples/next-prisma-starter/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:examples/next-prisma-starter/package.json:0",
+              "hunk:examples/next-prisma-starter/package.json:1"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:examples/next-prisma-todomvc/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/next-prisma-todomvc/package.json",
+      "parent": "cluster:examples/next-prisma-todomvc:examples-next-prisma-todomvc-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"catalog:\"` at 7 sites"
+      ],
+      "kind": "file",
+      "label": "examples/next-prisma-todomvc/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:examples/next-prisma-todomvc/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:examples/next-prisma-websockets-starter/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/next-prisma-websockets-starter/package.json",
+      "parent": "cluster:examples/next-prisma-websockets-starter:examples-next-prisma-websockets-starter-eslint.config.mjs-default",
+      "stats": {
+        "added": 3,
+        "removed": 3
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"^10.10.0\"` at 22 sites"
+      ],
+      "kind": "file",
+      "label": "examples/next-prisma-websockets-starter/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:examples/next-prisma-websockets-starter/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:examples/next-prisma-websockets-starter/src/server/prodServer.ts",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/next-prisma-websockets-starter/src/server/prodServer.ts",
+      "parent": "cluster:examples/next-prisma-websockets-starter:examples-next-prisma-websockets-starter-src-server-prodServer.ts",
+      "stats": {
+        "added": 1,
+        "removed": 2
+      },
+      "notes": [
+        "calls 8 unresolved targets: app.prepare(), app.prepare().then(), handler.broadcastReconnectNotification(), …"
+      ],
+      "kind": "file",
+      "label": "examples/next-prisma-websockets-starter/src/server/prodServer.ts",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:examples/next-websockets-encoder/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/next-websockets-encoder/package.json",
+      "parent": "cluster:examples/next-websockets-encoder:examples-next-websockets-encoder-package.json",
+      "stats": {
+        "added": 3,
+        "removed": 3
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"^10.10.0\"` at 22 sites"
+      ],
+      "kind": "file",
+      "label": "examples/next-websockets-encoder/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:examples/next-websockets-encoder/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:examples/next-websockets-encoder/src/server/prodServer.ts",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/next-websockets-encoder/src/server/prodServer.ts",
+      "parent": "cluster:examples/next-websockets-encoder:examples-next-websockets-encoder-src-server-prodServer.ts",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "calls 8 unresolved targets: app.prepare(), app.prepare().then(), handler.broadcastReconnectNotification(), …"
+      ],
+      "kind": "file",
+      "label": "examples/next-websockets-encoder/src/server/prodServer.ts",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:examples/standalone-server/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/standalone-server/package.json",
+      "parent": "cluster:examples/standalone-server:examples-standalone-server-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"catalog:\"` at 7 sites"
+      ],
+      "kind": "file",
+      "label": "examples/standalone-server/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:examples/standalone-server/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "package.json",
+      "parent": "cluster:.:eslint.config.js-default",
+      "stats": {
+        "added": 6,
+        "removed": 6
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"^10.10.0\"` at 22 sites"
+      ],
+      "kind": "file",
+      "label": "package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:package.json:0",
+              "hunk:package.json:1",
+              "hunk:package.json:2"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:packages/client/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/client/package.json",
+      "parent": "cluster:packages/client:packages-client-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"^10.10.0\"` at 22 sites"
+      ],
+      "kind": "file",
+      "label": "packages/client/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:packages/client/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:packages/client/src/internals/types.test.ts",
+      "kind": "file",
+      "level": 2,
+      "label": "packages/client/src/internals/types.test.ts (top-level)",
+      "parent": "module:packages/client",
+      "state": "unchanged",
+      "path": "packages/client/src/internals/types.test.ts"
+    },
+    {
+      "id": "file:packages/next/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/next/package.json",
+      "parent": "cluster:packages/next:packages-next-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"^10.10.0\"` at 22 sites"
+      ],
+      "kind": "file",
+      "label": "packages/next/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:packages/next/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:packages/next/src/app-dir/client.test.tsx",
+      "kind": "file",
+      "level": 2,
+      "label": "packages/next/src/app-dir/client.test.tsx (top-level)",
+      "parent": "module:packages/next",
+      "state": "unchanged",
+      "path": "packages/next/src/app-dir/client.test.tsx"
+    },
+    {
+      "id": "file:packages/openapi/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/openapi/package.json",
+      "parent": "cluster:packages/openapi:packages-openapi-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"^10.10.0\"` at 22 sites"
+      ],
+      "kind": "file",
+      "label": "packages/openapi/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:packages/openapi/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:packages/react-query/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/react-query/package.json",
+      "parent": "cluster:packages/react-query:packages-react-query-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"^10.10.0\"` at 22 sites"
+      ],
+      "kind": "file",
+      "label": "packages/react-query/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:packages/react-query/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:packages/react-query/src/shared/hooks/createHooksInternal.tsx",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/react-query/src/shared/hooks/createHooksInternal.tsx",
+      "parent": "cluster:packages/react-query:packages-react-query-src-shared-hooks-createHooksInternal.tsx",
+      "stats": {
+        "added": 0,
+        "removed": 1
+      },
+      "kind": "file",
+      "label": "packages/react-query/src/shared/hooks/createHooksInternal.tsx",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:packages/server/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/server/package.json",
+      "parent": "cluster:packages/server:packages-server-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"^10.10.0\"` at 22 sites"
+      ],
+      "kind": "file",
+      "label": "packages/server/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:packages/server/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:packages/server/src/unstable-core-do-not-import/stream/sse.test.ts",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/server/src/unstable-core-do-not-import/stream/sse.test.ts",
+      "parent": "cluster:packages/server:tests-packages-server-src-unstable-core-do-not-import-stream",
+      "stats": {
+        "added": 2,
+        "removed": 2
+      },
+      "notes": [
+        "calls 8 unresolved targets: controller.enqueue(), ee.emit(), ee.listenerCount(), …"
+      ],
+      "kind": "file",
+      "label": "packages/server/src/unstable-core-do-not-import/stream/sse.test.ts",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:packages/tanstack-react-query/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/tanstack-react-query/package.json",
+      "parent": "cluster:packages/tanstack-react-query:packages-tanstack-react-query-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"^10.10.0\"` at 22 sites"
+      ],
+      "kind": "file",
+      "label": "packages/tanstack-react-query/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:packages/tanstack-react-query/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:packages/tests/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/tests/package.json",
+      "parent": "cluster:examples/.test:examples-.test-diagnostics-big-router-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"^10.10.0\"` at 22 sites"
+      ],
+      "kind": "file",
+      "label": "packages/tests/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:packages/tests/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:packages/tests/server/streaming.test.ts",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/tests/server/streaming.test.ts",
+      "parent": "cluster:packages/tests:tests-packages-tests-server",
+      "stats": {
+        "added": 3,
+        "removed": 0
+      },
+      "notes": [
+        "calls 28 unresolved targets: ac.abort(), caller.iterable(), ctx.client.deferred.query(), …"
+      ],
+      "kind": "file",
+      "label": "packages/tests/server/streaming.test.ts",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:pnpm-workspace.yaml",
+      "level": 2,
+      "state": "modified",
+      "path": "pnpm-workspace.yaml",
+      "parent": "cluster:.:eslint.config.js-default",
+      "stats": {
+        "added": 6,
+        "removed": 0
+      },
+      "kind": "file",
+      "label": "pnpm-workspace.yaml",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:www/package.json",
+      "level": 2,
+      "state": "modified",
+      "path": "www/package.json",
+      "parent": "cluster:www:www-package.json",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `\"^9.26.0\"` → `\"catalog:\"` at 7 sites"
+      ],
+      "kind": "file",
+      "label": "www/package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps-manifest",
+            "message": "Changes dependency manifest",
+            "level": "med",
+            "hunkIds": [
+              "hunk:www/package.json:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "group:collapsed:mechanical:7c68e69b",
+      "kind": "group",
+      "level": 2,
+      "label": "Replaced `as any` → `(nothing)` at 9 sites",
+      "parent": "cluster:~collapsed:mechanical",
+      "state": "modified",
+      "stats": {
+        "added": 9,
+        "removed": 9
+      },
+      "collapsedId": "collapsed:mechanical:7c68e69b",
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [
+          {
+            "ruleId": "auth",
+            "message": "Changes authentication or authorization code",
+            "level": "high",
+            "hunkIds": [
+              "hunk:examples/next-prisma-websockets-starter/src/pages/api/auth/[...nextauth].ts:0"
+            ]
+          },
+          {
+            "ruleId": "collapsed-risky",
+            "message": "Collapsed as mechanical but touches a high-risk area; expand it",
+            "level": "high",
+            "hunkIds": [
+              "hunk:examples/next-prisma-websockets-starter/src/pages/api/auth/[...nextauth].ts:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "module:.",
+      "kind": "module",
+      "level": 0,
+      "label": ".",
+      "state": "modified",
+      "stats": {
+        "added": 24,
+        "removed": 8
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:examples/.test",
+      "kind": "module",
+      "level": 0,
+      "label": "examples/.test",
+      "path": "examples/.test",
+      "state": "modified",
+      "stats": {
+        "added": 4,
+        "removed": 4
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/.test/diagnostics-big-router/package.json",
+          "file:examples/.test/ssg-infinite-serialization/package.json",
+          "file:examples/.test/ssg/package.json",
+          "file:packages/tests/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:examples/bun",
+      "kind": "module",
+      "level": 0,
+      "label": "examples/bun",
+      "path": "examples/bun",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/bun/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:examples/cloudflare-workers",
+      "kind": "module",
+      "level": 0,
+      "label": "examples/cloudflare-workers",
+      "path": "examples/cloudflare-workers",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/cloudflare-workers/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:examples/express-minimal",
+      "kind": "module",
+      "level": 0,
+      "label": "examples/express-minimal",
+      "path": "examples/express-minimal",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/express-minimal/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:examples/express-server",
+      "kind": "module",
+      "level": 0,
+      "label": "examples/express-server",
+      "path": "examples/express-server",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/express-server/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:examples/fastify-server",
+      "kind": "module",
+      "level": 0,
+      "label": "examples/fastify-server",
+      "path": "examples/fastify-server",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/fastify-server/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:examples/lambda-api-gateway",
+      "kind": "module",
+      "level": 0,
+      "label": "examples/lambda-api-gateway",
+      "path": "examples/lambda-api-gateway",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/lambda-api-gateway/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:examples/lambda-api-gateway-streaming",
+      "kind": "module",
+      "level": 0,
+      "label": "examples/lambda-api-gateway-streaming",
+      "path": "examples/lambda-api-gateway-streaming",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/lambda-api-gateway-streaming/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:examples/lambda-url",
+      "kind": "module",
+      "level": 0,
+      "label": "examples/lambda-url",
+      "path": "examples/lambda-url",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/lambda-url/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:examples/minimal-content-types",
+      "kind": "module",
+      "level": 0,
+      "label": "examples/minimal-content-types",
+      "path": "examples/minimal-content-types",
+      "state": "modified",
+      "stats": {
+        "added": 2,
+        "removed": 2
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/minimal-content-types/client/package.json",
+          "file:examples/minimal-content-types/server/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:examples/minimal-react",
+      "kind": "module",
+      "level": 0,
+      "label": "examples/minimal-react",
+      "path": "examples/minimal-react",
+      "state": "modified",
+      "stats": {
+        "added": 2,
+        "removed": 2
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/minimal-react/client/package.json",
+          "file:examples/minimal-react/server/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:examples/next-big-router",
+      "kind": "module",
+      "level": 0,
+      "label": "examples/next-big-router",
+      "path": "examples/next-big-router",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/next-big-router/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:examples/next-edge-runtime",
+      "kind": "module",
+      "level": 0,
+      "label": "examples/next-edge-runtime",
+      "path": "examples/next-edge-runtime",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/next-edge-runtime/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:examples/next-formdata",
+      "kind": "module",
+      "level": 0,
+      "label": "examples/next-formdata",
+      "path": "examples/next-formdata",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/next-formdata/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:examples/next-minimal-starter",
+      "kind": "module",
+      "level": 0,
+      "label": "examples/next-minimal-starter",
+      "path": "examples/next-minimal-starter",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/next-minimal-starter/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:examples/next-prisma-starter",
+      "kind": "module",
+      "level": 0,
+      "label": "examples/next-prisma-starter",
+      "path": "examples/next-prisma-starter",
+      "state": "modified",
+      "stats": {
+        "added": 9,
+        "removed": 5
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/next-prisma-starter/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:examples/next-prisma-todomvc",
+      "kind": "module",
+      "level": 0,
+      "label": "examples/next-prisma-todomvc",
+      "path": "examples/next-prisma-todomvc",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/next-prisma-todomvc/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:examples/next-prisma-websockets-starter",
+      "kind": "module",
+      "level": 0,
+      "label": "examples/next-prisma-websockets-starter",
+      "path": "examples/next-prisma-websockets-starter",
+      "state": "modified",
+      "stats": {
+        "added": 11,
+        "removed": 7
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/next-prisma-websockets-starter/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:examples/next-websockets-encoder",
+      "kind": "module",
+      "level": 0,
+      "label": "examples/next-websockets-encoder",
+      "path": "examples/next-websockets-encoder",
+      "state": "modified",
+      "stats": {
+        "added": 4,
+        "removed": 4
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/next-websockets-encoder/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:examples/standalone-server",
+      "kind": "module",
+      "level": 0,
+      "label": "examples/standalone-server",
+      "path": "examples/standalone-server",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:examples/standalone-server/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:packages/client",
+      "kind": "module",
+      "level": 0,
+      "label": "packages/client",
+      "path": "packages/client",
+      "state": "modified",
+      "stats": {
+        "added": 5,
+        "removed": 6
+      },
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "symbol:packages/client/src/links/httpSubscriptionLink.ts#httpSubscriptionLink",
+          "file:packages/client/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:packages/next",
+      "kind": "module",
+      "level": 0,
+      "label": "packages/next",
+      "path": "packages/next",
+      "state": "modified",
+      "stats": {
+        "added": 5,
+        "removed": 5
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:packages/next/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:packages/openapi",
+      "kind": "module",
+      "level": 0,
+      "label": "packages/openapi",
+      "path": "packages/openapi",
+      "state": "modified",
+      "stats": {
+        "added": 2,
+        "removed": 6
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:packages/openapi/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:packages/react-query",
+      "kind": "module",
+      "level": 0,
+      "label": "packages/react-query",
+      "path": "packages/react-query",
+      "state": "modified",
+      "stats": {
+        "added": 2,
+        "removed": 2
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:packages/react-query/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:packages/server",
+      "kind": "module",
+      "level": 0,
+      "label": "packages/server",
+      "path": "packages/server",
+      "state": "modified",
+      "stats": {
+        "added": 4,
+        "removed": 4
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:packages/server/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:packages/tanstack-react-query",
+      "kind": "module",
+      "level": 0,
+      "label": "packages/tanstack-react-query",
+      "path": "packages/tanstack-react-query",
+      "state": "modified",
+      "stats": {
+        "added": 3,
+        "removed": 7
+      },
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#trpcSubscriptionOptions",
+          "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#useSubscription",
+          "file:packages/tanstack-react-query/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:packages/tests",
+      "kind": "module",
+      "level": 0,
+      "label": "packages/tests",
+      "path": "packages/tests",
+      "state": "modified",
+      "stats": {
+        "added": 3,
+        "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "module:www",
+      "kind": "module",
+      "level": 0,
+      "label": "www",
+      "path": "www",
+      "state": "modified",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:www/package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:~collapsed",
+      "kind": "module",
+      "level": 0,
+      "label": "Collapsed changes",
+      "state": "modified",
+      "stats": {
+        "added": 9,
+        "removed": 9
+      },
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "group:collapsed:mechanical:7c68e69b"
+        ]
+      }
+    },
+    {
+      "id": "symbol:eslint.config.js#default",
+      "level": 2,
+      "state": "modified",
+      "path": "eslint.config.js",
+      "parent": "cluster:.:eslint.config.js-default",
+      "stats": {
+        "added": 12,
+        "removed": 2
+      },
+      "kind": "symbol",
+      "label": "default",
+      "symbolKind": "variable",
+      "range": {
+        "start": 8,
+        "end": 214
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:examples/next-prisma-starter/eslint.config.mjs#default",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/next-prisma-starter/eslint.config.mjs",
+      "parent": "cluster:examples/next-prisma-starter:examples-next-prisma-starter-eslint.config.mjs-default",
+      "stats": {
+        "added": 6,
+        "removed": 2
+      },
+      "kind": "symbol",
+      "label": "default",
+      "symbolKind": "variable",
+      "range": {
+        "start": 5,
+        "end": 54
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:examples/next-prisma-websockets-starter/eslint.config.mjs#default",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/next-prisma-websockets-starter/eslint.config.mjs",
+      "parent": "cluster:examples/next-prisma-websockets-starter:examples-next-prisma-websockets-starter-eslint.config.mjs-default",
+      "stats": {
+        "added": 6,
+        "removed": 1
+      },
+      "kind": "symbol",
+      "label": "default",
+      "symbolKind": "variable",
+      "range": {
+        "start": 5,
+        "end": 55
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:examples/next-prisma-websockets-starter/src/server/prisma.ts#prisma",
+      "kind": "symbol",
+      "level": 2,
+      "label": "prisma",
+      "parent": "module:examples/next-prisma-websockets-starter",
+      "state": "unchanged",
+      "symbolKind": "variable",
+      "path": "examples/next-prisma-websockets-starter/src/server/prisma.ts",
+      "range": {
+        "start": 11,
+        "end": 18
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:examples/next-prisma-websockets-starter/src/server/routers/_app.ts#appRouter",
+      "kind": "symbol",
+      "level": 2,
+      "label": "appRouter",
+      "parent": "module:examples/next-prisma-websockets-starter",
+      "state": "unchanged",
+      "symbolKind": "variable",
+      "path": "examples/next-prisma-websockets-starter/src/server/routers/_app.ts",
+      "range": {
+        "start": 9,
+        "end": 24
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:examples/next-prisma-websockets-starter/src/server/routers/post.ts#currentlyTyping",
+      "kind": "symbol",
+      "level": 2,
+      "label": "currentlyTyping",
+      "parent": "module:examples/next-prisma-websockets-starter",
+      "state": "unchanged",
+      "symbolKind": "variable",
+      "path": "examples/next-prisma-websockets-starter/src/server/routers/post.ts",
+      "range": {
+        "start": 32,
+        "end": 33
+      },
+      "exported": false
+    },
+    {
+      "id": "symbol:examples/next-prisma-websockets-starter/src/server/routers/post.ts#postRouter",
+      "level": 2,
+      "state": "modified",
+      "path": "examples/next-prisma-websockets-starter/src/server/routers/post.ts",
+      "parent": "cluster:examples/next-prisma-websockets-starter:examples-next-prisma-websockets-starter-src-server-routers-post.ts-postRouter",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "calls 4 unresolved targets: emit.next(), items.shift(), newData.toString(), …"
+      ],
+      "kind": "symbol",
+      "label": "postRouter",
+      "symbolKind": "variable",
+      "range": {
+        "start": 53,
+        "end": 154
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:packages/client/src/TRPCClientError.ts#TRPCClientError",
+      "kind": "symbol",
+      "level": 2,
+      "label": "TRPCClientError",
+      "parent": "module:packages/client",
+      "state": "unchanged",
+      "symbolKind": "class",
+      "path": "packages/client/src/TRPCClientError.ts",
+      "range": {
+        "start": 47,
+        "end": 118
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:packages/client/src/TRPCClientError.ts#TRPCClientError.from",
+      "kind": "symbol",
+      "level": 2,
+      "label": "TRPCClientError.from",
+      "parent": "module:packages/client",
+      "state": "unchanged",
+      "symbolKind": "method",
+      "path": "packages/client/src/TRPCClientError.ts",
+      "range": {
+        "start": 87,
+        "end": 117
+      },
+      "exported": false
+    },
+    {
+      "id": "symbol:packages/client/src/getFetch.ts#getFetch",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/client/src/getFetch.ts",
+      "parent": "cluster:packages/client:packages-client-src-getFetch.ts-getFetch",
+      "stats": {
+        "added": 3,
+        "removed": 2
+      },
+      "kind": "symbol",
+      "label": "getFetch",
+      "symbolKind": "function",
+      "range": {
+        "start": 7,
+        "end": 24
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:packages/client/src/getFetch.ts#isFunction",
+      "kind": "symbol",
+      "level": 2,
+      "label": "isFunction",
+      "parent": "module:packages/client",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "packages/client/src/getFetch.ts",
+      "range": {
+        "start": 5,
+        "end": 5
+      },
+      "exported": false
+    },
+    {
+      "id": "symbol:packages/client/src/internals/inputWithTrackedEventId.ts#inputWithTrackedEventId",
+      "kind": "symbol",
+      "level": 2,
+      "label": "inputWithTrackedEventId",
+      "parent": "module:packages/client",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "packages/client/src/internals/inputWithTrackedEventId.ts",
+      "range": {
+        "start": 1,
+        "end": 15
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:packages/client/src/internals/types.ts#FetchEsque",
+      "kind": "symbol",
+      "level": 2,
+      "label": "FetchEsque",
+      "parent": "module:packages/client",
+      "state": "unchanged",
+      "symbolKind": "type",
+      "path": "packages/client/src/internals/types.ts",
+      "range": {
+        "start": 1,
+        "end": 11
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:packages/client/src/links/httpSubscriptionLink.ts#httpSubscriptionLink",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/client/src/links/httpSubscriptionLink.ts",
+      "parent": "cluster:packages/client:packages-client-src-links-httpSubscriptionLink.ts-httpSubscriptionLink",
+      "stats": {
+        "added": 1,
+        "removed": 3
+      },
+      "notes": [
+        "calls 9 unresolved targets: ac.abort(), connectionState.get(), connectionState.next(), …"
+      ],
+      "kind": "symbol",
+      "label": "httpSubscriptionLink",
+      "symbolKind": "function",
+      "range": {
+        "start": 62,
+        "end": 238
+      },
+      "exported": true,
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [
+          {
+            "ruleId": "payments",
+            "message": "Changes billing or payment code",
+            "level": "high",
+            "hunkIds": [
+              "hunk:packages/client/src/links/httpSubscriptionLink.ts:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "symbol:packages/next/src/app-dir/create-action-hook.tsx#UseTRPCActionOptions",
+      "kind": "symbol",
+      "level": 2,
+      "label": "UseTRPCActionOptions",
+      "parent": "module:packages/next",
+      "state": "unchanged",
+      "symbolKind": "interface",
+      "path": "packages/next/src/app-dir/create-action-hook.tsx",
+      "range": {
+        "start": 127,
+        "end": 130
+      },
+      "exported": false
+    },
+    {
+      "id": "symbol:packages/next/src/app-dir/create-action-hook.tsx#UseTRPCActionResult",
+      "kind": "symbol",
+      "level": 2,
+      "label": "UseTRPCActionResult",
+      "parent": "module:packages/next",
+      "state": "unchanged",
+      "symbolKind": "type",
+      "path": "packages/next/src/app-dir/create-action-hook.tsx",
+      "range": {
+        "start": 65,
+        "end": 69
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:packages/next/src/app-dir/create-action-hook.tsx#experimental_createActionHook",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/next/src/app-dir/create-action-hook.tsx",
+      "parent": "cluster:packages/next:packages-next-src-app-dir-create-action-hook.tsx-experimental_createActionHook",
+      "stats": {
+        "added": 4,
+        "removed": 4
+      },
+      "notes": [
+        "calls 6 unresolved targets: (mutateAsync as any)(...args).catch(), actionOptsRef.current?.onError(), actionOptsRef.current?.onSuccess(), …",
+        "Deviates from mechanical pattern: Replaced `as any` → `(nothing)` at 9 sites"
+      ],
+      "kind": "symbol",
+      "label": "experimental_createActionHook",
+      "symbolKind": "function",
+      "range": {
+        "start": 132,
+        "end": 232
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:packages/openapi/src/generate.ts#convertUnionType",
+      "kind": "symbol",
+      "level": 2,
+      "label": "convertUnionType",
+      "parent": "module:packages/openapi",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "packages/openapi/src/generate.ts",
+      "range": {
+        "start": 333,
+        "end": 424
+      },
+      "exported": false
+    },
+    {
+      "id": "symbol:packages/openapi/src/generate.ts#detectDiscriminatorProperty",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/openapi/src/generate.ts",
+      "parent": "cluster:packages/openapi:packages-openapi-src-generate.ts-detectDiscriminatorProperty",
+      "stats": {
+        "added": 1,
+        "removed": 5
+      },
+      "notes": [
+        "calls 1 unresolved target: s.required?.includes()"
+      ],
+      "kind": "symbol",
+      "label": "detectDiscriminatorProperty",
+      "symbolKind": "function",
+      "range": {
+        "start": 426,
+        "end": 457
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:packages/openapi/src/types.ts#SchemaObject",
+      "kind": "symbol",
+      "level": 2,
+      "label": "SchemaObject",
+      "parent": "module:packages/openapi",
+      "state": "unchanged",
+      "symbolKind": "type",
+      "path": "packages/openapi/src/types.ts",
+      "range": {
+        "start": 28,
+        "end": 53
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:packages/react-query/src/internals/context.tsx#TRPCContextState",
+      "kind": "symbol",
+      "level": 2,
+      "label": "TRPCContextState",
+      "parent": "module:packages/react-query",
+      "state": "unchanged",
+      "symbolKind": "interface",
+      "path": "packages/react-query/src/internals/context.tsx",
+      "range": {
+        "start": 125,
+        "end": 132
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:packages/react-query/src/internals/context.tsx#TRPCFetchInfiniteQueryOptions",
+      "kind": "symbol",
+      "level": 2,
+      "label": "TRPCFetchInfiniteQueryOptions",
+      "parent": "module:packages/react-query",
+      "state": "unchanged",
+      "symbolKind": "type",
+      "path": "packages/react-query/src/internals/context.tsx",
+      "range": {
+        "start": 55,
+        "end": 68
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:packages/react-query/src/internals/context.tsx#TRPCFetchQueryOptions",
+      "kind": "symbol",
+      "level": 2,
+      "label": "TRPCFetchQueryOptions",
+      "parent": "module:packages/react-query",
+      "state": "unchanged",
+      "symbolKind": "interface",
+      "path": "packages/react-query/src/internals/context.tsx",
+      "range": {
+        "start": 49,
+        "end": 53
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:packages/react-query/src/internals/context.tsx#TRPCQueryUtils",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/react-query/src/internals/context.tsx",
+      "parent": "cluster:packages/react-query:packages-react-query-src-internals-context.tsx-TRPCQueryUtils",
+      "stats": {
+        "added": 1,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "TRPCQueryUtils",
+      "symbolKind": "interface",
+      "range": {
+        "start": 134,
+        "end": 350
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:packages/server/src/unstable-core-do-not-import/http/contentType.ts#getAcceptHeader",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/server/src/unstable-core-do-not-import/http/contentType.ts",
+      "parent": "cluster:packages/server:packages-server-src-unstable-core-do-not-import-http-contentType.ts-getAcceptHeader",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "calls 5 unresolved targets: headers .get('accept') ?.split(',') .some(), headers .get('accept') ?.split(), headers .get(), …"
+      ],
+      "kind": "symbol",
+      "label": "getAcceptHeader",
+      "symbolKind": "function",
+      "range": {
+        "start": 8,
+        "end": 18
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:packages/server/src/unstable-core-do-not-import/http/contentType.ts#jsonContentTypeHandler",
+      "kind": "symbol",
+      "level": 2,
+      "label": "jsonContentTypeHandler",
+      "parent": "module:packages/server",
+      "state": "unchanged",
+      "symbolKind": "variable",
+      "path": "packages/server/src/unstable-core-do-not-import/http/contentType.ts",
+      "range": {
+        "start": 78,
+        "end": 212
+      },
+      "exported": false
+    },
+    {
+      "id": "symbol:packages/server/src/unstable-core-do-not-import/http/resolveResponse.ts#resolveResponse",
+      "kind": "symbol",
+      "level": 2,
+      "label": "resolveResponse",
+      "parent": "module:packages/server",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "packages/server/src/unstable-core-do-not-import/http/resolveResponse.ts",
+      "range": {
+        "start": 218,
+        "end": 775
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:packages/server/src/unstable-core-do-not-import/http/types.ts#TRPCAcceptHeader",
+      "kind": "symbol",
+      "level": 2,
+      "label": "TRPCAcceptHeader",
+      "parent": "module:packages/server",
+      "state": "unchanged",
+      "symbolKind": "type",
+      "path": "packages/server/src/unstable-core-do-not-import/http/types.ts",
+      "range": {
+        "start": 58,
+        "end": 58
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:packages/tanstack-react-query/src/internals/Context.tsx#CreateTRPCContextResult",
+      "kind": "symbol",
+      "level": 2,
+      "label": "CreateTRPCContextResult",
+      "parent": "module:packages/tanstack-react-query",
+      "state": "unchanged",
+      "symbolKind": "interface",
+      "path": "packages/tanstack-react-query/src/internals/Context.tsx",
+      "range": {
+        "start": 24,
+        "end": 31
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:packages/tanstack-react-query/src/internals/Context.tsx#TRPCProviderType",
+      "kind": "symbol",
+      "level": 2,
+      "label": "TRPCProviderType",
+      "parent": "module:packages/tanstack-react-query",
+      "state": "unchanged",
+      "symbolKind": "type",
+      "path": "packages/tanstack-react-query/src/internals/Context.tsx",
+      "range": {
+        "start": 13,
+        "end": 22
+      },
+      "exported": false
+    },
+    {
+      "id": "symbol:packages/tanstack-react-query/src/internals/Context.tsx#createTRPCContext",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/tanstack-react-query/src/internals/Context.tsx",
+      "parent": "cluster:packages/tanstack-react-query:packages-tanstack-react-query-src-internals-Context.tsx-createTRPCContext",
+      "stats": {
+        "added": 1,
+        "removed": 4
+      },
+      "kind": "symbol",
+      "label": "createTRPCContext",
+      "symbolKind": "function",
+      "range": {
+        "start": 33,
+        "end": 89
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:packages/tanstack-react-query/src/internals/createOptionsProxy.ts#TRPCOptionsProxy",
+      "kind": "symbol",
+      "level": 2,
+      "label": "TRPCOptionsProxy",
+      "parent": "module:packages/tanstack-react-query",
+      "state": "unchanged",
+      "symbolKind": "type",
+      "path": "packages/tanstack-react-query/src/internals/createOptionsProxy.ts",
+      "range": {
+        "start": 283,
+        "end": 291
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:packages/tanstack-react-query/src/internals/createOptionsProxy.ts#createTRPCOptionsProxy",
+      "kind": "symbol",
+      "level": 2,
+      "label": "createTRPCOptionsProxy",
+      "parent": "module:packages/tanstack-react-query",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "packages/tanstack-react-query/src/internals/createOptionsProxy.ts",
+      "range": {
+        "start": 332,
+        "end": 502
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#AnyTRPCSubscriptionOptionsIn",
+      "kind": "symbol",
+      "level": 2,
+      "label": "AnyTRPCSubscriptionOptionsIn",
+      "parent": "module:packages/tanstack-react-query",
+      "state": "unchanged",
+      "symbolKind": "type",
+      "path": "packages/tanstack-react-query/src/internals/subscriptionOptions.ts",
+      "range": {
+        "start": 122,
+        "end": 124
+      },
+      "exported": false
+    },
+    {
+      "id": "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#AnyTRPCSubscriptionOptionsOut",
+      "kind": "symbol",
+      "level": 2,
+      "label": "AnyTRPCSubscriptionOptionsOut",
+      "parent": "module:packages/tanstack-react-query",
+      "state": "unchanged",
+      "symbolKind": "type",
+      "path": "packages/tanstack-react-query/src/internals/subscriptionOptions.ts",
+      "range": {
+        "start": 126,
+        "end": 127
+      },
+      "exported": false
+    },
+    {
+      "id": "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#TRPCSubscriptionOptionsOut",
+      "kind": "symbol",
+      "level": 2,
+      "label": "TRPCSubscriptionOptionsOut",
+      "parent": "module:packages/tanstack-react-query",
+      "state": "unchanged",
+      "symbolKind": "interface",
+      "path": "packages/tanstack-react-query/src/internals/subscriptionOptions.ts",
+      "range": {
+        "start": 32,
+        "end": 43
+      },
+      "exported": false
+    },
+    {
+      "id": "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#TRPCSubscriptionResult",
+      "kind": "symbol",
+      "level": 2,
+      "label": "TRPCSubscriptionResult",
+      "parent": "module:packages/tanstack-react-query",
+      "state": "unchanged",
+      "symbolKind": "type",
+      "path": "packages/tanstack-react-query/src/internals/subscriptionOptions.ts",
+      "range": {
+        "start": 116,
+        "end": 120
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#trackResult",
+      "kind": "symbol",
+      "level": 2,
+      "label": "trackResult",
+      "parent": "module:packages/tanstack-react-query",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "packages/tanstack-react-query/src/internals/subscriptionOptions.ts",
+      "range": {
+        "start": 308,
+        "end": 321
+      },
+      "exported": false
+    },
+    {
+      "id": "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#trpcSubscriptionOptions",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/tanstack-react-query/src/internals/subscriptionOptions.ts",
+      "parent": "cluster:packages/tanstack-react-query:packages-tanstack-react-query-src-internals-Context.tsx-createTRPCContext",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "Deviates from mechanical pattern: Replaced `as any` → `(nothing)` at 9 sites"
+      ],
+      "kind": "symbol",
+      "label": "trpcSubscriptionOptions",
+      "symbolKind": "function",
+      "range": {
+        "start": 129,
+        "end": 165
+      },
+      "exported": true,
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [
+          {
+            "ruleId": "payments",
+            "message": "Changes billing or payment code",
+            "level": "high",
+            "hunkIds": [
+              "hunk:packages/tanstack-react-query/src/internals/subscriptionOptions.ts:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#useSubscription",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/tanstack-react-query/src/internals/subscriptionOptions.ts",
+      "parent": "cluster:packages/tanstack-react-query:packages-tanstack-react-query-src-internals-Context.tsx-createTRPCContext",
+      "stats": {
+        "added": 0,
+        "removed": 1
+      },
+      "notes": [
+        "calls 7 unresolved targets: currentSubscriptionRef.current(), optsRef.current.onConnectionStateChange(), optsRef.current.onData(), …"
+      ],
+      "kind": "symbol",
+      "label": "useSubscription",
+      "symbolKind": "function",
+      "range": {
+        "start": 167,
+        "end": 306
+      },
+      "exported": true,
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [
+          {
+            "ruleId": "payments",
+            "message": "Changes billing or payment code",
+            "level": "high",
+            "hunkIds": [
+              "hunk:packages/tanstack-react-query/src/internals/subscriptionOptions.ts:1"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "calls:file:packages/client/src/internals/types.test.ts->symbol:packages/client/src/getFetch.ts#getFetch",
+      "kind": "calls",
+      "from": "file:packages/client/src/internals/types.test.ts",
+      "to": "symbol:packages/client/src/getFetch.ts#getFetch",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:file:packages/next/src/app-dir/client.test.tsx->symbol:packages/next/src/app-dir/create-action-hook.tsx#experimental_createActionHook",
+      "kind": "calls",
+      "from": "file:packages/next/src/app-dir/client.test.tsx",
+      "to": "symbol:packages/next/src/app-dir/create-action-hook.tsx#experimental_createActionHook",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/client/src/getFetch.ts#getFetch->symbol:packages/client/src/getFetch.ts#isFunction",
+      "kind": "calls",
+      "from": "symbol:packages/client/src/getFetch.ts#getFetch",
+      "to": "symbol:packages/client/src/getFetch.ts#isFunction",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/client/src/links/httpSubscriptionLink.ts#httpSubscriptionLink->symbol:packages/client/src/TRPCClientError.ts#TRPCClientError.from",
+      "kind": "calls",
+      "from": "symbol:packages/client/src/links/httpSubscriptionLink.ts#httpSubscriptionLink",
+      "to": "symbol:packages/client/src/TRPCClientError.ts#TRPCClientError.from",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/client/src/links/httpSubscriptionLink.ts#httpSubscriptionLink->symbol:packages/client/src/internals/inputWithTrackedEventId.ts#inputWithTrackedEventId",
+      "kind": "calls",
+      "from": "symbol:packages/client/src/links/httpSubscriptionLink.ts#httpSubscriptionLink",
+      "to": "symbol:packages/client/src/internals/inputWithTrackedEventId.ts#inputWithTrackedEventId",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/openapi/src/generate.ts#convertUnionType->symbol:packages/openapi/src/generate.ts#detectDiscriminatorProperty",
+      "kind": "calls",
+      "from": "symbol:packages/openapi/src/generate.ts#convertUnionType",
+      "to": "symbol:packages/openapi/src/generate.ts#detectDiscriminatorProperty",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/server/src/unstable-core-do-not-import/http/contentType.ts#jsonContentTypeHandler->symbol:packages/server/src/unstable-core-do-not-import/http/contentType.ts#getAcceptHeader",
+      "kind": "calls",
+      "from": "symbol:packages/server/src/unstable-core-do-not-import/http/contentType.ts#jsonContentTypeHandler",
+      "to": "symbol:packages/server/src/unstable-core-do-not-import/http/contentType.ts#getAcceptHeader",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/server/src/unstable-core-do-not-import/http/resolveResponse.ts#resolveResponse->symbol:packages/server/src/unstable-core-do-not-import/http/contentType.ts#getAcceptHeader",
+      "kind": "calls",
+      "from": "symbol:packages/server/src/unstable-core-do-not-import/http/resolveResponse.ts#resolveResponse",
+      "to": "symbol:packages/server/src/unstable-core-do-not-import/http/contentType.ts#getAcceptHeader",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/tanstack-react-query/src/internals/Context.tsx#createTRPCContext->symbol:packages/tanstack-react-query/src/internals/createOptionsProxy.ts#createTRPCOptionsProxy",
+      "kind": "calls",
+      "from": "symbol:packages/tanstack-react-query/src/internals/Context.tsx#createTRPCContext",
+      "to": "symbol:packages/tanstack-react-query/src/internals/createOptionsProxy.ts#createTRPCOptionsProxy",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/tanstack-react-query/src/internals/createOptionsProxy.ts#createTRPCOptionsProxy->symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#trpcSubscriptionOptions",
+      "kind": "calls",
+      "from": "symbol:packages/tanstack-react-query/src/internals/createOptionsProxy.ts#createTRPCOptionsProxy",
+      "to": "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#trpcSubscriptionOptions",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#useSubscription->symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#trackResult",
+      "kind": "calls",
+      "from": "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#useSubscription",
+      "to": "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#trackResult",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:file:examples/next-prisma-websockets-starter/src/server/prodServer.ts->symbol:examples/next-prisma-websockets-starter/src/server/routers/_app.ts#appRouter",
+      "kind": "references",
+      "from": "file:examples/next-prisma-websockets-starter/src/server/prodServer.ts",
+      "to": "symbol:examples/next-prisma-websockets-starter/src/server/routers/_app.ts#appRouter",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:file:packages/client/src/internals/types.test.ts->symbol:packages/client/src/getFetch.ts#getFetch",
+      "kind": "references",
+      "from": "file:packages/client/src/internals/types.test.ts",
+      "to": "symbol:packages/client/src/getFetch.ts#getFetch",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:examples/next-prisma-websockets-starter/src/server/routers/_app.ts#appRouter->symbol:examples/next-prisma-websockets-starter/src/server/routers/post.ts#postRouter",
+      "kind": "references",
+      "from": "symbol:examples/next-prisma-websockets-starter/src/server/routers/_app.ts#appRouter",
+      "to": "symbol:examples/next-prisma-websockets-starter/src/server/routers/post.ts#postRouter",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:examples/next-prisma-websockets-starter/src/server/routers/post.ts#postRouter->symbol:examples/next-prisma-websockets-starter/src/server/prisma.ts#prisma",
+      "kind": "references",
+      "from": "symbol:examples/next-prisma-websockets-starter/src/server/routers/post.ts#postRouter",
+      "to": "symbol:examples/next-prisma-websockets-starter/src/server/prisma.ts#prisma",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:examples/next-prisma-websockets-starter/src/server/routers/post.ts#postRouter->symbol:examples/next-prisma-websockets-starter/src/server/routers/post.ts#currentlyTyping",
+      "kind": "references",
+      "from": "symbol:examples/next-prisma-websockets-starter/src/server/routers/post.ts#postRouter",
+      "to": "symbol:examples/next-prisma-websockets-starter/src/server/routers/post.ts#currentlyTyping",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/client/src/getFetch.ts#getFetch->symbol:packages/client/src/internals/types.ts#FetchEsque",
+      "kind": "references",
+      "from": "symbol:packages/client/src/getFetch.ts#getFetch",
+      "to": "symbol:packages/client/src/internals/types.ts#FetchEsque",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/client/src/links/httpSubscriptionLink.ts#httpSubscriptionLink->symbol:packages/client/src/TRPCClientError.ts#TRPCClientError",
+      "kind": "references",
+      "from": "symbol:packages/client/src/links/httpSubscriptionLink.ts#httpSubscriptionLink",
+      "to": "symbol:packages/client/src/TRPCClientError.ts#TRPCClientError",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/next/src/app-dir/create-action-hook.tsx#experimental_createActionHook->symbol:packages/next/src/app-dir/create-action-hook.tsx#UseTRPCActionOptions",
+      "kind": "references",
+      "from": "symbol:packages/next/src/app-dir/create-action-hook.tsx#experimental_createActionHook",
+      "to": "symbol:packages/next/src/app-dir/create-action-hook.tsx#UseTRPCActionOptions",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/next/src/app-dir/create-action-hook.tsx#experimental_createActionHook->symbol:packages/next/src/app-dir/create-action-hook.tsx#UseTRPCActionResult",
+      "kind": "references",
+      "from": "symbol:packages/next/src/app-dir/create-action-hook.tsx#experimental_createActionHook",
+      "to": "symbol:packages/next/src/app-dir/create-action-hook.tsx#UseTRPCActionResult",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/openapi/src/generate.ts#detectDiscriminatorProperty->symbol:packages/openapi/src/types.ts#SchemaObject",
+      "kind": "references",
+      "from": "symbol:packages/openapi/src/generate.ts#detectDiscriminatorProperty",
+      "to": "symbol:packages/openapi/src/types.ts#SchemaObject",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/react-query/src/internals/context.tsx#TRPCContextState->symbol:packages/react-query/src/internals/context.tsx#TRPCQueryUtils",
+      "kind": "references",
+      "from": "symbol:packages/react-query/src/internals/context.tsx#TRPCContextState",
+      "to": "symbol:packages/react-query/src/internals/context.tsx#TRPCQueryUtils",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/react-query/src/internals/context.tsx#TRPCQueryUtils->symbol:packages/react-query/src/internals/context.tsx#TRPCFetchInfiniteQueryOptions",
+      "kind": "references",
+      "from": "symbol:packages/react-query/src/internals/context.tsx#TRPCQueryUtils",
+      "to": "symbol:packages/react-query/src/internals/context.tsx#TRPCFetchInfiniteQueryOptions",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/react-query/src/internals/context.tsx#TRPCQueryUtils->symbol:packages/react-query/src/internals/context.tsx#TRPCFetchQueryOptions",
+      "kind": "references",
+      "from": "symbol:packages/react-query/src/internals/context.tsx#TRPCQueryUtils",
+      "to": "symbol:packages/react-query/src/internals/context.tsx#TRPCFetchQueryOptions",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/server/src/unstable-core-do-not-import/http/contentType.ts#getAcceptHeader->symbol:packages/server/src/unstable-core-do-not-import/http/types.ts#TRPCAcceptHeader",
+      "kind": "references",
+      "from": "symbol:packages/server/src/unstable-core-do-not-import/http/contentType.ts#getAcceptHeader",
+      "to": "symbol:packages/server/src/unstable-core-do-not-import/http/types.ts#TRPCAcceptHeader",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/tanstack-react-query/src/internals/Context.tsx#createTRPCContext->symbol:packages/tanstack-react-query/src/internals/Context.tsx#CreateTRPCContextResult",
+      "kind": "references",
+      "from": "symbol:packages/tanstack-react-query/src/internals/Context.tsx#createTRPCContext",
+      "to": "symbol:packages/tanstack-react-query/src/internals/Context.tsx#CreateTRPCContextResult",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/tanstack-react-query/src/internals/Context.tsx#createTRPCContext->symbol:packages/tanstack-react-query/src/internals/Context.tsx#TRPCProviderType",
+      "kind": "references",
+      "from": "symbol:packages/tanstack-react-query/src/internals/Context.tsx#createTRPCContext",
+      "to": "symbol:packages/tanstack-react-query/src/internals/Context.tsx#TRPCProviderType",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/tanstack-react-query/src/internals/Context.tsx#createTRPCContext->symbol:packages/tanstack-react-query/src/internals/createOptionsProxy.ts#TRPCOptionsProxy",
+      "kind": "references",
+      "from": "symbol:packages/tanstack-react-query/src/internals/Context.tsx#createTRPCContext",
+      "to": "symbol:packages/tanstack-react-query/src/internals/createOptionsProxy.ts#TRPCOptionsProxy",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#trpcSubscriptionOptions->symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#AnyTRPCSubscriptionOptionsIn",
+      "kind": "references",
+      "from": "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#trpcSubscriptionOptions",
+      "to": "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#AnyTRPCSubscriptionOptionsIn",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#trpcSubscriptionOptions->symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#AnyTRPCSubscriptionOptionsOut",
+      "kind": "references",
+      "from": "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#trpcSubscriptionOptions",
+      "to": "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#AnyTRPCSubscriptionOptionsOut",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#useSubscription->symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#TRPCSubscriptionOptionsOut",
+      "kind": "references",
+      "from": "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#useSubscription",
+      "to": "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#TRPCSubscriptionOptionsOut",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#useSubscription->symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#TRPCSubscriptionResult",
+      "kind": "references",
+      "from": "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#useSubscription",
+      "to": "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#TRPCSubscriptionResult",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    }
+  ],
+  "hunks": [
+    {
+      "id": "hunk:eslint.config.js:0",
+      "path": "eslint.config.js",
+      "oldStart": 7,
+      "oldLines": 7,
+      "newStart": 7,
+      "newLines": 7,
+      "patch": "@@ -7,7 +7,7 @@ import tseslint from 'typescript-eslint';\n \n export default tseslint.config(\n   includeIgnoreFile(path.join(import.meta.dirname, '.gitignore')),\n-  reactHooks.configs.recommended,\n+  reactHooks.configs.flat.recommended,\n   { ignores: ['**/vendor/**', '**/generated/**'] },\n   {\n     files: ['**/*.ts', '**/*.tsx'],",
+      "added": 1,
+      "removed": 1,
+      "owner": "symbol:eslint.config.js#default"
+    },
+    {
+      "id": "hunk:eslint.config.js:1",
+      "path": "eslint.config.js",
+      "oldStart": 22,
+      "oldLines": 7,
+      "newStart": 22,
+      "newLines": 6,
+      "patch": "@@ -22,7 +22,6 @@ export default tseslint.config(\n     ],\n     rules: {\n       ...reactPlugin.configs['jsx-runtime'].rules,\n-      'react-hooks/react-compiler': 'error',\n \n       // These rules aren't enabled in typescript-eslint's basic recommended config, but we like them\n       '@typescript-eslint/no-non-null-assertion': 'error',",
+      "added": 0,
+      "removed": 1,
+      "owner": "symbol:eslint.config.js#default"
+    },
+    {
+      "id": "hunk:eslint.config.js:2",
+      "path": "eslint.config.js",
+      "oldStart": 45,
+      "oldLines": 6,
+      "newStart": 44,
+      "newLines": 7,
+      "patch": "@@ -45,6 +44,7 @@ export default tseslint.config(\n         'error',\n         {\n           case: 'camelCase',\n+          checkDirectories: false,\n           ignore: [\n             'TRPC',\n             'RPC',",
+      "added": 1,
+      "removed": 0,
+      "owner": "symbol:eslint.config.js#default"
+    },
+    {
+      "id": "hunk:eslint.config.js:3",
+      "path": "eslint.config.js",
+      "oldStart": 121,
+      "oldLines": 6,
+      "newStart": 121,
+      "newLines": 16,
+      "patch": "@@ -121,6 +121,16 @@ export default tseslint.config(\n       '@typescript-eslint/switch-exhaustiveness-check': 'error',\n     },\n   },\n+  {\n+    // Todo: fix these and drop this block. 💪\n+    rules: {\n+      'react-hooks/refs': 'off',\n+      'react-hooks/immutability': 'off',\n+      'react-hooks/set-state-in-effect': 'off',\n+      'react-hooks/use-memo': 'off',\n+      'react-hooks/preserve-manual-memoization': 'off',\n+    },\n+  },\n   {\n     files: ['examples/**/*', 'packages/*/**/*', 'scripts/**/*', 'www/**/*'],\n     rules: {",
+      "added": 10,
+      "removed": 0,
+      "owner": "symbol:eslint.config.js#default"
+    },
+    {
+      "id": "hunk:examples/.test/diagnostics-big-router/package.json:0",
+      "path": "examples/.test/diagnostics-big-router/package.json",
+      "oldStart": 21,
+      "oldLines": 7,
+      "newStart": 21,
+      "newLines": 7,
+      "patch": "@@ -21,7 +21,7 @@\n     \"@types/node\": \"^24.13.4\",\n     \"@types/react\": \"^19.1.0\",\n     \"@types/react-dom\": \"^19.1.1\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"^10.10.0\",\n     \"tsx\": \"^4.19.3\",\n     \"typescript\": \"^5.9.2\"\n   }",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:examples/.test/diagnostics-big-router/package.json"
+    },
+    {
+      "id": "hunk:examples/.test/ssg-infinite-serialization/package.json:0",
+      "path": "examples/.test/ssg-infinite-serialization/package.json",
+      "oldStart": 26,
+      "oldLines": 7,
+      "newStart": 26,
+      "newLines": 7,
+      "patch": "@@ -26,7 +26,7 @@\n     \"@types/node\": \"^24.13.4\",\n     \"@types/react\": \"^19.1.0\",\n     \"@types/react-dom\": \"^19.1.1\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"^10.10.0\",\n     \"start-server-and-test\": \"^1.12.0\",\n     \"typescript\": \"^5.9.2\"\n   }",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:examples/.test/ssg-infinite-serialization/package.json"
+    },
+    {
+      "id": "hunk:examples/.test/ssg/package.json:0",
+      "path": "examples/.test/ssg/package.json",
+      "oldStart": 27,
+      "oldLines": 7,
+      "newStart": 27,
+      "newLines": 7,
+      "patch": "@@ -27,7 +27,7 @@\n     \"@types/node\": \"^24.13.4\",\n     \"@types/react\": \"^19.1.0\",\n     \"@types/react-dom\": \"^19.1.1\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"^10.10.0\",\n     \"start-server-and-test\": \"^1.12.0\",\n     \"typescript\": \"^5.9.2\"\n   }",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:examples/.test/ssg/package.json"
+    },
+    {
+      "id": "hunk:examples/bun/package.json:0",
+      "path": "examples/bun/package.json",
+      "oldStart": 18,
+      "oldLines": 7,
+      "newStart": 18,
+      "newLines": 7,
+      "patch": "@@ -18,7 +18,7 @@\n   },\n   \"devDependencies\": {\n     \"@types/bun\": \"^1.1.12\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"^10.10.0\",\n     \"start-server-and-test\": \"^1.12.0\",\n     \"typescript\": \"^5.9.2\",\n     \"wait-port\": \"^1.0.1\"",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:examples/bun/package.json"
+    },
+    {
+      "id": "hunk:examples/cloudflare-workers/package.json:0",
+      "path": "examples/cloudflare-workers/package.json",
+      "oldStart": 15,
+      "oldLines": 7,
+      "newStart": 15,
+      "newLines": 7,
+      "patch": "@@ -15,7 +15,7 @@\n   \"devDependencies\": {\n     \"@cloudflare/workers-types\": \"4.20250505.0\",\n     \"@types/node\": \"^24.13.4\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"^10.10.0\",\n     \"start-server-and-test\": \"^1.12.0\",\n     \"tsx\": \"^4.19.3\",\n     \"typescript\": \"^5.9.2\",",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:examples/cloudflare-workers/package.json"
+    },
+    {
+      "id": "hunk:examples/express-minimal/package.json:0",
+      "path": "examples/express-minimal/package.json",
+      "oldStart": 28,
+      "oldLines": 7,
+      "newStart": 28,
+      "newLines": 7,
+      "patch": "@@ -28,7 +28,7 @@\n     \"@types/node\": \"^24.13.4\",\n     \"@types/react\": \"^19.1.0\",\n     \"esbuild\": \"^0.17.10\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"^10.10.0\",\n     \"npm-run-all\": \"^4.1.5\",\n     \"start-server-and-test\": \"^1.12.0\",\n     \"tsx\": \"^4.19.3\",",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:examples/express-minimal/package.json"
+    },
+    {
+      "id": "hunk:examples/express-server/package.json:0",
+      "path": "examples/express-server/package.json",
+      "oldStart": 28,
+      "oldLines": 7,
+      "newStart": 28,
+      "newLines": 7,
+      "patch": "@@ -28,7 +28,7 @@\n     \"@types/node\": \"^24.13.4\",\n     \"@types/react\": \"^19.1.0\",\n     \"esbuild\": \"^0.17.10\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"^10.10.0\",\n     \"npm-run-all\": \"^4.1.5\",\n     \"start-server-and-test\": \"^1.12.0\",\n     \"tsx\": \"^4.19.3\",",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:examples/express-server/package.json"
+    },
+    {
+      "id": "hunk:examples/fastify-server/package.json:0",
+      "path": "examples/fastify-server/package.json",
+      "oldStart": 29,
+      "oldLines": 7,
+      "newStart": 29,
+      "newLines": 7,
+      "patch": "@@ -29,7 +29,7 @@\n     \"@types/node\": \"^24.13.4\",\n     \"@types/ws\": \"^8.2.0\",\n     \"esbuild\": \"^0.17.10\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"^10.10.0\",\n     \"npm-run-all\": \"^4.1.5\",\n     \"start-server-and-test\": \"^1.12.0\",\n     \"tsx\": \"^4.19.3\",",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:examples/fastify-server/package.json"
+    },
+    {
+      "id": "hunk:examples/lambda-api-gateway-streaming/package.json:0",
+      "path": "examples/lambda-api-gateway-streaming/package.json",
+      "oldStart": 19,
+      "oldLines": 7,
+      "newStart": 19,
+      "newLines": 7,
+      "patch": "@@ -19,7 +19,7 @@\n   \"devDependencies\": {\n     \"@types/aws-lambda\": \"^8.10.149\",\n     \"@types/node\": \"^24.13.4\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"^10.10.0\",\n     \"typescript\": \"^5.9.2\"\n   }\n }",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:examples/lambda-api-gateway-streaming/package.json"
+    },
+    {
+      "id": "hunk:examples/lambda-api-gateway/package.json:0",
+      "path": "examples/lambda-api-gateway/package.json",
+      "oldStart": 20,
+      "oldLines": 7,
+      "newStart": 20,
+      "newLines": 7,
+      "patch": "@@ -20,7 +20,7 @@\n   \"devDependencies\": {\n     \"@types/node\": \"^24.13.4\",\n     \"esbuild\": \"^0.17.10\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"^10.10.0\",\n     \"serverless\": \"^3.38.0\",\n     \"serverless-esbuild\": \"^1.55.0\",\n     \"serverless-offline\": \"^12.0.4\",",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:examples/lambda-api-gateway/package.json"
+    },
+    {
+      "id": "hunk:examples/lambda-url/package.json:0",
+      "path": "examples/lambda-url/package.json",
+      "oldStart": 20,
+      "oldLines": 7,
+      "newStart": 20,
+      "newLines": 7,
+      "patch": "@@ -20,7 +20,7 @@\n     \"@types/aws-lambda\": \"^8.10.149\",\n     \"@types/node\": \"^24.13.4\",\n     \"esbuild\": \"^0.17.10\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"^10.10.0\",\n     \"serverless\": \"^3.38.0\",\n     \"serverless-esbuild\": \"^1.55.0\",\n     \"typescript\": \"^5.9.2\"",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:examples/lambda-url/package.json"
+    },
+    {
+      "id": "hunk:examples/minimal-content-types/client/package.json:0",
+      "path": "examples/minimal-content-types/client/package.json",
+      "oldStart": 20,
+      "oldLines": 7,
+      "newStart": 20,
+      "newLines": 7,
+      "patch": "@@ -20,7 +20,7 @@\n     \"@types/react\": \"^19.1.0\",\n     \"@types/react-dom\": \"^19.1.1\",\n     \"@vitejs/plugin-react\": \"^4.3.4\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"^10.10.0\",\n     \"typescript\": \"^5.9.2\",\n     \"vite\": \"^6.1.1\"\n   }",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:examples/minimal-content-types/client/package.json"
+    },
+    {
+      "id": "hunk:examples/minimal-content-types/server/package.json:0",
+      "path": "examples/minimal-content-types/server/package.json",
+      "oldStart": 15,
+      "oldLines": 7,
+      "newStart": 15,
+      "newLines": 7,
+      "patch": "@@ -15,7 +15,7 @@\n   \"devDependencies\": {\n     \"@types/cors\": \"^2.8.13\",\n     \"@types/node\": \"^24.13.4\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"^10.10.0\",\n     \"tsx\": \"^4.19.3\",\n     \"typescript\": \"^5.9.2\"\n   }",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:examples/minimal-content-types/server/package.json"
+    },
+    {
+      "id": "hunk:examples/minimal-react/client/package.json:0",
+      "path": "examples/minimal-react/client/package.json",
+      "oldStart": 20,
+      "oldLines": 7,
+      "newStart": 20,
+      "newLines": 7,
+      "patch": "@@ -20,7 +20,7 @@\n     \"@types/react\": \"^19.1.0\",\n     \"@types/react-dom\": \"^19.1.1\",\n     \"@vitejs/plugin-react\": \"^4.3.4\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"^10.10.0\",\n     \"typescript\": \"^5.9.2\",\n     \"vite\": \"^6.1.1\"\n   }",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:examples/minimal-react/client/package.json"
+    },
+    {
+      "id": "hunk:examples/minimal-react/server/package.json:0",
+      "path": "examples/minimal-react/server/package.json",
+      "oldStart": 15,
+      "oldLines": 7,
+      "newStart": 15,
+      "newLines": 7,
+      "patch": "@@ -15,7 +15,7 @@\n   \"devDependencies\": {\n     \"@types/cors\": \"^2.8.13\",\n     \"@types/node\": \"^24.13.4\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"^10.10.0\",\n     \"tsx\": \"^4.19.3\",\n     \"typescript\": \"^5.9.2\"\n   }",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:examples/minimal-react/server/package.json"
+    },
+    {
+      "id": "hunk:examples/next-big-router/package.json:0",
+      "path": "examples/next-big-router/package.json",
+      "oldStart": 24,
+      "oldLines": 7,
+      "newStart": 24,
+      "newLines": 7,
+      "patch": "@@ -24,7 +24,7 @@\n     \"@types/node\": \"^24.13.4\",\n     \"@types/react\": \"^19.1.0\",\n     \"@types/react-dom\": \"^19.1.1\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"^10.10.0\",\n     \"tsx\": \"^4.19.3\",\n     \"typescript\": \"^5.9.2\"\n   }",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:examples/next-big-router/package.json"
+    },
+    {
+      "id": "hunk:examples/next-edge-runtime/package.json:0",
+      "path": "examples/next-edge-runtime/package.json",
+      "oldStart": 22,
+      "oldLines": 7,
+      "newStart": 22,
+      "newLines": 7,
+      "patch": "@@ -22,7 +22,7 @@\n     \"@types/node\": \"^24.13.4\",\n     \"@types/react\": \"^19.1.0\",\n     \"@types/react-dom\": \"^19.1.1\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"^10.10.0\",\n     \"typescript\": \"^5.9.2\"\n   }\n }",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:examples/next-edge-runtime/package.json"
+    },
+    {
+      "id": "hunk:examples/next-formdata/package.json:0",
+      "path": "examples/next-formdata/package.json",
+      "oldStart": 26,
+      "oldLines": 7,
+      "newStart": 26,
+      "newLines": 7,
+      "patch": "@@ -26,7 +26,7 @@\n     \"@types/node\": \"^24.13.4\",\n     \"@types/react\": \"^19.1.0\",\n     \"@types/react-dom\": \"^19.1.1\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"^10.10.0\",\n     \"typescript\": \"^5.9.2\"\n   }\n }",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:examples/next-formdata/package.json"
+    },
+    {
+      "id": "hunk:examples/next-minimal-starter/package.json:0",
+      "path": "examples/next-minimal-starter/package.json",
+      "oldStart": 23,
+      "oldLines": 7,
+      "newStart": 23,
+      "newLines": 7,
+      "patch": "@@ -23,7 +23,7 @@\n     \"@types/node\": \"^24.13.4\",\n     \"@types/react\": \"^19.1.0\",\n     \"@types/react-dom\": \"^19.1.1\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"^10.10.0\",\n     \"typescript\": \"^5.9.2\"\n   }\n }",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:examples/next-minimal-starter/package.json"
+    },
+    {
+      "id": "hunk:examples/next-prisma-starter/eslint.config.mjs:0",
+      "path": "examples/next-prisma-starter/eslint.config.mjs",
+      "oldStart": 3,
+      "oldLines": 7,
+      "newStart": 3,
+      "newLines": 7,
+      "patch": "@@ -3,7 +3,7 @@ import reactPlugin from 'eslint-plugin-react';\n import * as reactHooks from 'eslint-plugin-react-hooks';\n \n export default tseslint.config(\n-  reactHooks.configs.recommended,\n+  reactHooks.configs.flat.recommended,\n   {\n     files: ['**/*.js', '**/*.ts', '**/*.tsx'],\n     plugins: {",
+      "added": 1,
+      "removed": 1,
+      "owner": "symbol:examples/next-prisma-starter/eslint.config.mjs#default"
+    },
+    {
+      "id": "hunk:examples/next-prisma-starter/eslint.config.mjs:1",
+      "path": "examples/next-prisma-starter/eslint.config.mjs",
+      "oldStart": 16,
+      "oldLines": 7,
+      "newStart": 16,
+      "newLines": 11,
+      "patch": "@@ -16,7 +16,11 @@ export default tseslint.config(\n     ],\n     rules: {\n       ...reactPlugin.configs['jsx-runtime'].rules,\n-      'react-hooks/react-compiler': 'error',\n+      'react-hooks/refs': 'off',\n+      'react-hooks/immutability': 'off',\n+      'react-hooks/set-state-in-effect': 'off',\n+      'react-hooks/use-memo': 'off',\n+      'react-hooks/preserve-manual-memoization': 'off',\n \n       // Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs\n       '@typescript-eslint/consistent-type-definitions': 'off',",
+      "added": 5,
+      "removed": 1,
+      "owner": "symbol:examples/next-prisma-starter/eslint.config.mjs#default"
+    },
+    {
+      "id": "hunk:examples/next-prisma-starter/package.json:0",
+      "path": "examples/next-prisma-starter/package.json",
+      "oldStart": 51,
+      "oldLines": 10,
+      "newStart": 51,
+      "newLines": 10,
+      "patch": "@@ -51,10 +51,10 @@\n     \"@types/react\": \"^19.1.0\",\n     \"autoprefixer\": \"^10.4.7\",\n     \"dotenv\": \"^16.0.1\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"^10.10.0\",\n     \"eslint-config-next\": \"^15.3.1\",\n     \"eslint-plugin-react\": \"^7.37.5\",\n-    \"eslint-plugin-react-hooks\": \"6.0.0-rc.1\",\n+    \"eslint-plugin-react-hooks\": \"^7.1.1\",\n     \"npm-run-all\": \"^4.1.5\",\n     \"postcss\": \"^8.4.39\",\n     \"prettier\": \"^3.3.3\",",
+      "added": 2,
+      "removed": 2,
+      "owner": "file:examples/next-prisma-starter/package.json"
+    },
+    {
+      "id": "hunk:examples/next-prisma-starter/package.json:1",
+      "path": "examples/next-prisma-starter/package.json",
+      "oldStart": 63,
+      "oldLines": 7,
+      "newStart": 63,
+      "newLines": 7,
+      "patch": "@@ -63,7 +63,7 @@\n     \"tailwindcss\": \"^3.4.6\",\n     \"tsx\": \"^4.19.3\",\n     \"typescript\": \"^5.9.2\",\n-    \"typescript-eslint\": \"^8.31.1\",\n+    \"typescript-eslint\": \"^8.70.0\",\n     \"vite\": \"^6.1.1\",\n     \"vitest\": \"^4.0.18\"\n   },",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:examples/next-prisma-starter/package.json"
+    },
+    {
+      "id": "hunk:examples/next-prisma-todomvc/package.json:0",
+      "path": "examples/next-prisma-todomvc/package.json",
+      "oldStart": 42,
+      "oldLines": 7,
+      "newStart": 42,
+      "newLines": 7,
+      "patch": "@@ -42,7 +42,7 @@\n     \"@tanstack/react-query-devtools\": \"^5.80.3\",\n     \"@types/node\": \"^24.13.4\",\n     \"@types/react\": \"^19.1.0\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"^10.10.0\",\n     \"npm-run-all\": \"^4.1.5\",\n     \"prisma\": \"^6.7.0\",\n     \"start-server-and-test\": \"^1.12.0\",",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:examples/next-prisma-todomvc/package.json"
+    },
+    {
+      "id": "hunk:examples/next-prisma-websockets-starter/eslint.config.mjs:0",
+      "path": "examples/next-prisma-websockets-starter/eslint.config.mjs",
+      "oldStart": 16,
+      "oldLines": 7,
+      "newStart": 16,
+      "newLines": 12,
+      "patch": "@@ -16,7 +16,12 @@ export default tseslint.config(\n     ],\n     rules: {\n       ...reactPlugin.configs['jsx-runtime'].rules,\n-      ...hooksPlugin.configs.recommended.rules,\n+      ...hooksPlugin.configs.flat.recommended.rules,\n+      'react-hooks/refs': 'off',\n+      'react-hooks/immutability': 'off',\n+      'react-hooks/set-state-in-effect': 'off',\n+      'react-hooks/use-memo': 'off',\n+      'react-hooks/preserve-manual-memoization': 'off',\n \n       // Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs\n       '@typescript-eslint/consistent-type-definitions': 'off',",
+      "added": 6,
+      "removed": 1,
+      "owner": "symbol:examples/next-prisma-websockets-starter/eslint.config.mjs#default"
+    },
+    {
+      "id": "hunk:examples/next-prisma-websockets-starter/package.json:0",
+      "path": "examples/next-prisma-websockets-starter/package.json",
+      "oldStart": 64,
+      "oldLines": 18,
+      "newStart": 64,
+      "newLines": 18,
+      "patch": "@@ -64,18 +64,18 @@\n     \"@types/ws\": \"^8.2.0\",\n     \"autoprefixer\": \"^10.4.7\",\n     \"cross-env\": \"^7.0.3\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"^10.10.0\",\n     \"eslint-config-next\": \"^15.3.1\",\n     \"eslint-plugin-react\": \"^7.37.5\",\n-    \"eslint-plugin-react-hooks\": \"6.0.0-rc.1\",\n+    \"eslint-plugin-react-hooks\": \"^7.1.1\",\n     \"npm-run-all\": \"^4.1.5\",\n     \"postcss\": \"^8.4.39\",\n     \"prettier\": \"^3.3.3\",\n     \"prisma\": \"^6.7.0\",\n     \"start-server-and-test\": \"^1.12.0\",\n     \"tailwindcss\": \"^3.4.6\",\n     \"typescript\": \"^5.9.2\",\n-    \"typescript-eslint\": \"^8.31.1\"\n+    \"typescript-eslint\": \"^8.70.0\"\n   },\n   \"publishConfig\": {\n     \"access\": \"restricted\"",
+      "added": 3,
+      "removed": 3,
+      "owner": "file:examples/next-prisma-websockets-starter/package.json"
+    },
+    {
+      "id": "hunk:examples/next-prisma-websockets-starter/src/pages/api/auth/[...nextauth].ts:0",
+      "path": "examples/next-prisma-websockets-starter/src/pages/api/auth/[...nextauth].ts",
+      "oldStart": 51,
+      "oldLines": 7,
+      "newStart": 51,
+      "newLines": 7,
+      "patch": "@@ -51,7 +51,7 @@ if (useMockProvider) {\n           name: profile.login,\n           email: profile.email,\n           image: profile.avatar_url,\n-        } as any;\n+        };\n       },\n     }),\n   );",
+      "added": 1,
+      "removed": 1,
+      "owner": "group:collapsed:mechanical:7c68e69b",
+      "noise": {
+        "kind": "mechanical",
+        "detail": "same edit at 9 sites"
+      }
+    },
+    {
+      "id": "hunk:examples/next-prisma-websockets-starter/src/server/prodServer.ts:0",
+      "path": "examples/next-prisma-websockets-starter/src/server/prodServer.ts",
+      "oldStart": 1,
+      "oldLines": 7,
+      "newStart": 1,
+      "newLines": 6,
+      "patch": "@@ -1,7 +1,6 @@\n import next from 'next';\n import { createServer } from 'node:http';\n import { parse } from 'node:url';\n-import type { Socket } from 'net';\n \n import { WebSocketServer } from 'ws';\n import { applyWSSHandler } from '@trpc/server/adapters/ws';",
+      "added": 0,
+      "removed": 1,
+      "owner": "file:examples/next-prisma-websockets-starter/src/server/prodServer.ts"
+    },
+    {
+      "id": "hunk:examples/next-prisma-websockets-starter/src/server/prodServer.ts:1",
+      "path": "examples/next-prisma-websockets-starter/src/server/prodServer.ts",
+      "oldStart": 29,
+      "oldLines": 7,
+      "newStart": 28,
+      "newLines": 7,
+      "patch": "@@ -29,7 +28,7 @@ void app.prepare().then(() => {\n   });\n \n   server.on('upgrade', (req, socket, head) => {\n-    wss.handleUpgrade(req, socket as Socket, head, (ws) => {\n+    wss.handleUpgrade(req, socket, head, (ws) => {\n       wss.emit('connection', ws, req);\n     });\n   });",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:examples/next-prisma-websockets-starter/src/server/prodServer.ts"
+    },
+    {
+      "id": "hunk:examples/next-prisma-websockets-starter/src/server/routers/post.ts:0",
+      "path": "examples/next-prisma-websockets-starter/src/server/routers/post.ts",
+      "oldStart": 140,
+      "oldLines": 7,
+      "newStart": 140,
+      "newLines": 7,
+      "patch": "@@ -140,7 +140,7 @@ export const postRouter = router({\n       const onIsTypingUpdate = () => {\n         const newData = Object.keys(currentlyTyping);\n \n-        if (!prev || prev.toString() !== newData.toString()) {\n+        if (prev?.toString() !== newData.toString()) {\n           emit.next(newData);\n         }\n         prev = newData;",
+      "added": 1,
+      "removed": 1,
+      "owner": "symbol:examples/next-prisma-websockets-starter/src/server/routers/post.ts#postRouter"
+    },
+    {
+      "id": "hunk:examples/next-websockets-encoder/package.json:0",
+      "path": "examples/next-websockets-encoder/package.json",
+      "oldStart": 37,
+      "oldLines": 15,
+      "newStart": 37,
+      "newLines": 15,
+      "patch": "@@ -37,15 +37,15 @@\n     \"@types/ws\": \"^8.2.0\",\n     \"autoprefixer\": \"^10.4.7\",\n     \"cross-env\": \"^7.0.3\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"^10.10.0\",\n     \"eslint-config-next\": \"^15.3.1\",\n     \"eslint-plugin-react\": \"^7.37.5\",\n-    \"eslint-plugin-react-hooks\": \"6.0.0-rc.1\",\n+    \"eslint-plugin-react-hooks\": \"^7.1.1\",\n     \"npm-run-all\": \"^4.1.5\",\n     \"postcss\": \"^8.4.39\",\n     \"tailwindcss\": \"^3.4.6\",\n     \"typescript\": \"^5.9.2\",\n-    \"typescript-eslint\": \"^8.31.1\"\n+    \"typescript-eslint\": \"^8.70.0\"\n   },\n   \"publishConfig\": {\n     \"access\": \"restricted\"",
+      "added": 3,
+      "removed": 3,
+      "owner": "file:examples/next-websockets-encoder/package.json"
+    },
+    {
+      "id": "hunk:examples/next-websockets-encoder/src/server/prodServer.ts:0",
+      "path": "examples/next-websockets-encoder/src/server/prodServer.ts",
+      "oldStart": 32,
+      "oldLines": 7,
+      "newStart": 32,
+      "newLines": 7,
+      "patch": "@@ -32,7 +32,7 @@ void app.prepare().then(() => {\n   });\n \n   server.on('upgrade', (req, socket, head) => {\n-    wss.handleUpgrade(req, socket as Socket, head, (ws) => {\n+    wss.handleUpgrade(req, socket, head, (ws) => {\n       wss.emit('connection', ws, req);\n     });\n   });",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:examples/next-websockets-encoder/src/server/prodServer.ts"
+    },
+    {
+      "id": "hunk:examples/standalone-server/package.json:0",
+      "path": "examples/standalone-server/package.json",
+      "oldStart": 27,
+      "oldLines": 7,
+      "newStart": 27,
+      "newLines": 7,
+      "patch": "@@ -27,7 +27,7 @@\n     \"@types/node\": \"^24.13.4\",\n     \"@types/ws\": \"^8.2.0\",\n     \"esbuild\": \"^0.17.10\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"^10.10.0\",\n     \"npm-run-all\": \"^4.1.5\",\n     \"start-server-and-test\": \"^1.12.0\",\n     \"tsx\": \"^4.19.3\",",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:examples/standalone-server/package.json"
+    },
+    {
+      "id": "hunk:package.json:0",
+      "path": "package.json",
+      "oldStart": 39,
+      "oldLines": 7,
+      "newStart": 39,
+      "newLines": 7,
+      "patch": "@@ -39,7 +39,7 @@\n   \"dependencies\": {\n     \"@actions/core\": \"^3.0.0\",\n     \"@actions/github\": \"^9.0.0\",\n-    \"@eslint/compat\": \"^2.0.0\",\n+    \"@eslint/compat\": \"catalog:\",\n     \"@ianvs/prettier-plugin-sort-imports\": \"^4.4.0\",\n     \"@manypkg/cli\": \"^0.22.0\",\n     \"@tanstack/intent\": \"^0.0.27\",",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:package.json"
+    },
+    {
+      "id": "hunk:package.json:1",
+      "path": "package.json",
+      "oldStart": 52,
+      "oldLines": 10,
+      "newStart": 52,
+      "newLines": 10,
+      "patch": "@@ -52,10 +52,10 @@\n     \"@vitest/coverage-istanbul\": \"^4.0.18\",\n     \"@vitest/ui\": \"^4.0.18\",\n     \"concurrently\": \"^9.0.0\",\n-    \"eslint\": \"^9.26.0\",\n-    \"eslint-plugin-react\": \"^7.37.5\",\n-    \"eslint-plugin-react-hooks\": \"6.0.0-rc.1\",\n-    \"eslint-plugin-unicorn\": \"64.0.0\",\n+    \"eslint\": \"catalog:\",\n+    \"eslint-plugin-react\": \"catalog:\",\n+    \"eslint-plugin-react-hooks\": \"catalog:\",\n+    \"eslint-plugin-unicorn\": \"catalog:\",\n     \"event-source-polyfill\": \"^1.0.31\",\n     \"express\": \"^5.0.0\",\n     \"fast-glob\": \"^3.2.12\",",
+      "added": 4,
+      "removed": 4,
+      "owner": "file:package.json"
+    },
+    {
+      "id": "hunk:package.json:2",
+      "path": "package.json",
+      "oldStart": 70,
+      "oldLines": 7,
+      "newStart": 70,
+      "newLines": 7,
+      "patch": "@@ -70,7 +70,7 @@\n     \"tsx\": \"^4.19.3\",\n     \"turbo\": \"^2.5.4\",\n     \"typescript\": \"catalog:ts-api\",\n-    \"typescript-eslint\": \"^8.31.1\",\n+    \"typescript-eslint\": \"catalog:\",\n     \"vite\": \"^6.1.1\",\n     \"vitest\": \"^4.0.18\",\n     \"zod\": \"^4.2.1\"",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:package.json"
+    },
+    {
+      "id": "hunk:packages/client/package.json:0",
+      "path": "packages/client/package.json",
+      "oldStart": 124,
+      "oldLines": 7,
+      "newStart": 124,
+      "newLines": 7,
+      "patch": "@@ -124,7 +124,7 @@\n     \"@types/isomorphic-fetch\": \"^0.0.39\",\n     \"@types/node\": \"catalog:\",\n     \"dataloader\": \"^2.2.2\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"catalog:\",\n     \"isomorphic-fetch\": \"^3.0.0\",\n     \"node-fetch\": \"^3.3.0\",\n     \"tsdown\": \"catalog:\",",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:packages/client/package.json"
+    },
+    {
+      "id": "hunk:packages/client/src/__tests__/testClientResource.ts:0",
+      "path": "packages/client/src/__tests__/testClientResource.ts",
+      "oldStart": 162,
+      "oldLines": 7,
+      "newStart": 162,
+      "newLines": 7,
+      "patch": "@@ -162,7 +162,7 @@ export function testServerAndClientResource<TRouter extends AnyTRPCRouter>(\n             httpUrl: serverResource.httpUrl,\n             wssUrl: serverResource.wssUrl,\n             wsClient,\n-            transformer: router._def._config.transformer as any,\n+            transformer: router._def._config.transformer,\n           })\n         : opts.client\n       : {}),",
+      "added": 1,
+      "removed": 1,
+      "owner": "group:collapsed:mechanical:7c68e69b",
+      "noise": {
+        "kind": "mechanical",
+        "detail": "same edit at 9 sites"
+      }
+    },
+    {
+      "id": "hunk:packages/client/src/getFetch.ts:0",
+      "path": "packages/client/src/getFetch.ts",
+      "oldStart": 11,
+      "oldLines": 12,
+      "newStart": 11,
+      "newLines": 13,
+      "patch": "@@ -11,12 +11,13 @@ export function getFetch(\n     return customFetchImpl as FetchEsque;\n   }\n \n+  // eslint-disable-next-line @typescript-eslint/unbound-method\n   if (typeof window !== 'undefined' && isFunction(window.fetch)) {\n-    return window.fetch as FetchEsque;\n+    return window.fetch.bind(window);\n   }\n \n   if (typeof globalThis !== 'undefined' && isFunction(globalThis.fetch)) {\n-    return globalThis.fetch as FetchEsque;\n+    return globalThis.fetch;\n   }\n \n   throw new Error('No fetch implementation found');",
+      "added": 3,
+      "removed": 2,
+      "owner": "symbol:packages/client/src/getFetch.ts#getFetch"
+    },
+    {
+      "id": "hunk:packages/client/src/links/httpSubscriptionLink.ts:0",
+      "path": "packages/client/src/links/httpSubscriptionLink.ts",
+      "oldStart": 106,
+      "oldLines": 9,
+      "newStart": 106,
+      "newLines": 7,
+      "patch": "@@ -106,9 +106,7 @@ export function httpSubscriptionLink<\n           init: () => resultOf(opts.eventSourceOptions, { op }),\n           signal,\n           deserialize: (data) => transformer.output.deserialize(data),\n-          EventSource:\n-            opts.EventSource ??\n-            (globalThis.EventSource as never as TEventSource),\n+          EventSource: opts.EventSource ?? (globalThis.EventSource as never),\n         });\n \n         const connectionState = behaviorSubject<",
+      "added": 1,
+      "removed": 3,
+      "owner": "symbol:packages/client/src/links/httpSubscriptionLink.ts#httpSubscriptionLink"
+    },
+    {
+      "id": "hunk:packages/next/package.json:0",
+      "path": "packages/next/package.json",
+      "oldStart": 134,
+      "oldLines": 7,
+      "newStart": 134,
+      "newLines": 7,
+      "patch": "@@ -134,7 +134,7 @@\n     \"@types/react\": \"^19.1.0\",\n     \"@types/react-dom\": \"^19.1.1\",\n     \"devalue\": \"^5.0.0\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"catalog:\",\n     \"express\": \"^5.0.0\",\n     \"next\": \"^15.3.8\",\n     \"react\": \"^19.1.0\",",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:packages/next/package.json"
+    },
+    {
+      "id": "hunk:packages/next/src/app-dir/create-action-hook.tsx:0",
+      "path": "packages/next/src/app-dir/create-action-hook.tsx",
+      "oldStart": 168,
+      "oldLines": 12,
+      "newStart": 168,
+      "newLines": 12,
+      "patch": "@@ -168,12 +168,12 @@ export function experimental_createActionHook<\n     const mutateAsync = useCallback(\n       (input: any, requestOptions?: TRPCRequestOptions) => {\n         const idx = ++count.current;\n-        const context = {\n+        const context: ActionContext = {\n           ...requestOptions?.context,\n           _action(innerInput) {\n             return handler(innerInput);\n           },\n-        } as ActionContext;\n+        };\n \n         setState({\n           status: 'loading',",
+      "added": 2,
+      "removed": 2,
+      "owner": "symbol:packages/next/src/app-dir/create-action-hook.tsx#experimental_createActionHook"
+    },
+    {
+      "id": "hunk:packages/next/src/app-dir/create-action-hook.tsx:1",
+      "path": "packages/next/src/app-dir/create-action-hook.tsx",
+      "oldStart": 184,
+      "oldLines": 13,
+      "newStart": 184,
+      "newLines": 13,
+      "patch": "@@ -184,13 +184,13 @@ export function experimental_createActionHook<\n             context,\n           })\n           .then(async (data) => {\n-            await actionOptsRef.current?.onSuccess?.(data as any);\n+            await actionOptsRef.current?.onSuccess?.(data);\n             if (idx !== count.current) {\n               return;\n             }\n             setState({\n               status: 'success',\n-              data: data as any,\n+              data,\n             });\n           })\n           .catch(async (error) => {",
+      "added": 2,
+      "removed": 2,
+      "owner": "symbol:packages/next/src/app-dir/create-action-hook.tsx#experimental_createActionHook"
+    },
+    {
+      "id": "hunk:packages/openapi/package.json:0",
+      "path": "packages/openapi/package.json",
+      "oldStart": 83,
+      "oldLines": 7,
+      "newStart": 83,
+      "newLines": 7,
+      "patch": "@@ -83,7 +83,7 @@\n     \"@trpc/server\": \"11.18.0\",\n     \"@types/node\": \"catalog:\",\n     \"bson\": \"^7.2.0\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"catalog:\",\n     \"ion-js\": \"^5.2.1\",\n     \"superjson\": \"^1.12.4\",\n     \"tsdown\": \"catalog:\",",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:packages/openapi/package.json"
+    },
+    {
+      "id": "hunk:packages/openapi/src/generate.ts:0",
+      "path": "packages/openapi/src/generate.ts",
+      "oldStart": 446,
+      "oldLines": 11,
+      "newStart": 446,
+      "newLines": 7,
+      "patch": "@@ -446,11 +446,7 @@ function detectDiscriminatorProperty(schemas: SchemaObject[]): string | null {\n   for (const prop of firstProps) {\n     const allHaveConst = schemas.every((s) => {\n       const propSchema = s.properties?.[prop];\n-      return (\n-        propSchema !== undefined &&\n-        propSchema.const !== undefined &&\n-        s.required?.includes(prop)\n-      );\n+      return propSchema?.const !== undefined && s.required?.includes(prop);\n     });\n     if (allHaveConst) {\n       return prop;",
+      "added": 1,
+      "removed": 5,
+      "owner": "symbol:packages/openapi/src/generate.ts#detectDiscriminatorProperty"
+    },
+    {
+      "id": "hunk:packages/react-query/package.json:0",
+      "path": "packages/react-query/package.json",
+      "oldStart": 103,
+      "oldLines": 7,
+      "newStart": 103,
+      "newLines": 7,
+      "patch": "@@ -103,7 +103,7 @@\n     \"@types/express\": \"^5.0.0\",\n     \"@types/node\": \"catalog:\",\n     \"@types/react\": \"^19.1.0\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"catalog:\",\n     \"express\": \"^5.0.0\",\n     \"next\": \"^15.3.8\",\n     \"react\": \"^19.1.0\",",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:packages/react-query/package.json"
+    },
+    {
+      "id": "hunk:packages/react-query/src/internals/context.tsx:0",
+      "path": "packages/react-query/src/internals/context.tsx",
+      "oldStart": 292,
+      "oldLines": 6,
+      "newStart": 292,
+      "newLines": 7,
+      "patch": "@@ -292,6 +292,7 @@ export interface TRPCQueryUtils<TRouter extends AnyRouter> {\n   /**\n    * @see https://tanstack.com/query/v5/docs/reference/QueryClient#queryclientsetqueriesdata\n    */\n+  // eslint-disable-next-line max-params -- mirrors TanStack Query's own signature\n   setQueriesData: (\n     queryKey: TRPCQueryKey,\n     filters: QueryFilters,",
+      "added": 1,
+      "removed": 0,
+      "owner": "symbol:packages/react-query/src/internals/context.tsx#TRPCQueryUtils"
+    },
+    {
+      "id": "hunk:packages/react-query/src/shared/hooks/createHooksInternal.tsx:0",
+      "path": "packages/react-query/src/shared/hooks/createHooksInternal.tsx",
+      "oldStart": 1,
+      "oldLines": 5,
+      "newStart": 1,
+      "newLines": 4,
+      "patch": "@@ -1,5 +1,4 @@\n // TODO: Look into fixing react-compiler support\n-/* eslint-disable react-hooks/react-compiler */\n import {\n   useInfiniteQuery as __useInfiniteQuery,\n   useMutation as __useMutation,",
+      "added": 0,
+      "removed": 1,
+      "owner": "file:packages/react-query/src/shared/hooks/createHooksInternal.tsx"
+    },
+    {
+      "id": "hunk:packages/react-query/src/utils/createUtilityFunctions.ts:0",
+      "path": "packages/react-query/src/utils/createUtilityFunctions.ts",
+      "oldStart": 213,
+      "oldLines": 7,
+      "newStart": 213,
+      "newLines": 7,
+      "patch": "@@ -213,7 +213,7 @@ export function createUtilityFunctions<TRouter extends AnyRouter>(\n     },\n \n     setQueryData: (queryKey, updater, options) => {\n-      return queryClient.setQueryData(queryKey, updater as any, options);\n+      return queryClient.setQueryData(queryKey, updater, options);\n     },\n \n     // eslint-disable-next-line max-params",
+      "added": 1,
+      "removed": 1,
+      "owner": "group:collapsed:mechanical:7c68e69b",
+      "noise": {
+        "kind": "mechanical",
+        "detail": "same edit at 9 sites"
+      }
+    },
+    {
+      "id": "hunk:packages/react-query/src/utils/createUtilityFunctions.ts:1",
+      "path": "packages/react-query/src/utils/createUtilityFunctions.ts",
+      "oldStart": 233,
+      "oldLines": 7,
+      "newStart": 233,
+      "newLines": 7,
+      "patch": "@@ -233,7 +233,7 @@ export function createUtilityFunctions<TRouter extends AnyRouter>(\n     },\n \n     setInfiniteQueryData: (queryKey, updater, options) => {\n-      return queryClient.setQueryData(queryKey, updater as any, options);\n+      return queryClient.setQueryData(queryKey, updater, options);\n     },\n \n     getInfiniteQueryData: (queryKey) => {",
+      "added": 1,
+      "removed": 1,
+      "owner": "group:collapsed:mechanical:7c68e69b",
+      "noise": {
+        "kind": "mechanical",
+        "detail": "same edit at 9 sites"
+      }
+    },
+    {
+      "id": "hunk:packages/server/package.json:0",
+      "path": "packages/server/package.json",
+      "oldStart": 208,
+      "oldLines": 7,
+      "newStart": 208,
+      "newLines": 7,
+      "patch": "@@ -208,7 +208,7 @@\n     \"@types/react-dom\": \"^19.1.1\",\n     \"@types/ws\": \"^8.2.0\",\n     \"devalue\": \"^5.0.0\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"catalog:\",\n     \"express\": \"^5.0.0\",\n     \"fastify\": \"^5.0.0\",\n     \"fastify-plugin\": \"^5.0.0\",",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:packages/server/package.json"
+    },
+    {
+      "id": "hunk:packages/server/src/adapters/ws.ts:0",
+      "path": "packages/server/src/adapters/ws.ts",
+      "oldStart": 586,
+      "oldLines": 13,
+      "newStart": 586,
+      "newLines": 13,
+      "patch": "@@ -586,13 +586,13 @@ export function handleKeepAlive(\n     const scheduleTimeout = () => {\n       timeout = setTimeout(() => {\n         client.terminate();\n-      }, pongWaitMs) as any;\n+      }, pongWaitMs);\n     };\n     ping = setTimeout(() => {\n       client.send('PING');\n \n       scheduleTimeout();\n-    }, pingMs) as any;\n+    }, pingMs);\n   };\n \n   const onMessage = () => {",
+      "added": 2,
+      "removed": 2,
+      "owner": "group:collapsed:mechanical:7c68e69b",
+      "noise": {
+        "kind": "mechanical",
+        "detail": "same edit at 9 sites"
+      }
+    },
+    {
+      "id": "hunk:packages/server/src/unstable-core-do-not-import/http/contentType.ts:0",
+      "path": "packages/server/src/unstable-core-do-not-import/http/contentType.ts",
+      "oldStart": 12,
+      "oldLines": 7,
+      "newStart": 12,
+      "newLines": 7,
+      "patch": "@@ -12,7 +12,7 @@ export function getAcceptHeader(headers: Headers): TRPCAcceptHeader | null {\n       .get('accept')\n       ?.split(',')\n       .some((t) => t.trim() === 'application/jsonl')\n-      ? ('application/jsonl' as TRPCAcceptHeader)\n+      ? 'application/jsonl'\n       : null)\n   );\n }",
+      "added": 1,
+      "removed": 1,
+      "owner": "symbol:packages/server/src/unstable-core-do-not-import/http/contentType.ts#getAcceptHeader"
+    },
+    {
+      "id": "hunk:packages/server/src/unstable-core-do-not-import/stream/sse.test.ts:0",
+      "path": "packages/server/src/unstable-core-do-not-import/stream/sse.test.ts",
+      "oldStart": 111,
+      "oldLines": 9,
+      "newStart": 111,
+      "newLines": 9,
+      "patch": "@@ -111,9 +111,9 @@ test('e2e, server-sent events (SSE)', async () => {\n \n         await Promise.all([\n           // Restart the server\n-          await server.restart(),\n+          server.restart(),\n           // Wait for the EventSource to detect the error and reconnect\n-          await new Promise<void>((resolve) => {\n+          new Promise<void>((resolve) => {\n             es!.addEventListener(\n               'error',\n               () => {",
+      "added": 2,
+      "removed": 2,
+      "owner": "file:packages/server/src/unstable-core-do-not-import/stream/sse.test.ts"
+    },
+    {
+      "id": "hunk:packages/tanstack-react-query/package.json:0",
+      "path": "packages/tanstack-react-query/package.json",
+      "oldStart": 68,
+      "oldLines": 7,
+      "newStart": 68,
+      "newLines": 7,
+      "patch": "@@ -68,7 +68,7 @@\n     \"@trpc/server\": \"11.18.0\",\n     \"@types/node\": \"catalog:\",\n     \"@types/react\": \"^19.1.0\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"catalog:\",\n     \"event-source-polyfill\": \"^1.0.31\",\n     \"konn\": \"^0.7.0\",\n     \"react\": \"^19.1.0\",",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:packages/tanstack-react-query/package.json"
+    },
+    {
+      "id": "hunk:packages/tanstack-react-query/src/internals/Context.tsx:0",
+      "path": "packages/tanstack-react-query/src/internals/Context.tsx",
+      "oldStart": 85,
+      "oldLines": 8,
+      "newStart": 85,
+      "newLines": 5,
+      "patch": "@@ -85,8 +85,5 @@ export function createTRPCContext<\n     return client;\n   }\n \n-  return { TRPCProvider, useTRPC, useTRPCClient } as CreateTRPCContextResult<\n-    TRouter,\n-    TFeatureFlags\n-  >;\n+  return { TRPCProvider, useTRPC, useTRPCClient };\n }",
+      "added": 1,
+      "removed": 4,
+      "owner": "symbol:packages/tanstack-react-query/src/internals/Context.tsx#createTRPCContext"
+    },
+    {
+      "id": "hunk:packages/tanstack-react-query/src/internals/subscriptionOptions.ts:0",
+      "path": "packages/tanstack-react-query/src/internals/subscriptionOptions.ts",
+      "oldStart": 150,
+      "oldLines": 7,
+      "newStart": 150,
+      "newLines": 7,
+      "patch": "@@ -150,7 +150,7 @@ export const trpcSubscriptionOptions = <\n   >['subscribe'] = (innerOpts) => {\n     return subscribe(\n       path.join('.'),\n-      input === skipToken ? undefined : (input as any),\n+      input === skipToken ? undefined : input,\n       innerOpts,\n     );\n   };",
+      "added": 1,
+      "removed": 1,
+      "owner": "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#trpcSubscriptionOptions"
+    },
+    {
+      "id": "hunk:packages/tanstack-react-query/src/internals/subscriptionOptions.ts:1",
+      "path": "packages/tanstack-react-query/src/internals/subscriptionOptions.ts",
+      "oldStart": 245,
+      "oldLines": 7,
+      "newStart": 245,
+      "newLines": 6,
+      "patch": "@@ -245,7 +245,6 @@ export function useSubscription<TOutput, TError>(\n     currentSubscriptionRef.current = () => {\n       subscription.unsubscribe();\n     };\n-    // eslint-disable-next-line react-hooks/react-compiler\n     // eslint-disable-next-line react-hooks/exhaustive-deps\n   }, [hashKey(opts.queryKey), opts.enabled]);\n ",
+      "added": 0,
+      "removed": 1,
+      "owner": "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#useSubscription"
+    },
+    {
+      "id": "hunk:packages/tests/package.json:0",
+      "path": "packages/tests/package.json",
+      "oldStart": 18,
+      "oldLines": 7,
+      "newStart": 18,
+      "newLines": 7,
+      "patch": "@@ -18,7 +18,7 @@\n     \"dataloader\": \"^2.2.2\",\n     \"devalue\": \"^5.0.0\",\n     \"effect\": \"3.21.0\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"catalog:\",\n     \"fastify\": \"^5.0.0\",\n     \"fastify-plugin\": \"^5.0.0\",\n     \"jsdom\": \"^29.0.0\",",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:packages/tests/package.json"
+    },
+    {
+      "id": "hunk:packages/tests/server/index.test.ts:0",
+      "path": "packages/tests/server/index.test.ts",
+      "oldStart": 473,
+      "oldLines": 7,
+      "newStart": 473,
+      "newLines": 7,
+      "patch": "@@ -473,7 +473,7 @@ test('void mutation response', async () => {\n \n   const ws = createWSClient({\n     url: `ws://localhost:${wssPort}`,\n-    WebSocket: WebSocket as any,\n+    WebSocket: WebSocket,\n   });\n   const wsClient = createTRPCClient<typeof router>({\n     links: [wsLink({ client: ws })],",
+      "added": 1,
+      "removed": 1,
+      "owner": "group:collapsed:mechanical:7c68e69b",
+      "noise": {
+        "kind": "mechanical",
+        "detail": "same edit at 9 sites"
+      }
+    },
+    {
+      "id": "hunk:packages/tests/server/links.test.ts:0",
+      "path": "packages/tests/server/links.test.ts",
+      "oldStart": 57,
+      "oldLines": 7,
+      "newStart": 57,
+      "newLines": 7,
+      "patch": "@@ -57,7 +57,7 @@ test('chainer', async () => {\n \n   const result = await observableToPromise(chain);\n   expect(result?.context?.['response']).toBeTruthy();\n-  result.context!['response'] = '[redacted]' as any;\n+  result.context!['response'] = '[redacted]';\n   expect(result).toMatchInlineSnapshot(`\n     Object {\n       \"context\": Object {",
+      "added": 1,
+      "removed": 1,
+      "owner": "group:collapsed:mechanical:7c68e69b",
+      "noise": {
+        "kind": "mechanical",
+        "detail": "same edit at 9 sites"
+      }
+    },
+    {
+      "id": "hunk:packages/tests/server/links.test.ts:1",
+      "path": "packages/tests/server/links.test.ts",
+      "oldStart": 813,
+      "oldLines": 7,
+      "newStart": 813,
+      "newLines": 7,
+      "patch": "@@ -813,7 +813,7 @@ test('init with URL object', async () => {\n \n   const result = await observableToPromise(chain);\n   expect(result?.context?.['response']).toBeTruthy();\n-  result.context!['response'] = '[redacted]' as any;\n+  result.context!['response'] = '[redacted]';\n   expect(result).toMatchInlineSnapshot(`\n     Object {\n       \"context\": Object {",
+      "added": 1,
+      "removed": 1,
+      "owner": "group:collapsed:mechanical:7c68e69b",
+      "noise": {
+        "kind": "mechanical",
+        "detail": "same edit at 9 sites"
+      }
+    },
+    {
+      "id": "hunk:packages/tests/server/streaming.test.ts:0",
+      "path": "packages/tests/server/streaming.test.ts",
+      "oldStart": 1041,
+      "oldLines": 6,
+      "newStart": 1041,
+      "newLines": 7,
+      "patch": "@@ -1041,6 +1041,7 @@ describe('with transformer', () => {\n \n     const router = t.router({\n       iterable: t.procedure.query(async function* () {\n+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion\n         yield 1 as number;\n         yield 2;\n         yield 3;",
+      "added": 1,
+      "removed": 0,
+      "owner": "file:packages/tests/server/streaming.test.ts"
+    },
+    {
+      "id": "hunk:packages/tests/server/streaming.test.ts:1",
+      "path": "packages/tests/server/streaming.test.ts",
+      "oldStart": 1106,
+      "oldLines": 6,
+      "newStart": 1107,
+      "newLines": 7,
+      "patch": "@@ -1106,6 +1107,7 @@ describe('with transformer', () => {\n \n     const router = t.router({\n       iterable: t.procedure.query(async function* () {\n+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion\n         yield 1 as number;\n         yield 2;\n         yield 3;",
+      "added": 1,
+      "removed": 0,
+      "owner": "file:packages/tests/server/streaming.test.ts"
+    },
+    {
+      "id": "hunk:packages/tests/server/streaming.test.ts:2",
+      "path": "packages/tests/server/streaming.test.ts",
+      "oldStart": 1168,
+      "oldLines": 6,
+      "newStart": 1170,
+      "newLines": 7,
+      "patch": "@@ -1168,6 +1170,7 @@ describe('with transformer', () => {\n \n     const router = t.router({\n       iterable: t.procedure.query(async function* () {\n+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion\n         yield 1 as number;\n         yield 2;\n         yield 3;",
+      "added": 1,
+      "removed": 0,
+      "owner": "file:packages/tests/server/streaming.test.ts"
+    },
+    {
+      "id": "hunk:pnpm-workspace.yaml:0",
+      "path": "pnpm-workspace.yaml",
+      "oldStart": 45,
+      "oldLines": 6,
+      "newStart": 45,
+      "newLines": 12,
+      "patch": "@@ -45,6 +45,12 @@ catalog:\n   '@types/node': ^24.13.4\n   tsdown: 0.23.0\n   typescript: ^7.0.2\n+  eslint: ^10.10.0\n+  typescript-eslint: ^8.70.0\n+  eslint-plugin-react: ^7.37.5\n+  eslint-plugin-react-hooks: ^7.1.1\n+  eslint-plugin-unicorn: ^74.0.0\n+  '@eslint/compat': ^2.1.1\n \n catalogs:\n   ts-api:",
+      "added": 6,
+      "removed": 0,
+      "owner": "file:pnpm-workspace.yaml"
+    },
+    {
+      "id": "hunk:www/package.json:0",
+      "path": "www/package.json",
+      "oldStart": 99,
+      "oldLines": 7,
+      "newStart": 99,
+      "newLines": 7,
+      "patch": "@@ -99,7 +99,7 @@\n     \"docusaurus-plugin-typedoc\": \"1.4.2\",\n     \"dotenv\": \"^16.0.1\",\n     \"effect\": \"3.21.0\",\n-    \"eslint\": \"^9.26.0\",\n+    \"eslint\": \"^10.10.0\",\n     \"fastify\": \"^5.0.0\",\n     \"next\": \"^15.3.8\",\n     \"next-auth\": \"npm:next-auth@^4.24.11\",",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:www/package.json"
+    }
+  ],
+  "skippedFiles": [
+    {
+      "path": "pnpm-lock.yaml",
+      "reason": "No patch available (binary, too large, or pure rename)"
+    }
+  ],
+  "limits": [
+    "Callers outside this repository snapshot are not shown.",
+    "External packages are not resolved (no node_modules); edges to them are omitted."
+  ],
+  "collapsed": [
+    {
+      "id": "collapsed:mechanical:657c78c1",
+      "kind": "mechanical",
+      "label": "Replaced `\"^9.26.0\"` → `\"catalog:\"` at 7 sites",
+      "hunkIds": [
+        "hunk:packages/client/package.json:0",
+        "hunk:packages/next/package.json:0",
+        "hunk:packages/openapi/package.json:0",
+        "hunk:packages/react-query/package.json:0",
+        "hunk:packages/server/package.json:0",
+        "hunk:packages/tanstack-react-query/package.json:0",
+        "hunk:packages/tests/package.json:0"
+      ],
+      "files": [
+        "packages/client/package.json",
+        "packages/next/package.json",
+        "packages/openapi/package.json",
+        "packages/react-query/package.json",
+        "packages/server/package.json",
+        "packages/tanstack-react-query/package.json",
+        "packages/tests/package.json"
+      ],
+      "added": 7,
+      "removed": 7,
+      "verified": false,
+      "exemplarHunkId": "hunk:packages/client/package.json:0",
+      "outlierHunkIds": [
+        "hunk:examples/.test/diagnostics-big-router/package.json:0",
+        "hunk:examples/.test/ssg-infinite-serialization/package.json:0",
+        "hunk:examples/.test/ssg/package.json:0",
+        "hunk:examples/bun/package.json:0",
+        "hunk:examples/cloudflare-workers/package.json:0",
+        "hunk:examples/express-minimal/package.json:0",
+        "hunk:examples/express-server/package.json:0",
+        "hunk:examples/fastify-server/package.json:0",
+        "hunk:examples/lambda-api-gateway-streaming/package.json:0",
+        "hunk:examples/lambda-api-gateway/package.json:0",
+        "hunk:examples/lambda-url/package.json:0",
+        "hunk:examples/minimal-content-types/client/package.json:0",
+        "hunk:examples/minimal-content-types/server/package.json:0",
+        "hunk:examples/minimal-react/client/package.json:0",
+        "hunk:examples/minimal-react/server/package.json:0",
+        "hunk:examples/next-big-router/package.json:0",
+        "hunk:examples/next-edge-runtime/package.json:0",
+        "hunk:examples/next-formdata/package.json:0",
+        "hunk:examples/next-minimal-starter/package.json:0",
+        "hunk:examples/next-prisma-starter/package.json:0",
+        "hunk:examples/next-prisma-todomvc/package.json:0",
+        "hunk:examples/next-prisma-websockets-starter/package.json:0",
+        "hunk:examples/next-websockets-encoder/package.json:0",
+        "hunk:examples/standalone-server/package.json:0",
+        "hunk:package.json:1",
+        "hunk:www/package.json:0"
+      ]
+    },
+    {
+      "id": "collapsed:mechanical:7c68e69b",
+      "kind": "mechanical",
+      "label": "Replaced `as any` → `(nothing)` at 9 sites",
+      "hunkIds": [
+        "hunk:examples/next-prisma-websockets-starter/src/pages/api/auth/[...nextauth].ts:0",
+        "hunk:packages/client/src/__tests__/testClientResource.ts:0",
+        "hunk:packages/react-query/src/utils/createUtilityFunctions.ts:0",
+        "hunk:packages/react-query/src/utils/createUtilityFunctions.ts:1",
+        "hunk:packages/server/src/adapters/ws.ts:0",
+        "hunk:packages/tests/server/index.test.ts:0",
+        "hunk:packages/tests/server/links.test.ts:0",
+        "hunk:packages/tests/server/links.test.ts:1"
+      ],
+      "files": [
+        "examples/next-prisma-websockets-starter/src/pages/api/auth/[...nextauth].ts",
+        "packages/client/src/__tests__/testClientResource.ts",
+        "packages/react-query/src/utils/createUtilityFunctions.ts",
+        "packages/server/src/adapters/ws.ts",
+        "packages/tests/server/index.test.ts",
+        "packages/tests/server/links.test.ts"
+      ],
+      "added": 9,
+      "removed": 9,
+      "verified": false,
+      "exemplarHunkId": "hunk:examples/next-prisma-websockets-starter/src/pages/api/auth/[...nextauth].ts:0",
+      "outlierHunkIds": [
+        "hunk:packages/next/src/app-dir/create-action-hook.tsx:1",
+        "hunk:packages/tanstack-react-query/src/internals/subscriptionOptions.ts:0"
+      ]
+    },
+    {
+      "id": "collapsed:mechanical:939f2c48",
+      "kind": "mechanical",
+      "label": "Replaced `\"^9.26.0\"` → `\"^10.10.0\"` at 22 sites",
+      "hunkIds": [
+        "hunk:examples/.test/diagnostics-big-router/package.json:0",
+        "hunk:examples/.test/ssg-infinite-serialization/package.json:0",
+        "hunk:examples/.test/ssg/package.json:0",
+        "hunk:examples/bun/package.json:0",
+        "hunk:examples/cloudflare-workers/package.json:0",
+        "hunk:examples/express-minimal/package.json:0",
+        "hunk:examples/express-server/package.json:0",
+        "hunk:examples/fastify-server/package.json:0",
+        "hunk:examples/lambda-api-gateway-streaming/package.json:0",
+        "hunk:examples/lambda-api-gateway/package.json:0",
+        "hunk:examples/lambda-url/package.json:0",
+        "hunk:examples/minimal-content-types/client/package.json:0",
+        "hunk:examples/minimal-content-types/server/package.json:0",
+        "hunk:examples/minimal-react/client/package.json:0",
+        "hunk:examples/minimal-react/server/package.json:0",
+        "hunk:examples/next-big-router/package.json:0",
+        "hunk:examples/next-edge-runtime/package.json:0",
+        "hunk:examples/next-formdata/package.json:0",
+        "hunk:examples/next-minimal-starter/package.json:0",
+        "hunk:examples/next-prisma-todomvc/package.json:0",
+        "hunk:examples/standalone-server/package.json:0",
+        "hunk:www/package.json:0"
+      ],
+      "files": [
+        "examples/.test/diagnostics-big-router/package.json",
+        "examples/.test/ssg-infinite-serialization/package.json",
+        "examples/.test/ssg/package.json",
+        "examples/bun/package.json",
+        "examples/cloudflare-workers/package.json",
+        "examples/express-minimal/package.json",
+        "examples/express-server/package.json",
+        "examples/fastify-server/package.json",
+        "examples/lambda-api-gateway-streaming/package.json",
+        "examples/lambda-api-gateway/package.json",
+        "examples/lambda-url/package.json",
+        "examples/minimal-content-types/client/package.json",
+        "examples/minimal-content-types/server/package.json",
+        "examples/minimal-react/client/package.json",
+        "examples/minimal-react/server/package.json",
+        "examples/next-big-router/package.json",
+        "examples/next-edge-runtime/package.json",
+        "examples/next-formdata/package.json",
+        "examples/next-minimal-starter/package.json",
+        "examples/next-prisma-todomvc/package.json",
+        "examples/standalone-server/package.json",
+        "www/package.json"
+      ],
+      "added": 22,
+      "removed": 22,
+      "verified": false,
+      "exemplarHunkId": "hunk:examples/.test/diagnostics-big-router/package.json:0",
+      "outlierHunkIds": [
+        "hunk:examples/next-prisma-starter/package.json:0",
+        "hunk:examples/next-prisma-websockets-starter/package.json:0",
+        "hunk:examples/next-websockets-encoder/package.json:0",
+        "hunk:package.json:1",
+        "hunk:packages/client/package.json:0",
+        "hunk:packages/next/package.json:0",
+        "hunk:packages/openapi/package.json:0",
+        "hunk:packages/react-query/package.json:0",
+        "hunk:packages/server/package.json:0",
+        "hunk:packages/tanstack-react-query/package.json:0",
+        "hunk:packages/tests/package.json:0"
+      ]
+    }
+  ],
+  "stats": {
+    "files": 58,
+    "added": 964,
+    "removed": 1089,
+    "durationMs": 11607
+  },
+  "policy": {
+    "source": "default",
+    "changedInPr": false,
+    "errors": []
+  }
+}

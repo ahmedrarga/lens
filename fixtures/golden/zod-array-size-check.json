@@ -14,21 +14,9 @@
     "baseRef": "main",
     "headRef": "fix/size-cap-before-walk"
   },
-  "generatedAt": "2026-10-22T17:42:20.103Z",
+  "generatedAt": "2026-10-22T17:58:49.965Z",
   "pipelineVersion": "m1-0.1.0",
   "nodes": [
-    {
-      "id": "cluster:packages/zod:packages-zod-src-v4-classic-tests-array.test.ts",
-      "kind": "cluster",
-      "level": 1,
-      "label": "array.test.ts (+2)",
-      "parent": "module:packages/zod",
-      "state": "modified",
-      "stats": {
-        "added": 40,
-        "removed": 0
-      }
-    },
     {
       "id": "cluster:packages/zod:packages-zod-src-v4-core-compile.ts",
       "kind": "cluster",
@@ -39,6 +27,11 @@
       "stats": {
         "added": 2,
         "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
       }
     },
     {
@@ -51,6 +44,28 @@
       "stats": {
         "added": 51,
         "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:packages/zod:tests-packages-zod-src-v4-classic-tests",
+      "kind": "cluster",
+      "level": 1,
+      "label": "Tests: packages/zod/src/v4/classic/tests",
+      "parent": "module:packages/zod",
+      "state": "modified",
+      "stats": {
+        "added": 40,
+        "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
       }
     },
     {
@@ -58,7 +73,7 @@
       "level": 2,
       "state": "modified",
       "path": "packages/zod/src/v4/classic/tests/array.test.ts",
-      "parent": "cluster:packages/zod:packages-zod-src-v4-classic-tests-array.test.ts",
+      "parent": "cluster:packages/zod:tests-packages-zod-src-v4-classic-tests",
       "stats": {
         "added": 27,
         "removed": 0
@@ -67,14 +82,19 @@
         "calls 4 unresolved targets: a.slice(), schema.element.parse(), schema.parse(), …"
       ],
       "kind": "file",
-      "label": "packages/zod/src/v4/classic/tests/array.test.ts"
+      "label": "packages/zod/src/v4/classic/tests/array.test.ts",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "file:packages/zod/src/v4/classic/tests/map.test.ts",
       "level": 2,
       "state": "modified",
       "path": "packages/zod/src/v4/classic/tests/map.test.ts",
-      "parent": "cluster:packages/zod:packages-zod-src-v4-classic-tests-array.test.ts",
+      "parent": "cluster:packages/zod:tests-packages-zod-src-v4-classic-tests",
       "stats": {
         "added": 7,
         "removed": 0
@@ -83,14 +103,19 @@
         "calls 18 unresolved targets: asyncMap.safeParseAsync(), capped.safeParse(), justTwo.parse(), …"
       ],
       "kind": "file",
-      "label": "packages/zod/src/v4/classic/tests/map.test.ts"
+      "label": "packages/zod/src/v4/classic/tests/map.test.ts",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "file:packages/zod/src/v4/classic/tests/set.test.ts",
       "level": 2,
       "state": "modified",
       "path": "packages/zod/src/v4/classic/tests/set.test.ts",
-      "parent": "cluster:packages/zod:packages-zod-src-v4-classic-tests-array.test.ts",
+      "parent": "cluster:packages/zod:tests-packages-zod-src-v4-classic-tests",
       "stats": {
         "added": 6,
         "removed": 0
@@ -99,7 +124,12 @@
         "calls 15 unresolved targets: asyncResult.data!.has(), justTwo.parse(), justTwo.safeParse(), …"
       ],
       "kind": "file",
-      "label": "packages/zod/src/v4/classic/tests/set.test.ts"
+      "label": "packages/zod/src/v4/classic/tests/set.test.ts",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "file:packages/zod/src/v4/core/compile.ts",
@@ -112,7 +142,12 @@
         "removed": 0
       },
       "kind": "file",
-      "label": "packages/zod/src/v4/core/compile.ts"
+      "label": "packages/zod/src/v4/core/compile.ts",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "file:packages/zod/src/v4/core/util.ts",
@@ -125,7 +160,12 @@
         "removed": 0
       },
       "kind": "file",
-      "label": "packages/zod/src/v4/core/util.ts"
+      "label": "packages/zod/src/v4/core/util.ts",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "module:packages/zod",
@@ -137,6 +177,11 @@
       "stats": {
         "added": 93,
         "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
       }
     },
     {
@@ -276,7 +321,12 @@
         "start": 1560,
         "end": 1586
       },
-      "exported": false
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:packages/zod/src/v4/core/compile.ts#generateCheck",
@@ -310,7 +360,12 @@
         "start": 2100,
         "end": 2120
       },
-      "exported": false
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:packages/zod/src/v4/core/compile.ts#generateSetCheck",
@@ -329,7 +384,12 @@
         "start": 2122,
         "end": 2140
       },
-      "exported": false
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:packages/zod/src/v4/core/compile.ts#generateSizeGate",
@@ -348,7 +408,12 @@
         "start": 1554,
         "end": 1558
       },
-      "exported": false
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:packages/zod/src/v4/core/compile.ts#newVar",
@@ -445,7 +510,12 @@
         "start": 1845,
         "end": 1931
       },
-      "exported": true
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodMap",
@@ -464,7 +534,12 @@
         "start": 3466,
         "end": 3516
       },
-      "exported": true
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodSet",
@@ -486,7 +561,12 @@
         "start": 3579,
         "end": 3619
       },
-      "exported": true
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodType",
@@ -535,7 +615,12 @@
         "start": 1871,
         "end": 1871
       },
-      "exported": false
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:packages/zod/src/v4/core/schemas.ts#capSize",
@@ -557,7 +642,12 @@
         "start": 1848,
         "end": 1869
       },
-      "exported": false
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:packages/zod/src/v4/core/schemas.ts#handleMapResult",
@@ -591,7 +681,12 @@
         "start": 1872,
         "end": 1872
       },
-      "exported": false
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:packages/zod/src/v4/core/schemas.ts#setSize",
@@ -610,7 +705,12 @@
         "start": 1873,
         "end": 1873
       },
-      "exported": false
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:packages/zod/src/v4/core/util.ts#attachSchema",
@@ -644,7 +744,12 @@
         "start": 938,
         "end": 949
       },
-      "exported": true
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     }
   ],
   "edges": [
@@ -1286,10 +1391,16 @@
     "Callers outside this repository snapshot are not shown.",
     "External packages are not resolved (no node_modules); edges to them are omitted."
   ],
+  "collapsed": [],
   "stats": {
     "files": 6,
     "added": 93,
     "removed": 0,
-    "durationMs": 10975
+    "durationMs": 11663
+  },
+  "policy": {
+    "source": "default",
+    "changedInPr": false,
+    "errors": []
   }
 }

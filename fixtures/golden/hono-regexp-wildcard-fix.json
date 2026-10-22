@@ -14,19 +14,61 @@
     "baseRef": "v5",
     "headRef": "fix-regexp-router-mid-wildcard-v5"
   },
-  "generatedAt": "2026-10-22T17:41:48.647Z",
+  "generatedAt": "2026-10-22T17:58:37.500Z",
   "pipelineVersion": "m1-0.1.0",
   "nodes": [
     {
-      "id": "cluster:src/router:src-router-reg-exp-router-node.ts-compareKey",
+      "id": "cluster:src/router:src-router-linear-router-router.ts-LinearRouter.match",
       "kind": "cluster",
       "level": 1,
-      "label": "compareKey",
+      "label": "LinearRouter.match (+2)",
       "parent": "module:src/router",
       "state": "modified",
       "stats": {
-        "added": 2,
-        "removed": 2
+        "added": 25,
+        "removed": 7
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:src/router:src-router-reg-exp-router-prepared-router.ts-serializeInitParams",
+      "kind": "cluster",
+      "level": 1,
+      "label": "serializeInitParams (+2)",
+      "parent": "module:src/router",
+      "state": "modified",
+      "stats": {
+        "added": 5,
+        "removed": 5
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:src/router:src-router-reg-exp-router-router.ts",
+      "kind": "cluster",
+      "level": 1,
+      "label": "router.ts (+3)",
+      "parent": "module:src/router",
+      "state": "modified",
+      "stats": {
+        "added": 49,
+        "removed": 16
+      },
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:src/router/reg-exp-router/router.test.ts"
+        ]
       }
     },
     {
@@ -39,18 +81,28 @@
       "stats": {
         "added": 52,
         "removed": 23
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
       }
     },
     {
       "id": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.add",
       "kind": "cluster",
       "level": 1,
-      "label": "RegExpRouter.add (+18)",
+      "label": "RegExpRouter.add (+8)",
       "parent": "module:src/router",
       "state": "modified",
       "stats": {
-        "added": 358,
-        "removed": 101
+        "added": 21,
+        "removed": 74
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
       }
     },
     {
@@ -63,6 +115,28 @@
       "stats": {
         "added": 11,
         "removed": 14
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:src/router:tests-src-router",
+      "kind": "cluster",
+      "level": 1,
+      "label": "Tests: src/router",
+      "parent": "module:src/router",
+      "state": "modified",
+      "stats": {
+        "added": 260,
+        "removed": 1
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
       }
     },
     {
@@ -70,65 +144,135 @@
       "level": 2,
       "state": "modified",
       "path": "src/router/linear-router/router.test.ts",
-      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.add",
+      "parent": "cluster:src/router:src-router-linear-router-router.ts-LinearRouter.match",
       "stats": {
         "added": 13,
         "removed": 0
       },
       "kind": "file",
-      "label": "src/router/linear-router/router.test.ts"
+      "label": "src/router/linear-router/router.test.ts",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:src/router/pattern-router/router.test.ts",
+      "kind": "file",
+      "level": 2,
+      "label": "src/router/pattern-router/router.test.ts (top-level)",
+      "parent": "module:src/router",
+      "state": "unchanged",
+      "path": "src/router/pattern-router/router.test.ts"
     },
     {
       "id": "file:src/router/reg-exp-router/prepared-router.test.ts",
       "level": 2,
       "state": "modified",
       "path": "src/router/reg-exp-router/prepared-router.test.ts",
-      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.add",
+      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts",
       "stats": {
         "added": 45,
         "removed": 0
       },
       "kind": "file",
-      "label": "src/router/reg-exp-router/prepared-router.test.ts"
+      "label": "src/router/reg-exp-router/prepared-router.test.ts",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "file:src/router/reg-exp-router/prepared-router.ts",
       "level": 2,
       "state": "modified",
       "path": "src/router/reg-exp-router/prepared-router.ts",
-      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.add",
+      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts",
       "stats": {
         "added": 1,
         "removed": 1
       },
       "kind": "file",
-      "label": "src/router/reg-exp-router/prepared-router.ts"
+      "label": "src/router/reg-exp-router/prepared-router.ts",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "file:src/router/reg-exp-router/router.test.ts",
       "level": 2,
       "state": "modified",
       "path": "src/router/reg-exp-router/router.test.ts",
-      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.add",
+      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts",
       "stats": {
         "added": 0,
         "removed": 14
       },
       "kind": "file",
-      "label": "src/router/reg-exp-router/router.test.ts"
+      "label": "src/router/reg-exp-router/router.test.ts",
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [
+          {
+            "ruleId": "weakened-test",
+            "message": "Removes assertions from a test (expect()",
+            "level": "high",
+            "hunkIds": [
+              "hunk:src/router/reg-exp-router/router.test.ts:0"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "file:src/router/reg-exp-router/router.ts",
       "level": 2,
       "state": "modified",
       "path": "src/router/reg-exp-router/router.ts",
-      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.add",
+      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts",
       "stats": {
         "added": 3,
         "removed": 1
       },
       "kind": "file",
-      "label": "src/router/reg-exp-router/router.ts"
+      "label": "src/router/reg-exp-router/router.ts",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:src/router/smart-router/router.test.ts",
+      "kind": "file",
+      "level": 2,
+      "label": "src/router/smart-router/router.test.ts (top-level)",
+      "parent": "module:src/router",
+      "state": "unchanged",
+      "path": "src/router/smart-router/router.test.ts"
+    },
+    {
+      "id": "file:src/router/trie-router/node.test.ts",
+      "kind": "file",
+      "level": 2,
+      "label": "src/router/trie-router/node.test.ts (top-level)",
+      "parent": "module:src/router",
+      "state": "unchanged",
+      "path": "src/router/trie-router/node.test.ts"
+    },
+    {
+      "id": "file:src/router/trie-router/router.test.ts",
+      "kind": "file",
+      "level": 2,
+      "label": "src/router/trie-router/router.test.ts (top-level)",
+      "parent": "module:src/router",
+      "state": "unchanged",
+      "path": "src/router/trie-router/router.test.ts"
     },
     {
       "id": "module:src",
@@ -136,7 +280,12 @@
       "level": 0,
       "label": "src",
       "path": "src",
-      "state": "unchanged"
+      "state": "unchanged",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "module:src/router",
@@ -148,6 +297,14 @@
       "stats": {
         "added": 423,
         "removed": 140
+      },
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:src/router/reg-exp-router/router.test.ts"
+        ]
       }
     },
     {
@@ -245,7 +402,7 @@
       "level": 2,
       "state": "modified",
       "path": "src/router/common.case.test.ts",
-      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.add",
+      "parent": "cluster:src/router:tests-src-router",
       "stats": {
         "added": 260,
         "removed": 1
@@ -260,14 +417,19 @@
         "start": 16,
         "end": 1543
       },
-      "exported": true
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:src/router/linear-router/router.ts#LinearRouter.match",
       "level": 2,
       "state": "modified",
       "path": "src/router/linear-router/router.ts",
-      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.add",
+      "parent": "cluster:src/router:src-router-linear-router-router.ts-LinearRouter.match",
       "stats": {
         "added": 11,
         "removed": 6
@@ -282,14 +444,19 @@
         "start": 33,
         "end": 175
       },
-      "exported": false
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:src/router/linear-router/router.ts#splitByStarRe",
       "level": 2,
       "state": "modified",
       "path": "src/router/linear-router/router.ts",
-      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.add",
+      "parent": "cluster:src/router:src-router-linear-router-router.ts-LinearRouter.match",
       "stats": {
         "added": 1,
         "removed": 1
@@ -301,7 +468,12 @@
         "start": 10,
         "end": 10
       },
-      "exported": false
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:src/router/reg-exp-router/matcher.ts#HandlerData",
@@ -458,7 +630,12 @@
         "start": 55,
         "end": 152
       },
-      "exported": false
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:src/router/reg-exp-router/node.ts#ONLY_WILDCARD_REG_EXP_STR",
@@ -492,7 +669,12 @@
         "start": 6,
         "end": 6
       },
-      "exported": true
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:src/router/reg-exp-router/node.ts#ParamAssocArray",
@@ -529,7 +711,7 @@
       "level": 2,
       "state": "modified",
       "path": "src/router/reg-exp-router/node.ts",
-      "parent": "cluster:src/router:src-router-reg-exp-router-node.ts-compareKey",
+      "parent": "cluster:src/router:src-router-reg-exp-router-prepared-router.ts-serializeInitParams",
       "stats": {
         "added": 2,
         "removed": 2
@@ -541,7 +723,12 @@
         "start": 17,
         "end": 47
       },
-      "exported": false
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:src/router/reg-exp-router/prepared-router.ts#PreparedRegExpRouter",
@@ -563,7 +750,7 @@
       "level": 2,
       "state": "modified",
       "path": "src/router/reg-exp-router/prepared-router.ts",
-      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.add",
+      "parent": "cluster:src/router:src-router-reg-exp-router-prepared-router.ts-serializeInitParams",
       "stats": {
         "added": 1,
         "removed": 1
@@ -578,7 +765,12 @@
         "start": 47,
         "end": 86
       },
-      "exported": false
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:src/router/reg-exp-router/prepared-router.ts#buildInitParams",
@@ -600,14 +792,19 @@
         "start": 95,
         "end": 155
       },
-      "exported": true
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:src/router/reg-exp-router/prepared-router.ts#serializeInitParams",
       "level": 2,
       "state": "modified",
       "path": "src/router/reg-exp-router/prepared-router.ts",
-      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.add",
+      "parent": "cluster:src/router:src-router-reg-exp-router-prepared-router.ts-serializeInitParams",
       "stats": {
         "added": 2,
         "removed": 2
@@ -622,22 +819,12 @@
         "start": 157,
         "end": 166
       },
-      "exported": true
-    },
-    {
-      "id": "symbol:src/router/reg-exp-router/router.ts#HandlerWithMetadata",
-      "kind": "symbol",
-      "level": 2,
-      "label": "HandlerWithMetadata",
-      "parent": "module:src/router",
-      "state": "unchanged",
-      "symbolKind": "type",
-      "path": "src/router/reg-exp-router/router.ts",
-      "range": {
-        "start": 19,
-        "end": 19
-      },
-      "exported": false
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter",
@@ -656,7 +843,12 @@
         "start": 41,
         "end": 147
       },
-      "exported": true
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.#buildMatcher",
@@ -678,7 +870,12 @@
         "start": 105,
         "end": 146
       },
-      "exported": false
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.add",
@@ -700,7 +897,12 @@
         "start": 60,
         "end": 88
       },
-      "exported": false
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.buildAllMatchers",
@@ -719,7 +921,12 @@
         "start": 92,
         "end": 103
       },
-      "exported": false
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.constructor",
@@ -738,7 +945,12 @@
         "start": 47,
         "end": 50
       },
-      "exported": false
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:src/router/reg-exp-router/router.ts#buildWildcardRegExp",
@@ -757,7 +969,12 @@
         "start": 22,
         "end": 36
       },
-      "exported": false
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:src/router/reg-exp-router/router.ts#covers",
@@ -776,7 +993,12 @@
         "start": 28,
         "end": 39
       },
-      "exported": false
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:src/router/reg-exp-router/router.ts#endsWithWildcard",
@@ -795,7 +1017,12 @@
         "start": 21,
         "end": 24
       },
-      "exported": false
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:src/router/reg-exp-router/router.ts#findMiddleware",
@@ -817,7 +1044,12 @@
         "start": 38,
         "end": 46
       },
-      "exported": false
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:src/router/reg-exp-router/router.ts#wildcardRegExpCache",
@@ -836,7 +1068,12 @@
         "start": 21,
         "end": 21
       },
-      "exported": false
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:src/router/reg-exp-router/trie.ts#Trie",
@@ -855,7 +1092,12 @@
         "start": 7,
         "end": 86
       },
-      "exported": true
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:src/router/reg-exp-router/trie.ts#Trie.insert",
@@ -877,7 +1119,12 @@
         "start": 14,
         "end": 59
       },
-      "exported": false
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:src/router/trie-router/node.ts#HandlerParamsSet",
@@ -914,22 +1161,12 @@
         "start": 84,
         "end": 222
       },
-      "exported": false
-    },
-    {
-      "id": "symbol:src/router/trie-router/node.ts#emptyParams",
-      "kind": "symbol",
-      "level": 2,
-      "label": "emptyParams",
-      "parent": "module:src/router",
-      "state": "unchanged",
-      "symbolKind": "variable",
-      "path": "src/router/trie-router/node.ts",
-      "range": {
-        "start": 17,
-        "end": 17
-      },
-      "exported": false
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "symbol:src/router/utils.ts#createNullObject",
@@ -962,6 +1199,15 @@
       "kind": "calls",
       "from": "file:src/router/linear-router/router.test.ts",
       "to": "symbol:src/router/linear-router/router.ts#LinearRouter.match",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:file:src/router/pattern-router/router.test.ts->symbol:src/router/common.case.test.ts#runTest",
+      "kind": "calls",
+      "from": "file:src/router/pattern-router/router.test.ts",
+      "to": "symbol:src/router/common.case.test.ts#runTest",
       "state": "unchanged",
       "provenance": "static",
       "weight": 1
@@ -1016,6 +1262,33 @@
       "kind": "calls",
       "from": "file:src/router/reg-exp-router/router.test.ts",
       "to": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.add",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:file:src/router/smart-router/router.test.ts->symbol:src/router/common.case.test.ts#runTest",
+      "kind": "calls",
+      "from": "file:src/router/smart-router/router.test.ts",
+      "to": "symbol:src/router/common.case.test.ts#runTest",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:file:src/router/trie-router/node.test.ts->symbol:src/router/trie-router/node.ts#Node.search",
+      "kind": "calls",
+      "from": "file:src/router/trie-router/node.test.ts",
+      "to": "symbol:src/router/trie-router/node.ts#Node.search",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:file:src/router/trie-router/router.test.ts->symbol:src/router/common.case.test.ts#runTest",
+      "kind": "calls",
+      "from": "file:src/router/trie-router/router.test.ts",
+      "to": "symbol:src/router/common.case.test.ts#runTest",
       "state": "unchanged",
       "provenance": "static",
       "weight": 1
@@ -1222,6 +1495,15 @@
       "id": "references:file:src/router/reg-exp-router/router.test.ts->symbol:src/router/reg-exp-router/router.ts#RegExpRouter",
       "kind": "references",
       "from": "file:src/router/reg-exp-router/router.test.ts",
+      "to": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:file:src/router/smart-router/router.test.ts->symbol:src/router/reg-exp-router/router.ts#RegExpRouter",
+      "kind": "references",
+      "from": "file:src/router/smart-router/router.test.ts",
       "to": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter",
       "state": "unchanged",
       "provenance": "static",
@@ -1507,15 +1789,6 @@
       "weight": 1
     },
     {
-      "id": "references:symbol:src/router/reg-exp-router/router.ts#RegExpRouter->symbol:src/router/reg-exp-router/router.ts#HandlerWithMetadata",
-      "kind": "references",
-      "from": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter",
-      "to": "symbol:src/router/reg-exp-router/router.ts#HandlerWithMetadata",
-      "state": "unchanged",
-      "provenance": "static",
-      "weight": 1
-    },
-    {
       "id": "references:symbol:src/router/reg-exp-router/router.ts#RegExpRouter->symbol:src/router/reg-exp-router/trie.ts#Trie",
       "kind": "references",
       "from": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter",
@@ -1736,15 +2009,6 @@
       "kind": "references",
       "from": "symbol:src/router/trie-router/node.ts#Node.search",
       "to": "symbol:src/router/trie-router/node.ts#HandlerParamsSet",
-      "state": "unchanged",
-      "provenance": "static",
-      "weight": 1
-    },
-    {
-      "id": "references:symbol:src/router/trie-router/node.ts#Node.search->symbol:src/router/trie-router/node.ts#emptyParams",
-      "kind": "references",
-      "from": "symbol:src/router/trie-router/node.ts#Node.search",
-      "to": "symbol:src/router/trie-router/node.ts#emptyParams",
       "state": "unchanged",
       "provenance": "static",
       "weight": 1
@@ -2105,10 +2369,16 @@
     "Callers outside this repository snapshot are not shown.",
     "External packages are not resolved (no node_modules); edges to them are omitted."
   ],
+  "collapsed": [],
   "stats": {
     "files": 10,
     "added": 423,
     "removed": 140,
-    "durationMs": 5619
+    "durationMs": 7912
+  },
+  "policy": {
+    "source": "default",
+    "changedInPr": false,
+    "errors": []
   }
 }

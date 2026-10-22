@@ -14,7 +14,7 @@
     "baseRef": "main",
     "headRef": "staged-publishing"
   },
-  "generatedAt": "2026-10-22T17:42:22.394Z",
+  "generatedAt": "2026-10-22T17:58:58.648Z",
   "pipelineVersion": "m1-0.1.0",
   "nodes": [
     {
@@ -27,6 +27,11 @@
       "stats": {
         "added": 41,
         "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
       }
     },
     {
@@ -39,6 +44,14 @@
       "stats": {
         "added": 62,
         "removed": 51
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:.github/workflows/release.yml"
+        ]
       }
     },
     {
@@ -52,7 +65,12 @@
         "removed": 0
       },
       "kind": "file",
-      "label": ".github/scripts/npm-stage-publish.sh"
+      "label": ".github/scripts/npm-stage-publish.sh",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
     },
     {
       "id": "file:.github/workflows/release.yml",
@@ -65,7 +83,27 @@
         "removed": 51
       },
       "kind": "file",
-      "label": ".github/workflows/release.yml"
+      "label": ".github/workflows/release.yml",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "ci",
+            "message": "Changes CI/CD pipeline configuration",
+            "level": "med",
+            "hunkIds": [
+              "hunk:.github/workflows/release.yml:0",
+              "hunk:.github/workflows/release.yml:1",
+              "hunk:.github/workflows/release.yml:2",
+              "hunk:.github/workflows/release.yml:3",
+              "hunk:.github/workflows/release.yml:4",
+              "hunk:.github/workflows/release.yml:5",
+              "hunk:.github/workflows/release.yml:6"
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "module:.github/scripts",
@@ -77,6 +115,11 @@
       "stats": {
         "added": 41,
         "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
       }
     },
     {
@@ -89,6 +132,14 @@
       "stats": {
         "added": 62,
         "removed": 51
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:.github/workflows/release.yml"
+        ]
       }
     }
   ],
@@ -195,10 +246,16 @@
   "limits": [
     "External packages are not resolved (no node_modules); edges to them are omitted."
   ],
+  "collapsed": [],
   "stats": {
     "files": 2,
     "added": 103,
     "removed": 51,
-    "durationMs": 1855
+    "durationMs": 7648
+  },
+  "policy": {
+    "source": "default",
+    "changedInPr": false,
+    "errors": []
   }
 }
