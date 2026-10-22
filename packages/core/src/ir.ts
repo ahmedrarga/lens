@@ -2,8 +2,9 @@
 // See docs/plan.md §2. Change it deliberately: everything downstream depends on it.
 import { z } from 'zod';
 
-// M1 emits module, cluster, file and symbol nodes. Z3 (hunks) is rendered from `ChangeGraph.hunks`.
-export const NodeKind = z.enum(['module', 'cluster', 'file', 'symbol', 'hunk']);
+// Emitted: module, cluster, file, symbol, and (M2) group = a collapsed noise group
+// (e.g. "Formatting: 14 hunks"). Z3 (hunks) is rendered from `ChangeGraph.hunks`.
+export const NodeKind = z.enum(['module', 'cluster', 'file', 'symbol', 'hunk', 'group']);
 export type NodeKind = z.infer<typeof NodeKind>;
 
 export const EdgeKind = z.enum(['calls', 'references', 'imports', 'contains']);
@@ -49,8 +50,68 @@ export const GraphNode = z.object({
   exported: z.boolean().optional(),
   /** Analysis notes for this node, e.g. "2 dynamic calls could not be resolved". */
   notes: z.array(z.string()).optional(),
+  risk: z.lazy(() => Risk).optional(),
+  /** For kind = group: the CollapsedSummary it stands for. */
+  collapsedId: z.string().optional(),
 });
 export type GraphNode = z.infer<typeof GraphNode>;
+
+// ---------- M2: risk ----------
+
+export const RiskLevel = z.enum(['low', 'med', 'high', 'blocker']);
+export type RiskLevel = z.infer<typeof RiskLevel>;
+
+export const RiskReason = z.object({
+  ruleId: z.string(),
+  message: z.string(),
+  level: RiskLevel,
+  /** Where the evidence is: hunk ids that triggered the rule (empty for path-only rules). */
+  hunkIds: z.array(z.string()).optional(),
+});
+export type RiskReason = z.infer<typeof RiskReason>;
+
+export const Risk = z.object({
+  /** Max of own reasons and (for containers) children. */
+  level: RiskLevel,
+  /** True if any own or descendant reason requires a human to read the code. */
+  mustReview: z.boolean(),
+  /** Reasons attached directly to this node. Containers usually have none of their own. */
+  reasons: z.array(RiskReason),
+  /** Set on containers when the level comes from descendants (UI: halo, "3 risky inside"). */
+  inheritedFrom: z.array(z.string()).optional(),
+});
+export type Risk = z.infer<typeof Risk>;
+
+// ---------- M2: noise ----------
+
+export const NoiseKind = z.enum([
+  'formatting', 'rename', 'move', 'generated', 'lockfile', 'mechanical',
+]);
+export type NoiseKind = z.infer<typeof NoiseKind>;
+
+export const HunkNoise = z.object({ kind: NoiseKind, detail: z.string().optional() });
+export type HunkNoise = z.infer<typeof HunkNoise>;
+
+export const CollapsedSummary = z.object({
+  /** e.g. `collapsed:formatting`, `collapsed:mechanical:<hash>`. Stable across runs. */
+  id: z.string(),
+  kind: NoiseKind,
+  /** e.g. "Formatting only (prettier-style)", "Replaced `foo(x)` with `bar(x)` at 31 sites". */
+  label: z.string(),
+  hunkIds: z.array(z.string()),
+  files: z.array(z.string()),
+  added: z.number().int(),
+  removed: z.number().int(),
+  /**
+   * True only when a mechanical check proved no semantic change (e.g. token streams equal
+   * ignoring trivia). Unverified groups must be shown as "collapsed, unverified".
+   */
+  verified: z.boolean(),
+  /** mechanical: one representative hunk, and hunks that resemble the pattern but deviate. */
+  exemplarHunkId: z.string().optional(),
+  outlierHunkIds: z.array(z.string()).optional(),
+});
+export type CollapsedSummary = z.infer<typeof CollapsedSummary>;
 
 export const GraphEdge = z.object({
   id: z.string(),
@@ -77,8 +138,10 @@ export const Hunk = z.object({
   patch: z.string(),
   added: z.number().int(),
   removed: z.number().int(),
-  /** Owning node id (symbol or file node). Never empty: the coverage invariant. */
+  /** Owning node id (symbol, file or group node). Never empty: the coverage invariant. */
   owner: z.string(),
+  /** Set when the hunk was classified as noise and collapsed. */
+  noise: HunkNoise.optional(),
 });
 export type Hunk = z.infer<typeof Hunk>;
 
@@ -113,6 +176,18 @@ export const ChangeGraph = z.object({
   skippedFiles: z.array(z.object({ path: z.string(), reason: z.string() })),
   /** Analysis limits surfaced in the UI, e.g. "external types not resolved (no node_modules)". */
   limits: z.array(z.string()),
+  /** M2: collapsed noise groups. Optional so M1 graphs still parse. */
+  collapsed: z.array(CollapsedSummary).optional(),
+  /** M2: which risk policy was applied. */
+  policy: z
+    .object({
+      source: z.enum(['default', 'repo']),
+      path: z.string().optional(),
+      /** The policy file itself is modified by this PR (always must-review). */
+      changedInPr: z.boolean(),
+      errors: z.array(z.string()),
+    })
+    .optional(),
   stats: z.object({
     files: z.number().int(),
     added: z.number().int(),

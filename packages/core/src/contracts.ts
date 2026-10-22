@@ -1,6 +1,8 @@
 // Interfaces between pipeline stages. Each stage lives in its own package and
 // depends only on @lens/core, so stages can be built and tested independently.
-import type { ChangeGraph, FileStatus, Hunk, LineRange, PrRef, SymbolKind } from './ir.js';
+import type {
+  ChangeGraph, CollapsedSummary, FileStatus, Hunk, HunkNoise, LineRange, PrRef, RiskLevel, SymbolKind,
+} from './ir.js';
 
 // ---------- git-provider ----------
 
@@ -87,6 +89,58 @@ export interface Indexer {
   index(snapshot: SourceSnapshot): Promise<IndexResult>;
 }
 
+// ---------- noise (M2) ----------
+
+export interface NoiseInput {
+  files: PrFile[];
+  hunks: ParsedHunk[];
+  /** Full contents of changed text files at head / base (absent for added / removed files). */
+  head: Map<string, string>;
+  base: Map<string, string>;
+}
+
+export interface NoiseResult {
+  /** hunk id -> classification. Hunks not in the map are real changes. */
+  hunkNoise: Map<string, HunkNoise>;
+  collapsed: CollapsedSummary[];
+}
+
+/** Signature of `detectNoise` in @lens/noise. Must never classify a semantic change as `verified` noise. */
+export type DetectNoise = (input: NoiseInput) => NoiseResult;
+
+// ---------- risk (M2) ----------
+
+export interface RiskRule {
+  id: string;
+  description: string;
+  level: RiskLevel;
+  mustReview: boolean;
+  match: {
+    /** picomatch globs on repo-relative paths. */
+    paths?: string[];
+    /** Regexes on symbol qualified names. */
+    symbols?: string[];
+    /** Regexes tested against added and removed lines of hunks. */
+    content?: string[];
+    /** Restrict to file statuses, e.g. ['removed']. */
+    fileStatus?: FileStatus[];
+  };
+}
+
+export interface RiskPolicy {
+  rules: RiskRule[];
+  /** Globs never collapsed as noise even if they look like it (e.g. generated auth clients). */
+  neverCollapse?: string[];
+}
+
+export interface RiskContext {
+  files: PrFile[];
+  policySource: { source: 'default' | 'repo'; path?: string; errors: string[] };
+}
+
+/** Signature of `applyRisk` in @lens/risk: returns a new graph with node.risk and graph.policy set. */
+export type ApplyRisk = (graph: ChangeGraph, policy: RiskPolicy, ctx: RiskContext) => ChangeGraph;
+
 // ---------- graph ----------
 
 export interface BuildGraphInput {
@@ -100,6 +154,8 @@ export interface BuildGraphInput {
   skippedFiles: { path: string; reason: string }[];
   limits: string[];
   durationMs: number;
+  /** M2: noise hunks are owned by `group` nodes, not by symbols/files. */
+  noise?: NoiseResult;
 }
 
 /** Signature of `buildGraph` in @lens/graph. Must satisfy the coverage invariant. */

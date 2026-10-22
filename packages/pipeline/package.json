@@ -5,6 +5,16 @@
   "type": "module",
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "scripts": { "typecheck": "tsc --noEmit -p ." },
-  "dependencies": { "@lens/core": "*", "@lens/git-provider": "*", "@lens/diff": "*", "@lens/indexer": "*", "@lens/graph": "*" }
+  "scripts": {
+    "typecheck": "tsc --noEmit -p ."
+  },
+  "dependencies": {
+    "@lens/core": "*",
+    "@lens/git-provider": "*",
+    "@lens/diff": "*",
+    "@lens/indexer": "*",
+    "@lens/graph": "*",
+    "@lens/noise": "*",
+    "@lens/risk": "*"
+  }
 }

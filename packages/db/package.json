@@ -1,0 +1,21 @@
+{
+  "name": "@lens/db",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p .",
+    "db:generate": "drizzle-kit generate"
+  },
+  "dependencies": {
+    "@lens/core": "*",
+    "drizzle-orm": "^0.36.4",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.10",
+    "drizzle-kit": "^0.28.1"
+  }
+}
