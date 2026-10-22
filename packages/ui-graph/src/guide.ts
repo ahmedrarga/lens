@@ -130,8 +130,11 @@ export function startHere(graph: ChangeGraph): StartHere {
   const starts: StartNode[] = [...new Set(pick)].slice(0, 3).map((n) => {
     const inn = [...(callers.get(n.id) ?? [])].map((i) => leaves.get(i)!).sort((a, b) => size(b) - size(a) || cmp(a.id, b.id));
     const out = [...(callees.get(n.id) ?? [])].map((i) => leaves.get(i)!).sort((a, b) => size(b) - size(a) || cmp(a.id, b.id));
-    const verb = inn.length ? 'called by' : 'calls';
-    return { id: n.id, label: n.label, tag: n.state === 'added' ? 'new' : 'changed', verb, followers: (inn.length ? inn : out).slice(0, 3).map((f) => ({ id: f.id, label: f.label })) };
+    // Tests calling the start node are noise here; show production callers, else what it calls.
+    const notTest = (l: GraphNode) => !TEST_RE.test(l.path ?? '');
+    const prodIn = inn.filter(notTest);
+    const verb = prodIn.length ? 'called by' : 'calls';
+    return { id: n.id, label: n.label, tag: n.state === 'added' ? 'new' : 'changed', verb, followers: (prodIn.length ? prodIn : out.filter(notTest)).slice(0, 3).map((f) => ({ id: f.id, label: f.label })) };
   });
   const ls = [...leaves.values()];
   const mods = graph.nodes.filter((n) => n.kind === 'module' && n.state !== 'unchanged' && !isCollapsedId(n.id)).length;
