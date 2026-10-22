@@ -17,8 +17,11 @@ export interface PrFile {
 }
 
 export interface GitProvider {
-  /** Parse "https://github.com/o/r/pull/123" (or "o/r#123"). Throws on invalid input. */
-  parsePrUrl(url: string): { owner: string; repo: string; number: number };
+  /**
+   * Parse "https://github.com/o/r/pull/123" (or "o/r#123"), or a GitLab merge request URL
+   * "https://<host>/group/sub/project/-/merge_requests/45". Throws on invalid input.
+   */
+  parsePrUrl(url: string): { owner: string; repo: string; number: number; host?: string };
   getPr(url: string): Promise<PrRef>;
   listFiles(pr: PrRef): Promise<PrFile[]>;
   /** File contents at a commit, or null if absent / binary / too large. */

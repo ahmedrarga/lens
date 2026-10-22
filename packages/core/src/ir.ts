@@ -149,7 +149,10 @@ export const FileStatus = z.enum(['added', 'modified', 'removed', 'renamed']);
 export type FileStatus = z.infer<typeof FileStatus>;
 
 export const PrRef = z.object({
-  provider: z.literal('github'),
+  provider: z.enum(['github', 'gitlab']),
+  /** Host, e.g. github.com, gitlab.com or a self-hosted GitLab. Defaults to the provider's SaaS host. */
+  host: z.string().optional(),
+  /** GitLab: namespace path, possibly nested ("group/subgroup"). GitHub: the owner. */
   owner: z.string(),
   repo: z.string(),
   number: z.number().int(),
