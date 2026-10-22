@@ -2,6 +2,7 @@
   "schema": 1,
   "pr": {
     "provider": "github",
+    "host": "github.com",
     "owner": "honojs",
     "repo": "hono",
     "number": 5379,
@@ -14,7 +15,7 @@
     "baseRef": "main",
     "headRef": "fix/jwt-invalid-signature-error"
   },
-  "generatedAt": "2026-10-22T18:00:15.998Z",
+  "generatedAt": "2026-10-22T18:03:28.734Z",
   "pipelineVersion": "m1-0.1.0",
   "nodes": [
     {
@@ -231,7 +232,7 @@
     "files": 2,
     "added": 21,
     "removed": 6,
-    "durationMs": 7068
+    "durationMs": 7358
   },
   "policy": {
     "source": "default",

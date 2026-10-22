@@ -28,7 +28,7 @@ const AUTH_PATHS = [
   '**/authori[sz]*', '**/*Authori[sz]*', '**/authentic*', '**/*Authentic*', '**/oauth*/**', '**/OAuth*',
 ];
 const PERMISSION_PATHS = nameGlobs(['permission', 'permissions', 'rbac', 'acl', 'acls', 'role', 'roles', 'policies']);
-const PAYMENT_PATHS = nameGlobs(['billing', 'payment', 'payments', 'stripe', 'checkout', 'invoice', 'invoices', 'paypal', 'subscription', 'subscriptions']);
+const PAYMENT_PATHS = nameGlobs(['billing', 'payment', 'payments', 'stripe', 'checkout', 'invoice', 'invoices', 'paypal']);
 const CRYPTO_PATHS = nameGlobs(['crypto', 'cipher', 'encrypt', 'encryption', 'decrypt', 'kms', 'hmac']);
 
 const rule = (
@@ -38,6 +38,11 @@ const rule = (
 export const LENS_POLICY_RULE: RiskRule = rule(
   'lens-policy', 'Changes Lens policy (.lens/**), which controls what gets reviewed', 'blocker', true,
   { paths: ['.lens/**', '**/.lens/**'] },
+);
+
+/** package.json: fires only when dependency entries change (custom analysis in deps.ts; level/message come from it). */
+export const DEPS_MANIFEST_RULE: RiskRule = rule(
+  'deps-manifest', 'Changes dependencies', 'med', false, { paths: ['**/package.json'] },
 );
 
 /**
@@ -81,7 +86,7 @@ export const DEFAULT_RULES: RiskRule[] = [
   }),
   rule('payments', 'Changes billing or payment code', 'high', true, {
     paths: [...PAYMENT_PATHS, ...NOT_TESTS],
-    symbols: ['\\b(charge(Card|Customer)?|refund\\w*|payout\\w*|createPaymentIntent|capturePayment|createCheckoutSession|createSubscription|cancelSubscription)\\b'],
+    symbols: ['\\b(charge(Card|Customer)?|refund\\w*|payout\\w*|createPaymentIntent|capturePayment|createCheckoutSession|(create|cancel|update|renew)(Billing|Stripe|Paid|Plan)Subscription|(stripe|billing|invoice|checkout|payment|plan|price)\\w*Subscription|Subscription(Plan|Price|Invoice|Billing)\\w*)\\b'],
   }),
   rule('db-migration', 'Changes a database migration or schema definition', 'high', true, {
     paths: [
@@ -115,8 +120,9 @@ export const DEFAULT_RULES: RiskRule[] = [
   rule('ci', 'Changes CI/CD pipeline configuration', 'med', false, {
     paths: ['.github/workflows/**', '.github/actions/**', '.gitlab-ci.yml', '.circleci/**', '.buildkite/**', '**/Jenkinsfile', 'azure-pipelines.yml'],
   }),
-  rule('deps-manifest', 'Changes dependency manifest', 'med', false, {
-    paths: ['**/package.json', '**/requirements*.txt', '**/pyproject.toml', '**/go.mod', '**/Cargo.toml', '**/Gemfile'],
+  DEPS_MANIFEST_RULE,
+  rule('deps-manifest-other', 'Changes dependency manifest', 'med', false, {
+    paths: ['**/requirements*.txt', '**/pyproject.toml', '**/go.mod', '**/Cargo.toml', '**/Gemfile'],
   }),
   rule('env-config', 'Changes environment configuration', 'med', false, {
     paths: ['**/.env', '**/.env.*', '**/*.env'],

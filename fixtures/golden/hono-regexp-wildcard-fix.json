@@ -2,6 +2,7 @@
   "schema": 1,
   "pr": {
     "provider": "github",
+    "host": "github.com",
     "owner": "honojs",
     "repo": "hono",
     "number": 5556,
@@ -14,7 +15,7 @@
     "baseRef": "v5",
     "headRef": "fix-regexp-router-mid-wildcard-v5"
   },
-  "generatedAt": "2026-10-22T17:58:37.500Z",
+  "generatedAt": "2026-10-22T18:03:48.946Z",
   "pipelineVersion": "m1-0.1.0",
   "nodes": [
     {
@@ -2374,7 +2375,7 @@
     "files": 10,
     "added": 423,
     "removed": 140,
-    "durationMs": 7912
+    "durationMs": 10129
   },
   "policy": {
     "source": "default",

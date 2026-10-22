@@ -1,0 +1,54 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`golden risk precision > hono-deps-lockfile.json 1`] = `"file:package.json :: deps-manifest (low)"`;
+
+exports[`golden risk precision > hono-jwt-signature.json 1`] = `"symbol:src/utils/jwt/jwt.ts#verify :: auth (high)"`;
+
+exports[`golden risk precision > hono-regexp-wildcard-fix.json 1`] = `
+"file:src/router/reg-exp-router/router.test.ts :: weakened-test (high)
+symbol:src/router/reg-exp-router/router.ts#buildWildcardRegExp :: deletion (med)
+symbol:src/router/reg-exp-router/router.ts#findMiddleware :: deletion (med)
+symbol:src/router/reg-exp-router/router.ts#wildcardRegExpCache :: deletion (med)"
+`;
+
+exports[`golden risk precision > trpc-eslint-upgrade-lockfile.json 1`] = `
+"file:examples/.test/diagnostics-big-router/package.json :: deps-manifest (low)
+file:examples/.test/ssg-infinite-serialization/package.json :: deps-manifest (low)
+file:examples/.test/ssg/package.json :: deps-manifest (low)
+file:examples/bun/package.json :: deps-manifest (low)
+file:examples/cloudflare-workers/package.json :: deps-manifest (low)
+file:examples/express-minimal/package.json :: deps-manifest (low)
+file:examples/express-server/package.json :: deps-manifest (low)
+file:examples/fastify-server/package.json :: deps-manifest (low)
+file:examples/lambda-api-gateway-streaming/package.json :: deps-manifest (low)
+file:examples/lambda-api-gateway/package.json :: deps-manifest (low)
+file:examples/lambda-url/package.json :: deps-manifest (low)
+file:examples/minimal-content-types/client/package.json :: deps-manifest (low)
+file:examples/minimal-content-types/server/package.json :: deps-manifest (low)
+file:examples/minimal-react/client/package.json :: deps-manifest (low)
+file:examples/minimal-react/server/package.json :: deps-manifest (low)
+file:examples/next-big-router/package.json :: deps-manifest (low)
+file:examples/next-edge-runtime/package.json :: deps-manifest (low)
+file:examples/next-formdata/package.json :: deps-manifest (low)
+file:examples/next-minimal-starter/package.json :: deps-manifest (low)
+file:examples/next-prisma-starter/package.json :: deps-manifest (low)
+file:examples/next-prisma-todomvc/package.json :: deps-manifest (low)
+file:examples/next-prisma-websockets-starter/package.json :: deps-manifest (low)
+file:examples/next-websockets-encoder/package.json :: deps-manifest (low)
+file:examples/standalone-server/package.json :: deps-manifest (low)
+file:package.json :: deps-manifest (low)
+file:packages/client/package.json :: deps-manifest (low)
+file:packages/next/package.json :: deps-manifest (low)
+file:packages/openapi/package.json :: deps-manifest (low)
+file:packages/react-query/package.json :: deps-manifest (low)
+file:packages/server/package.json :: deps-manifest (low)
+file:packages/tanstack-react-query/package.json :: deps-manifest (low)
+file:packages/tests/package.json :: deps-manifest (low)
+file:www/package.json :: deps-manifest (low)
+group:collapsed:mechanical:7c68e69b :: auth (high)
+group:collapsed:mechanical:7c68e69b :: collapsed-risky (high)"
+`;
+
+exports[`golden risk precision > zod-array-size-check.json 1`] = `""`;
+
+exports[`golden risk precision > zod-release-config.json 1`] = `"file:.github/workflows/release.yml :: ci (med)"`;

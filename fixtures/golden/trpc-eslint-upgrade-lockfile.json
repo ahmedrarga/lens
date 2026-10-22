@@ -2,6 +2,7 @@
   "schema": 1,
   "pr": {
     "provider": "github",
+    "host": "github.com",
     "owner": "trpc",
     "repo": "trpc",
     "number": 7576,
@@ -14,7 +15,7 @@
     "baseRef": "deps/typescript-7",
     "headRef": "deps/eslint-10"
   },
-  "generatedAt": "2026-10-22T18:00:07.615Z",
+  "generatedAt": "2026-10-22T18:03:19.221Z",
   "pipelineVersion": "m1-0.1.0",
   "nodes": [
     {
@@ -29,12 +30,9 @@
         "removed": 8
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -49,13 +47,9 @@
         "removed": 2
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/.test/diagnostics-big-router/package.json",
-          "file:packages/tests/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -70,12 +64,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/.test/ssg-infinite-serialization/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -90,12 +81,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/.test/ssg/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -110,12 +98,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/bun/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -130,12 +115,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/cloudflare-workers/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -150,12 +132,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/express-minimal/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -170,12 +149,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/express-server/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -190,12 +166,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/fastify-server/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -210,12 +183,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/lambda-api-gateway-streaming/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -230,12 +200,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/lambda-api-gateway/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -250,12 +217,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/lambda-url/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -270,12 +234,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/minimal-content-types/client/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -290,12 +251,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/minimal-content-types/server/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -310,12 +268,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/minimal-react/client/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -330,12 +285,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/minimal-react/server/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -350,12 +302,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/next-big-router/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -370,12 +319,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/next-edge-runtime/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -390,12 +336,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/next-formdata/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -410,12 +353,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/next-minimal-starter/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -430,12 +370,9 @@
         "removed": 5
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/next-prisma-starter/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -450,12 +387,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/next-prisma-todomvc/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -470,12 +404,9 @@
         "removed": 4
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/next-prisma-websockets-starter/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -524,12 +455,9 @@
         "removed": 3
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/next-websockets-encoder/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -561,12 +489,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/standalone-server/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -581,12 +506,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:packages/client/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -618,12 +540,9 @@
         "removed": 3
       },
       "risk": {
-        "level": "high",
-        "mustReview": true,
-        "reasons": [],
-        "inheritedFrom": [
-          "symbol:packages/client/src/links/httpSubscriptionLink.ts#httpSubscriptionLink"
-        ]
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
       }
     },
     {
@@ -638,12 +557,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:packages/next/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -675,12 +591,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:packages/openapi/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -712,12 +625,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:packages/react-query/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -766,12 +676,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:packages/server/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -820,12 +727,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:packages/tanstack-react-query/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -840,13 +744,9 @@
         "removed": 6
       },
       "risk": {
-        "level": "high",
-        "mustReview": true,
-        "reasons": [],
-        "inheritedFrom": [
-          "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#trpcSubscriptionOptions",
-          "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#useSubscription"
-        ]
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
       }
     },
     {
@@ -878,12 +778,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:www/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -922,13 +819,13 @@
       "kind": "file",
       "label": "examples/.test/diagnostics-big-router/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:examples/.test/diagnostics-big-router/package.json:0"
             ]
@@ -952,13 +849,13 @@
       "kind": "file",
       "label": "examples/.test/ssg-infinite-serialization/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:examples/.test/ssg-infinite-serialization/package.json:0"
             ]
@@ -982,13 +879,13 @@
       "kind": "file",
       "label": "examples/.test/ssg/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:examples/.test/ssg/package.json:0"
             ]
@@ -1012,13 +909,13 @@
       "kind": "file",
       "label": "examples/bun/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:examples/bun/package.json:0"
             ]
@@ -1042,13 +939,13 @@
       "kind": "file",
       "label": "examples/cloudflare-workers/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:examples/cloudflare-workers/package.json:0"
             ]
@@ -1072,13 +969,13 @@
       "kind": "file",
       "label": "examples/express-minimal/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:examples/express-minimal/package.json:0"
             ]
@@ -1102,13 +999,13 @@
       "kind": "file",
       "label": "examples/express-server/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:examples/express-server/package.json:0"
             ]
@@ -1132,13 +1029,13 @@
       "kind": "file",
       "label": "examples/fastify-server/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:examples/fastify-server/package.json:0"
             ]
@@ -1162,13 +1059,13 @@
       "kind": "file",
       "label": "examples/lambda-api-gateway-streaming/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:examples/lambda-api-gateway-streaming/package.json:0"
             ]
@@ -1192,13 +1089,13 @@
       "kind": "file",
       "label": "examples/lambda-api-gateway/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:examples/lambda-api-gateway/package.json:0"
             ]
@@ -1222,13 +1119,13 @@
       "kind": "file",
       "label": "examples/lambda-url/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:examples/lambda-url/package.json:0"
             ]
@@ -1252,13 +1149,13 @@
       "kind": "file",
       "label": "examples/minimal-content-types/client/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:examples/minimal-content-types/client/package.json:0"
             ]
@@ -1282,13 +1179,13 @@
       "kind": "file",
       "label": "examples/minimal-content-types/server/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:examples/minimal-content-types/server/package.json:0"
             ]
@@ -1312,13 +1209,13 @@
       "kind": "file",
       "label": "examples/minimal-react/client/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:examples/minimal-react/client/package.json:0"
             ]
@@ -1342,13 +1239,13 @@
       "kind": "file",
       "label": "examples/minimal-react/server/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:examples/minimal-react/server/package.json:0"
             ]
@@ -1372,13 +1269,13 @@
       "kind": "file",
       "label": "examples/next-big-router/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:examples/next-big-router/package.json:0"
             ]
@@ -1402,13 +1299,13 @@
       "kind": "file",
       "label": "examples/next-edge-runtime/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:examples/next-edge-runtime/package.json:0"
             ]
@@ -1432,13 +1329,13 @@
       "kind": "file",
       "label": "examples/next-formdata/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:examples/next-formdata/package.json:0"
             ]
@@ -1462,13 +1359,13 @@
       "kind": "file",
       "label": "examples/next-minimal-starter/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:examples/next-minimal-starter/package.json:0"
             ]
@@ -1492,13 +1389,13 @@
       "kind": "file",
       "label": "examples/next-prisma-starter/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 3 dependencies: eslint, eslint-plugin-react-hooks, typescript-eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:examples/next-prisma-starter/package.json:0",
               "hunk:examples/next-prisma-starter/package.json:1"
@@ -1523,13 +1420,13 @@
       "kind": "file",
       "label": "examples/next-prisma-todomvc/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:examples/next-prisma-todomvc/package.json:0"
             ]
@@ -1553,13 +1450,13 @@
       "kind": "file",
       "label": "examples/next-prisma-websockets-starter/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 3 dependencies: eslint, eslint-plugin-react-hooks, typescript-eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:examples/next-prisma-websockets-starter/package.json:0"
             ]
@@ -1604,13 +1501,13 @@
       "kind": "file",
       "label": "examples/next-websockets-encoder/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 3 dependencies: eslint, eslint-plugin-react-hooks, typescript-eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:examples/next-websockets-encoder/package.json:0"
             ]
@@ -1655,13 +1552,13 @@
       "kind": "file",
       "label": "examples/standalone-server/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:examples/standalone-server/package.json:0"
             ]
@@ -1685,13 +1582,13 @@
       "kind": "file",
       "label": "package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 6 dependencies: @eslint/compat, eslint, eslint-plugin-react, eslint-plugin-react-hooks, eslint-plugin-unicorn, typescript-eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:package.json:0",
               "hunk:package.json:1",
@@ -1717,13 +1614,13 @@
       "kind": "file",
       "label": "packages/client/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:packages/client/package.json:0"
             ]
@@ -1756,13 +1653,13 @@
       "kind": "file",
       "label": "packages/next/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:packages/next/package.json:0"
             ]
@@ -1795,13 +1692,13 @@
       "kind": "file",
       "label": "packages/openapi/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:packages/openapi/package.json:0"
             ]
@@ -1825,13 +1722,13 @@
       "kind": "file",
       "label": "packages/react-query/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:packages/react-query/package.json:0"
             ]
@@ -1873,13 +1770,13 @@
       "kind": "file",
       "label": "packages/server/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:packages/server/package.json:0"
             ]
@@ -1924,13 +1821,13 @@
       "kind": "file",
       "label": "packages/tanstack-react-query/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:packages/tanstack-react-query/package.json:0"
             ]
@@ -1954,13 +1851,13 @@
       "kind": "file",
       "label": "packages/tests/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:packages/tests/package.json:0"
             ]
@@ -2023,13 +1920,13 @@
       "kind": "file",
       "label": "www/package.json",
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
         "reasons": [
           {
             "ruleId": "deps-manifest",
-            "message": "Changes dependency manifest",
-            "level": "med",
+            "message": "Changes 1 dependency: eslint (version bumps or dev-only)",
+            "level": "low",
             "hunkIds": [
               "hunk:www/package.json:0"
             ]
@@ -2083,12 +1980,9 @@
         "removed": 8
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2103,15 +1997,9 @@
         "removed": 4
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/.test/diagnostics-big-router/package.json",
-          "file:examples/.test/ssg-infinite-serialization/package.json",
-          "file:examples/.test/ssg/package.json",
-          "file:packages/tests/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2126,12 +2014,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/bun/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2146,12 +2031,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/cloudflare-workers/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2166,12 +2048,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/express-minimal/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2186,12 +2065,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/express-server/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2206,12 +2082,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/fastify-server/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2226,12 +2099,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/lambda-api-gateway/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2246,12 +2116,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/lambda-api-gateway-streaming/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2266,12 +2133,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/lambda-url/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2286,13 +2150,9 @@
         "removed": 2
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/minimal-content-types/client/package.json",
-          "file:examples/minimal-content-types/server/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2307,13 +2167,9 @@
         "removed": 2
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/minimal-react/client/package.json",
-          "file:examples/minimal-react/server/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2328,12 +2184,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/next-big-router/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2348,12 +2201,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/next-edge-runtime/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2368,12 +2218,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/next-formdata/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2388,12 +2235,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/next-minimal-starter/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2408,12 +2252,9 @@
         "removed": 5
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/next-prisma-starter/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2428,12 +2269,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/next-prisma-todomvc/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2448,12 +2286,9 @@
         "removed": 7
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/next-prisma-websockets-starter/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2468,12 +2303,9 @@
         "removed": 4
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/next-websockets-encoder/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2488,12 +2320,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:examples/standalone-server/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2508,13 +2337,9 @@
         "removed": 6
       },
       "risk": {
-        "level": "high",
-        "mustReview": true,
-        "reasons": [],
-        "inheritedFrom": [
-          "symbol:packages/client/src/links/httpSubscriptionLink.ts#httpSubscriptionLink",
-          "file:packages/client/package.json"
-        ]
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
       }
     },
     {
@@ -2529,12 +2354,9 @@
         "removed": 5
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:packages/next/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2549,12 +2371,9 @@
         "removed": 6
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:packages/openapi/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2569,12 +2388,9 @@
         "removed": 2
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:packages/react-query/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2589,12 +2405,9 @@
         "removed": 4
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:packages/server/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2609,14 +2422,9 @@
         "removed": 7
       },
       "risk": {
-        "level": "high",
-        "mustReview": true,
-        "reasons": [],
-        "inheritedFrom": [
-          "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#trpcSubscriptionOptions",
-          "symbol:packages/tanstack-react-query/src/internals/subscriptionOptions.ts#useSubscription",
-          "file:packages/tanstack-react-query/package.json"
-        ]
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
       }
     },
     {
@@ -2648,12 +2456,9 @@
         "removed": 1
       },
       "risk": {
-        "level": "med",
+        "level": "low",
         "mustReview": false,
-        "reasons": [],
-        "inheritedFrom": [
-          "file:www/package.json"
-        ]
+        "reasons": []
       }
     },
     {
@@ -2940,18 +2745,9 @@
       },
       "exported": true,
       "risk": {
-        "level": "high",
-        "mustReview": true,
-        "reasons": [
-          {
-            "ruleId": "payments",
-            "message": "Changes billing or payment code",
-            "level": "high",
-            "hunkIds": [
-              "hunk:packages/client/src/links/httpSubscriptionLink.ts:0"
-            ]
-          }
-        ]
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
       }
     },
     {
@@ -3391,18 +3187,9 @@
       },
       "exported": true,
       "risk": {
-        "level": "high",
-        "mustReview": true,
-        "reasons": [
-          {
-            "ruleId": "payments",
-            "message": "Changes billing or payment code",
-            "level": "high",
-            "hunkIds": [
-              "hunk:packages/tanstack-react-query/src/internals/subscriptionOptions.ts:0"
-            ]
-          }
-        ]
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
       }
     },
     {
@@ -3427,18 +3214,9 @@
       },
       "exported": true,
       "risk": {
-        "level": "high",
-        "mustReview": true,
-        "reasons": [
-          {
-            "ruleId": "payments",
-            "message": "Changes billing or payment code",
-            "level": "high",
-            "hunkIds": [
-              "hunk:packages/tanstack-react-query/src/internals/subscriptionOptions.ts:1"
-            ]
-          }
-        ]
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
       }
     }
   ],
@@ -4790,7 +4568,7 @@
     "files": 58,
     "added": 964,
     "removed": 1089,
-    "durationMs": 11607
+    "durationMs": 12166
   },
   "policy": {
     "source": "default",

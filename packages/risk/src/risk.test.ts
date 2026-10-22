@@ -74,7 +74,9 @@ describe('default rules', () => {
     ['infra tf', { path: 'infra/main.tf' }, ['infra']],
     ['k8s', { path: 'deploy/k8s/app.yaml' }, ['infra']],
     ['ci', { path: '.github/workflows/ci.yml' }, ['ci']],
-    ['deps', { path: 'packages/a/package.json' }, ['deps-manifest']],
+    ['deps new runtime', { path: 'packages/a/package.json', added: ['    "left-pad": "^1.3.0"'] }, ['deps-manifest']],
+    ['stripe subscription symbol', { path: 'src/x.ts', symbol: 'createStripeSubscription' }, ['payments']],
+    ['pip manifest', { path: 'requirements.txt' }, ['deps-manifest-other']],
     ['env', { path: '.env.production' }, ['env-config']],
     ['env read', { path: 'src/x.ts', added: ['const u = process.env.DATABASE_URL'] }, ['env-read']],
     ['deleted test', { path: 'src/a.test.ts', status: 'removed', removed: ['x'] }, ['deleted-tests', 'deletion']],
@@ -110,6 +112,11 @@ describe('default rules', () => {
     ['auth test file in auth area', { path: 'src/auth/login.test.ts', added: ['expect(1)'] }],
     ['map.delete', { path: 'src/x.ts', added: ['cache.delete(key)'] }],
     ['lockfile', { path: 'package-lock.json' }],
+    ['websocket subscription symbol', { path: 'src/link.ts', symbol: 'httpSubscriptionLink' }],
+    ['useSubscription hook', { path: 'src/useSubscription.ts', symbol: 'useSubscription' }],
+    ['subscription options', { path: 'src/subscription/options.ts', symbol: 'trpcSubscriptionOptions' }],
+    ['package.json scripts only', { path: 'package.json', added: ['    "build": "tsc -b"'], removed: ['    "build": "tsc"'] }],
+    ['package.json version/engines', { path: 'package.json', added: ['  "version": "1.2.4",', '    "node": ">=20"'], removed: ['  "version": "1.2.3",', '    "node": ">=18"'] }],
     ['removed eval', { path: 'src/x.ts', removed: ['eval(x)'] }],
     ['safe sql', { path: 'src/q.ts', added: ['db.query("SELECT 1 FROM t WHERE id = $1", [id])'] }],
     ['modified test without removal', { path: 'src/a.test.ts', added: ['expect(a).toBe(1)'] }],
@@ -310,5 +317,45 @@ neverCollapse: ["gen/auth/**"]
     const { ids } = run([{ path: 'a.ts', added: ['// TODO(SEC) fix'] }, { path: 'b.ts', removed: ['// TODO(SEC) fix'] }], policy);
     expect(ids(0)).toEqual(['t']);
     expect(ids(1)).toEqual([]);
+  });
+});
+
+describe('deps-manifest precision', () => {
+  const pj = (lines: string[], header = '') => ({
+    path: 'package.json', patch: ['@@ -1,3 +1,3 @@' + header, ...lines].join('\n'),
+  });
+  function reasons(p: { path: string; patch: string }) {
+    const { graph, files } = mkGraph([{ path: p.path }]);
+    graph.hunks[0]!.patch = p.patch;
+    const out = applyRisk(graph, DEFAULT_POLICY, { files, policySource: { source: 'default', errors: [] } });
+    return out.nodes[2]!.risk!.reasons.filter((r) => r.ruleId === 'deps-manifest');
+  }
+  it('dev version bumps are low and merged into one reason', () => {
+    const r = reasons(pj([
+      '   "devDependencies": {', '-    "eslint": "^9.0.0",', '+    "eslint": "^10.0.0",',
+      '-    "prettier": "3.0.0",', '+    "prettier": "3.1.0",', '   }',
+    ]));
+    expect(r).toHaveLength(1);
+    expect(r[0]).toMatchObject({ level: 'low' });
+    expect(r[0]!.message).toMatch(/^Changes 2 dependencies: eslint, prettier/);
+  });
+  it('new runtime dependency is med', () => {
+    const r = reasons(pj(['   "dependencies": {', '+    "zod": "^3.0.0",', '     "hono": "^4.0.0"', '   }']));
+    expect(r[0]).toMatchObject({ level: 'med' });
+    expect(r[0]!.message).toBe('Adds 1 dependency: zod');
+  });
+  it('new dev dependency is low; removed runtime is med', () => {
+    expect(reasons(pj(['   "devDependencies": {', '+    "vitest": "^2.0.0"', '   }']))[0]!.level).toBe('low');
+    expect(reasons(pj(['   "dependencies": {', '-    "zod": "^3.0.0"', '   }']))[0]!.level).toBe('med');
+  });
+  it('uses the section from the hunk header and ignores scripts', () => {
+    expect(reasons(pj(['-    "a": "1.0.0",', '+    "a": "1.1.0",'], ' "devDependencies": {'))[0]!.level).toBe('low');
+    expect(reasons(pj(['   "scripts": {', '-    "build": "tsc",', '+    "build": "tsc -b",', '   }']))).toEqual([]);
+  });
+  it('section closing resets context', () => {
+    const r = reasons(pj([
+      '   "devDependencies": {', '     "a": "1.0.0"', '   },', '   "scripts": {', '-    "x": "1.0.0",', '+    "x": "2.0.0",', '   }',
+    ]));
+    expect(r).toEqual([]);
   });
 });
