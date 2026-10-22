@@ -1,0 +1,1572 @@
+{
+  "schema": 1,
+  "pr": {
+    "provider": "github",
+    "owner": "acme",
+    "repo": "webapp",
+    "number": 1287,
+    "url": "https://github.com/acme/webapp/pull/1287",
+    "title": "Add team invitations",
+    "body": "Admins can invite people by email to a workspace. Invite link expires after 7 days; invitee joins with the invited role.",
+    "author": "claude-agent",
+    "baseSha": "3f2a9c1d7b8e4a5f60718293a4b5c6d7e8f90123",
+    "headSha": "9b8a7c6d5e4f30211203948576a8b9c0d1e2f345",
+    "baseRef": "main",
+    "headRef": "agent/team-invitations"
+  },
+  "generatedAt": "2026-01-15T10:00:00.000Z",
+  "pipelineVersion": "sample-1",
+  "nodes": [
+    {
+      "id": "module:src/api",
+      "kind": "module",
+      "level": 0,
+      "label": "src/api",
+      "state": "modified",
+      "stats": {
+        "added": 24,
+        "removed": 6
+      }
+    },
+    {
+      "id": "module:src/services",
+      "kind": "module",
+      "level": 0,
+      "label": "src/services",
+      "state": "modified",
+      "stats": {
+        "added": 43,
+        "removed": 2
+      }
+    },
+    {
+      "id": "module:src/db",
+      "kind": "module",
+      "level": 0,
+      "label": "src/db",
+      "state": "modified",
+      "stats": {
+        "added": 30,
+        "removed": 0
+      }
+    },
+    {
+      "id": "module:web",
+      "kind": "module",
+      "level": 0,
+      "label": "web",
+      "state": "modified",
+      "stats": {
+        "added": 39,
+        "removed": 0
+      }
+    },
+    {
+      "id": "module:root",
+      "kind": "module",
+      "level": 0,
+      "label": "repo root",
+      "state": "modified",
+      "stats": {
+        "added": 342,
+        "removed": 12
+      }
+    },
+    {
+      "id": "module:src/auth",
+      "kind": "module",
+      "level": 0,
+      "label": "src/auth",
+      "state": "unchanged"
+    },
+    {
+      "id": "cluster:invitation-endpoints",
+      "kind": "cluster",
+      "level": 1,
+      "label": "Invitation endpoints",
+      "parent": "module:src/api",
+      "state": "modified",
+      "stats": {
+        "added": 24,
+        "removed": 6
+      }
+    },
+    {
+      "id": "cluster:invitation-service",
+      "kind": "cluster",
+      "level": 1,
+      "label": "Invitation service",
+      "parent": "module:src/services",
+      "state": "modified",
+      "notes": [
+        "Authorization check lives in the route layer, not in the service"
+      ],
+      "stats": {
+        "added": 31,
+        "removed": 1
+      }
+    },
+    {
+      "id": "cluster:invite-email",
+      "kind": "cluster",
+      "level": 1,
+      "label": "Invite email delivery",
+      "parent": "module:src/services",
+      "state": "modified",
+      "stats": {
+        "added": 12,
+        "removed": 1
+      }
+    },
+    {
+      "id": "cluster:invitations-schema",
+      "kind": "cluster",
+      "level": 1,
+      "label": "Invitations schema",
+      "parent": "module:src/db",
+      "state": "modified",
+      "notes": [
+        "Adds a table and a new schema entry; no backfill needed"
+      ],
+      "stats": {
+        "added": 30,
+        "removed": 0
+      }
+    },
+    {
+      "id": "cluster:invite-ui",
+      "kind": "cluster",
+      "level": 1,
+      "label": "Invite members UI",
+      "parent": "module:web",
+      "state": "modified",
+      "stats": {
+        "added": 39,
+        "removed": 0
+      }
+    },
+    {
+      "id": "cluster:deps-config",
+      "kind": "cluster",
+      "level": 1,
+      "label": "Dependencies & config",
+      "parent": "module:root",
+      "state": "modified",
+      "stats": {
+        "added": 342,
+        "removed": 12
+      }
+    },
+    {
+      "id": "symbol:src/api/routes/invitations.ts#createInvitationRoute",
+      "kind": "symbol",
+      "level": 2,
+      "label": "createInvitationRoute",
+      "parent": "cluster:invitation-endpoints",
+      "state": "added",
+      "symbolKind": "function",
+      "path": "src/api/routes/invitations.ts",
+      "range": {
+        "start": 12,
+        "end": 34
+      },
+      "exported": true,
+      "stats": {
+        "added": 11,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/api/routes/invitations.ts#acceptInvitationRoute",
+      "kind": "symbol",
+      "level": 2,
+      "label": "acceptInvitationRoute",
+      "parent": "cluster:invitation-endpoints",
+      "state": "added",
+      "symbolKind": "function",
+      "path": "src/api/routes/invitations.ts",
+      "range": {
+        "start": 36,
+        "end": 52
+      },
+      "exported": true,
+      "stats": {
+        "added": 5,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/api/routes/invitations.ts#revokeInvitationRoute",
+      "kind": "symbol",
+      "level": 2,
+      "label": "revokeInvitationRoute",
+      "parent": "cluster:invitation-endpoints",
+      "state": "added",
+      "symbolKind": "function",
+      "path": "src/api/routes/invitations.ts",
+      "range": {
+        "start": 54,
+        "end": 66
+      },
+      "exported": true,
+      "stats": {
+        "added": 5,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/api/routes/index.ts#registerRoutes",
+      "kind": "symbol",
+      "level": 2,
+      "label": "registerRoutes",
+      "parent": "cluster:invitation-endpoints",
+      "state": "modified",
+      "symbolKind": "function",
+      "path": "src/api/routes/index.ts",
+      "range": {
+        "start": 8,
+        "end": 30
+      },
+      "exported": true,
+      "stats": {
+        "added": 3,
+        "removed": 1
+      }
+    },
+    {
+      "id": "symbol:src/api/routes/legacyInvite.ts#sendLegacyInvite",
+      "kind": "symbol",
+      "level": 2,
+      "label": "sendLegacyInvite",
+      "parent": "cluster:invitation-endpoints",
+      "state": "removed",
+      "symbolKind": "function",
+      "path": "src/api/routes/legacyInvite.ts",
+      "range": {
+        "start": 1,
+        "end": 15
+      },
+      "stats": {
+        "added": 0,
+        "removed": 5
+      }
+    },
+    {
+      "id": "symbol:src/services/invitations/service.ts#InvitationService",
+      "kind": "symbol",
+      "level": 2,
+      "label": "InvitationService",
+      "parent": "cluster:invitation-service",
+      "state": "added",
+      "symbolKind": "class",
+      "path": "src/services/invitations/service.ts",
+      "range": {
+        "start": 10,
+        "end": 90
+      },
+      "exported": true,
+      "stats": {
+        "added": 32,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/services/invitations/service.ts#InvitationService.createInvitation",
+      "kind": "symbol",
+      "level": 2,
+      "label": "InvitationService.createInvitation",
+      "parent": "cluster:invitation-service",
+      "state": "added",
+      "symbolKind": "method",
+      "path": "src/services/invitations/service.ts",
+      "range": {
+        "start": 22,
+        "end": 48
+      },
+      "notes": [
+        "1 dynamic call could not be resolved (this.hooks[event])"
+      ],
+      "stats": {
+        "added": 14,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/services/invitations/service.ts#InvitationService.acceptInvitation",
+      "kind": "symbol",
+      "level": 2,
+      "label": "InvitationService.acceptInvitation",
+      "parent": "cluster:invitation-service",
+      "state": "added",
+      "symbolKind": "method",
+      "path": "src/services/invitations/service.ts",
+      "range": {
+        "start": 50,
+        "end": 78
+      },
+      "stats": {
+        "added": 7,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/services/invitations/service.ts#InvitationService.revokeInvitation",
+      "kind": "symbol",
+      "level": 2,
+      "label": "InvitationService.revokeInvitation",
+      "parent": "cluster:invitation-service",
+      "state": "added",
+      "symbolKind": "method",
+      "path": "src/services/invitations/service.ts",
+      "range": {
+        "start": 80,
+        "end": 88
+      },
+      "notes": [
+        "Table name is computed at runtime; edge to db is unresolved"
+      ],
+      "stats": {
+        "added": 4,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/services/invitations/token.ts#generateToken",
+      "kind": "symbol",
+      "level": 2,
+      "label": "generateToken",
+      "parent": "cluster:invitation-service",
+      "state": "added",
+      "symbolKind": "function",
+      "path": "src/services/invitations/token.ts",
+      "range": {
+        "start": 3,
+        "end": 12
+      },
+      "exported": true,
+      "stats": {
+        "added": 5,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/services/invitations/token.ts#INVITE_TTL_MS",
+      "kind": "symbol",
+      "level": 2,
+      "label": "INVITE_TTL_MS",
+      "parent": "cluster:invitation-service",
+      "state": "added",
+      "symbolKind": "variable",
+      "path": "src/services/invitations/token.ts",
+      "range": {
+        "start": 1,
+        "end": 1
+      },
+      "exported": true,
+      "stats": {
+        "added": 0,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/services/workspaces/service.ts#WorkspaceService.addMember",
+      "kind": "symbol",
+      "level": 2,
+      "label": "WorkspaceService.addMember",
+      "parent": "cluster:invitation-service",
+      "state": "modified",
+      "symbolKind": "method",
+      "path": "src/services/workspaces/service.ts",
+      "range": {
+        "start": 41,
+        "end": 60
+      },
+      "stats": {
+        "added": 1,
+        "removed": 1
+      }
+    },
+    {
+      "id": "symbol:src/services/email/invite.ts#sendInviteEmail",
+      "kind": "symbol",
+      "level": 2,
+      "label": "sendInviteEmail",
+      "parent": "cluster:invite-email",
+      "state": "added",
+      "symbolKind": "function",
+      "path": "src/services/email/invite.ts",
+      "range": {
+        "start": 5,
+        "end": 28
+      },
+      "exported": true,
+      "stats": {
+        "added": 5,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/services/email/invite.ts#renderInviteTemplate",
+      "kind": "symbol",
+      "level": 2,
+      "label": "renderInviteTemplate",
+      "parent": "cluster:invite-email",
+      "state": "added",
+      "symbolKind": "function",
+      "path": "src/services/email/invite.ts",
+      "range": {
+        "start": 30,
+        "end": 52
+      },
+      "stats": {
+        "added": 6,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/services/email/mailer.ts#Mailer.send",
+      "kind": "symbol",
+      "level": 2,
+      "label": "Mailer.send",
+      "parent": "cluster:invite-email",
+      "state": "modified",
+      "symbolKind": "method",
+      "path": "src/services/email/mailer.ts",
+      "range": {
+        "start": 14,
+        "end": 30
+      },
+      "stats": {
+        "added": 1,
+        "removed": 1
+      }
+    },
+    {
+      "id": "file:src/db/migrations/0042_create_invitations.sql",
+      "kind": "file",
+      "level": 2,
+      "label": "0042_create_invitations.sql",
+      "parent": "cluster:invitations-schema",
+      "state": "added",
+      "path": "src/db/migrations/0042_create_invitations.sql",
+      "range": {
+        "start": 1,
+        "end": 18
+      },
+      "stats": {
+        "added": 11,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/db/models/invitation.ts#Invitation",
+      "kind": "symbol",
+      "level": 2,
+      "label": "Invitation",
+      "parent": "cluster:invitations-schema",
+      "state": "added",
+      "symbolKind": "interface",
+      "path": "src/db/models/invitation.ts",
+      "range": {
+        "start": 1,
+        "end": 14
+      },
+      "exported": true,
+      "stats": {
+        "added": 10,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/db/repos/invitationRepo.ts#insertInvitation",
+      "kind": "symbol",
+      "level": 2,
+      "label": "insertInvitation",
+      "parent": "cluster:invitations-schema",
+      "state": "added",
+      "symbolKind": "function",
+      "path": "src/db/repos/invitationRepo.ts",
+      "range": {
+        "start": 6,
+        "end": 20
+      },
+      "exported": true,
+      "stats": {
+        "added": 4,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/db/repos/invitationRepo.ts#findInvitationByToken",
+      "kind": "symbol",
+      "level": 2,
+      "label": "findInvitationByToken",
+      "parent": "cluster:invitations-schema",
+      "state": "added",
+      "symbolKind": "function",
+      "path": "src/db/repos/invitationRepo.ts",
+      "range": {
+        "start": 22,
+        "end": 34
+      },
+      "exported": true,
+      "stats": {
+        "added": 4,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/db/schema.ts#schema",
+      "kind": "symbol",
+      "level": 2,
+      "label": "schema",
+      "parent": "cluster:invitations-schema",
+      "state": "modified",
+      "symbolKind": "variable",
+      "path": "src/db/schema.ts",
+      "range": {
+        "start": 40,
+        "end": 58
+      },
+      "exported": true,
+      "stats": {
+        "added": 1,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:web/src/components/InviteDialog.tsx#InviteDialog",
+      "kind": "symbol",
+      "level": 2,
+      "label": "InviteDialog",
+      "parent": "cluster:invite-ui",
+      "state": "added",
+      "symbolKind": "component",
+      "path": "web/src/components/InviteDialog.tsx",
+      "range": {
+        "start": 8,
+        "end": 64
+      },
+      "exported": true,
+      "stats": {
+        "added": 12,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:web/src/hooks/useInvitations.ts#useInvitations",
+      "kind": "symbol",
+      "level": 2,
+      "label": "useInvitations",
+      "parent": "cluster:invite-ui",
+      "state": "added",
+      "symbolKind": "function",
+      "path": "web/src/hooks/useInvitations.ts",
+      "range": {
+        "start": 4,
+        "end": 30
+      },
+      "exported": true,
+      "stats": {
+        "added": 10,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:web/src/pages/MembersPage.tsx#MembersPage",
+      "kind": "symbol",
+      "level": 2,
+      "label": "MembersPage",
+      "parent": "cluster:invite-ui",
+      "state": "modified",
+      "symbolKind": "component",
+      "path": "web/src/pages/MembersPage.tsx",
+      "range": {
+        "start": 20,
+        "end": 70
+      },
+      "exported": true,
+      "stats": {
+        "added": 4,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:web/src/api/invitations.ts#inviteMember",
+      "kind": "symbol",
+      "level": 2,
+      "label": "inviteMember",
+      "parent": "cluster:invite-ui",
+      "state": "added",
+      "symbolKind": "function",
+      "path": "web/src/api/invitations.ts",
+      "range": {
+        "start": 3,
+        "end": 14
+      },
+      "exported": true,
+      "stats": {
+        "added": 3,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:web/src/pages/AcceptInvitePage.tsx#AcceptInvitePage",
+      "kind": "symbol",
+      "level": 2,
+      "label": "AcceptInvitePage",
+      "parent": "cluster:invite-ui",
+      "state": "added",
+      "symbolKind": "component",
+      "path": "web/src/pages/AcceptInvitePage.tsx",
+      "range": {
+        "start": 6,
+        "end": 40
+      },
+      "exported": true,
+      "stats": {
+        "added": 10,
+        "removed": 0
+      }
+    },
+    {
+      "id": "file:package-lock.json",
+      "kind": "file",
+      "level": 2,
+      "label": "package-lock.json",
+      "parent": "cluster:deps-config",
+      "state": "modified",
+      "path": "package-lock.json",
+      "range": {
+        "start": 1,
+        "end": 1
+      },
+      "stats": {
+        "added": 340,
+        "removed": 12
+      },
+      "notes": [
+        "Lockfile: diff not shown"
+      ]
+    },
+    {
+      "id": "file:.env.example",
+      "kind": "file",
+      "level": 2,
+      "label": ".env.example",
+      "parent": "cluster:deps-config",
+      "state": "modified",
+      "path": ".env.example",
+      "range": {
+        "start": 1,
+        "end": 12
+      },
+      "stats": {
+        "added": 2,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/auth/guards.ts#requireAdmin",
+      "kind": "symbol",
+      "level": 2,
+      "label": "requireAdmin",
+      "parent": "module:src/auth",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "src/auth/guards.ts",
+      "range": {
+        "start": 10,
+        "end": 24
+      }
+    },
+    {
+      "id": "symbol:src/auth/session.ts#getSession",
+      "kind": "symbol",
+      "level": 2,
+      "label": "getSession",
+      "parent": "module:src/auth",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "src/auth/session.ts",
+      "range": {
+        "start": 5,
+        "end": 30
+      }
+    },
+    {
+      "id": "symbol:src/auth/middleware.ts#authMiddleware",
+      "kind": "symbol",
+      "level": 2,
+      "label": "authMiddleware",
+      "parent": "module:src/auth",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "src/auth/middleware.ts",
+      "range": {
+        "start": 3,
+        "end": 22
+      }
+    },
+    {
+      "id": "symbol:src/services/users/service.ts#UserService.findByEmail",
+      "kind": "symbol",
+      "level": 2,
+      "label": "UserService.findByEmail",
+      "parent": "module:src/services",
+      "state": "unchanged",
+      "symbolKind": "method",
+      "path": "src/services/users/service.ts",
+      "range": {
+        "start": 18,
+        "end": 29
+      }
+    },
+    {
+      "id": "symbol:src/db/client.ts#db",
+      "kind": "symbol",
+      "level": 2,
+      "label": "db",
+      "parent": "module:src/db",
+      "state": "unchanged",
+      "symbolKind": "variable",
+      "path": "src/db/client.ts",
+      "range": {
+        "start": 4,
+        "end": 12
+      }
+    },
+    {
+      "id": "symbol:src/db/models/workspace.ts#Workspace",
+      "kind": "symbol",
+      "level": 2,
+      "label": "Workspace",
+      "parent": "module:src/db",
+      "state": "unchanged",
+      "symbolKind": "interface",
+      "path": "src/db/models/workspace.ts",
+      "range": {
+        "start": 1,
+        "end": 10
+      }
+    },
+    {
+      "id": "symbol:src/db/repos/memberRepo.ts#addMemberRow",
+      "kind": "symbol",
+      "level": 2,
+      "label": "addMemberRow",
+      "parent": "module:src/db",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "src/db/repos/memberRepo.ts",
+      "range": {
+        "start": 8,
+        "end": 21
+      }
+    },
+    {
+      "id": "symbol:src/services/email/transport.ts#smtpTransport",
+      "kind": "symbol",
+      "level": 2,
+      "label": "smtpTransport",
+      "parent": "module:src/services",
+      "state": "unchanged",
+      "symbolKind": "variable",
+      "path": "src/services/email/transport.ts",
+      "range": {
+        "start": 3,
+        "end": 15
+      }
+    },
+    {
+      "id": "symbol:web/src/components/Button.tsx#Button",
+      "kind": "symbol",
+      "level": 2,
+      "label": "Button",
+      "parent": "module:web",
+      "state": "unchanged",
+      "symbolKind": "component",
+      "path": "web/src/components/Button.tsx",
+      "range": {
+        "start": 5,
+        "end": 28
+      }
+    },
+    {
+      "id": "symbol:web/src/api/http.ts#http",
+      "kind": "symbol",
+      "level": 2,
+      "label": "http",
+      "parent": "module:web",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "web/src/api/http.ts",
+      "range": {
+        "start": 6,
+        "end": 24
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge:1",
+      "kind": "calls",
+      "from": "symbol:src/api/routes/index.ts#registerRoutes",
+      "to": "symbol:src/api/routes/invitations.ts#createInvitationRoute",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:2",
+      "kind": "calls",
+      "from": "symbol:src/api/routes/index.ts#registerRoutes",
+      "to": "symbol:src/api/routes/invitations.ts#acceptInvitationRoute",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:3",
+      "kind": "calls",
+      "from": "symbol:src/api/routes/index.ts#registerRoutes",
+      "to": "symbol:src/api/routes/invitations.ts#revokeInvitationRoute",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:4",
+      "kind": "calls",
+      "from": "symbol:src/api/routes/index.ts#registerRoutes",
+      "to": "symbol:src/auth/middleware.ts#authMiddleware",
+      "state": "unchanged",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:5",
+      "kind": "calls",
+      "from": "symbol:src/api/routes/index.ts#registerRoutes",
+      "to": "symbol:src/api/routes/legacyInvite.ts#sendLegacyInvite",
+      "state": "removed",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:6",
+      "kind": "calls",
+      "from": "symbol:src/api/routes/invitations.ts#createInvitationRoute",
+      "to": "symbol:src/auth/guards.ts#requireAdmin",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:7",
+      "kind": "calls",
+      "from": "symbol:src/api/routes/invitations.ts#revokeInvitationRoute",
+      "to": "symbol:src/auth/guards.ts#requireAdmin",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:8",
+      "kind": "calls",
+      "from": "symbol:src/api/routes/invitations.ts#acceptInvitationRoute",
+      "to": "symbol:src/auth/session.ts#getSession",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:9",
+      "kind": "calls",
+      "from": "symbol:src/api/routes/invitations.ts#createInvitationRoute",
+      "to": "symbol:src/services/invitations/service.ts#InvitationService.createInvitation",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:10",
+      "kind": "calls",
+      "from": "symbol:src/api/routes/invitations.ts#acceptInvitationRoute",
+      "to": "symbol:src/services/invitations/service.ts#InvitationService.acceptInvitation",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:11",
+      "kind": "calls",
+      "from": "symbol:src/api/routes/invitations.ts#revokeInvitationRoute",
+      "to": "symbol:src/services/invitations/service.ts#InvitationService.revokeInvitation",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:12",
+      "kind": "imports",
+      "from": "symbol:src/api/routes/invitations.ts#acceptInvitationRoute",
+      "to": "symbol:src/db/models/invitation.ts#Invitation",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:13",
+      "kind": "calls",
+      "from": "symbol:src/api/routes/legacyInvite.ts#sendLegacyInvite",
+      "to": "symbol:src/services/email/mailer.ts#Mailer.send",
+      "state": "removed",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:14",
+      "kind": "calls",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService.createInvitation",
+      "to": "symbol:src/services/invitations/token.ts#generateToken",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:15",
+      "kind": "calls",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService.createInvitation",
+      "to": "symbol:src/db/repos/invitationRepo.ts#insertInvitation",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:16",
+      "kind": "calls",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService.createInvitation",
+      "to": "symbol:src/services/email/invite.ts#sendInviteEmail",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:17",
+      "kind": "calls",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService.createInvitation",
+      "to": "symbol:src/services/users/service.ts#UserService.findByEmail",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:18",
+      "kind": "references",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService.createInvitation",
+      "to": "symbol:src/services/invitations/token.ts#INVITE_TTL_MS",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:19",
+      "kind": "calls",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService.acceptInvitation",
+      "to": "symbol:src/db/repos/invitationRepo.ts#findInvitationByToken",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:20",
+      "kind": "calls",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService.acceptInvitation",
+      "to": "symbol:src/services/workspaces/service.ts#WorkspaceService.addMember",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:21",
+      "kind": "references",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService.acceptInvitation",
+      "to": "symbol:src/services/invitations/token.ts#INVITE_TTL_MS",
+      "state": "added",
+      "provenance": "static",
+      "weight": 2
+    },
+    {
+      "id": "edge:22",
+      "kind": "calls",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService.revokeInvitation",
+      "to": "symbol:src/db/client.ts#db",
+      "state": "added",
+      "provenance": "unresolved"
+    },
+    {
+      "id": "edge:23",
+      "kind": "calls",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService.revokeInvitation",
+      "to": "symbol:src/db/repos/invitationRepo.ts#findInvitationByToken",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:24",
+      "kind": "references",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService",
+      "to": "symbol:src/services/invitations/service.ts#InvitationService.createInvitation",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:25",
+      "kind": "references",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService",
+      "to": "symbol:src/services/invitations/service.ts#InvitationService.acceptInvitation",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:26",
+      "kind": "references",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService",
+      "to": "symbol:src/services/invitations/service.ts#InvitationService.revokeInvitation",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:27",
+      "kind": "references",
+      "from": "symbol:src/services/invitations/token.ts#generateToken",
+      "to": "symbol:src/services/invitations/token.ts#INVITE_TTL_MS",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:28",
+      "kind": "calls",
+      "from": "symbol:src/services/workspaces/service.ts#WorkspaceService.addMember",
+      "to": "symbol:src/db/repos/memberRepo.ts#addMemberRow",
+      "state": "modified",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:29",
+      "kind": "references",
+      "from": "symbol:src/services/workspaces/service.ts#WorkspaceService.addMember",
+      "to": "symbol:src/db/models/invitation.ts#Invitation",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:30",
+      "kind": "calls",
+      "from": "symbol:src/services/email/invite.ts#sendInviteEmail",
+      "to": "symbol:src/services/email/invite.ts#renderInviteTemplate",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:31",
+      "kind": "calls",
+      "from": "symbol:src/services/email/invite.ts#sendInviteEmail",
+      "to": "symbol:src/services/email/mailer.ts#Mailer.send",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:32",
+      "kind": "references",
+      "from": "symbol:src/services/email/invite.ts#sendInviteEmail",
+      "to": "file:.env.example",
+      "state": "added",
+      "provenance": "inferred"
+    },
+    {
+      "id": "edge:33",
+      "kind": "calls",
+      "from": "symbol:src/services/email/mailer.ts#Mailer.send",
+      "to": "symbol:src/services/email/transport.ts#smtpTransport",
+      "state": "modified",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:34",
+      "kind": "calls",
+      "from": "symbol:src/db/repos/invitationRepo.ts#insertInvitation",
+      "to": "symbol:src/db/client.ts#db",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:35",
+      "kind": "calls",
+      "from": "symbol:src/db/repos/invitationRepo.ts#findInvitationByToken",
+      "to": "symbol:src/db/client.ts#db",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:36",
+      "kind": "references",
+      "from": "symbol:src/db/repos/invitationRepo.ts#insertInvitation",
+      "to": "symbol:src/db/models/invitation.ts#Invitation",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:37",
+      "kind": "references",
+      "from": "symbol:src/db/repos/invitationRepo.ts#findInvitationByToken",
+      "to": "symbol:src/db/models/invitation.ts#Invitation",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:38",
+      "kind": "references",
+      "from": "symbol:src/db/schema.ts#schema",
+      "to": "symbol:src/db/models/invitation.ts#Invitation",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:39",
+      "kind": "references",
+      "from": "symbol:src/db/schema.ts#schema",
+      "to": "file:src/db/migrations/0042_create_invitations.sql",
+      "state": "added",
+      "provenance": "inferred"
+    },
+    {
+      "id": "edge:40",
+      "kind": "references",
+      "from": "symbol:src/db/models/invitation.ts#Invitation",
+      "to": "symbol:src/db/models/workspace.ts#Workspace",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:41",
+      "kind": "calls",
+      "from": "symbol:web/src/components/InviteDialog.tsx#InviteDialog",
+      "to": "symbol:web/src/hooks/useInvitations.ts#useInvitations",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:42",
+      "kind": "references",
+      "from": "symbol:web/src/components/InviteDialog.tsx#InviteDialog",
+      "to": "symbol:web/src/components/Button.tsx#Button",
+      "state": "unchanged",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:43",
+      "kind": "calls",
+      "from": "symbol:web/src/hooks/useInvitations.ts#useInvitations",
+      "to": "symbol:web/src/api/invitations.ts#inviteMember",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:44",
+      "kind": "calls",
+      "from": "symbol:web/src/api/invitations.ts#inviteMember",
+      "to": "symbol:web/src/api/http.ts#http",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:45",
+      "kind": "calls",
+      "from": "symbol:web/src/api/invitations.ts#inviteMember",
+      "to": "symbol:src/api/routes/invitations.ts#createInvitationRoute",
+      "state": "added",
+      "provenance": "inferred"
+    },
+    {
+      "id": "edge:46",
+      "kind": "calls",
+      "from": "symbol:web/src/hooks/useInvitations.ts#useInvitations",
+      "to": "symbol:web/src/api/http.ts#http",
+      "state": "added",
+      "provenance": "unresolved"
+    },
+    {
+      "id": "edge:47",
+      "kind": "calls",
+      "from": "symbol:web/src/pages/AcceptInvitePage.tsx#AcceptInvitePage",
+      "to": "symbol:src/api/routes/invitations.ts#acceptInvitationRoute",
+      "state": "added",
+      "provenance": "inferred"
+    },
+    {
+      "id": "edge:48",
+      "kind": "references",
+      "from": "symbol:web/src/pages/MembersPage.tsx#MembersPage",
+      "to": "symbol:web/src/components/InviteDialog.tsx#InviteDialog",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:49",
+      "kind": "imports",
+      "from": "symbol:web/src/pages/MembersPage.tsx#MembersPage",
+      "to": "symbol:web/src/components/InviteDialog.tsx#InviteDialog",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:50",
+      "kind": "calls",
+      "from": "symbol:web/src/pages/AcceptInvitePage.tsx#AcceptInvitePage",
+      "to": "symbol:web/src/api/http.ts#http",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:51",
+      "kind": "references",
+      "from": "symbol:web/src/pages/AcceptInvitePage.tsx#AcceptInvitePage",
+      "to": "symbol:web/src/components/Button.tsx#Button",
+      "state": "unchanged",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:52",
+      "kind": "imports",
+      "from": "symbol:web/src/components/InviteDialog.tsx#InviteDialog",
+      "to": "symbol:web/src/components/Button.tsx#Button",
+      "state": "unchanged",
+      "provenance": "static"
+    }
+  ],
+  "hunks": [
+    {
+      "id": "hunk:1",
+      "path": "src/api/routes/invitations.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 12,
+      "newLines": 11,
+      "patch": "@@ -0,0 +12,11 @@\n+export async function createInvitationRoute(req: Request, res: Response) {\n+  await requireAdmin(req);\n+  const { email, role } = InviteBody.parse(req.body);\n+  const invitation = await invitationService.createInvitation({\n+    workspaceId: req.params.workspaceId,\n+    email,\n+    role,\n+    invitedBy: req.session.userId,\n+  });\n+  res.status(201).json({ id: invitation.id, expiresAt: invitation.expiresAt });\n+}",
+      "added": 11,
+      "removed": 0,
+      "owner": "symbol:src/api/routes/invitations.ts#createInvitationRoute"
+    },
+    {
+      "id": "hunk:2",
+      "path": "src/api/routes/invitations.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 36,
+      "newLines": 5,
+      "patch": "@@ -0,0 +36,5 @@\n+export async function acceptInvitationRoute(req: Request, res: Response) {\n+  const session = await getSession(req);\n+  const member = await invitationService.acceptInvitation(req.params.token, session.userId);\n+  res.json({ workspaceId: member.workspaceId, role: member.role });\n+}",
+      "added": 5,
+      "removed": 0,
+      "owner": "symbol:src/api/routes/invitations.ts#acceptInvitationRoute"
+    },
+    {
+      "id": "hunk:3",
+      "path": "src/api/routes/invitations.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 54,
+      "newLines": 5,
+      "patch": "@@ -0,0 +54,5 @@\n+export async function revokeInvitationRoute(req: Request, res: Response) {\n+  await requireAdmin(req);\n+  await invitationService.revokeInvitation(req.params.id);\n+  res.status(204).end();\n+}",
+      "added": 5,
+      "removed": 0,
+      "owner": "symbol:src/api/routes/invitations.ts#revokeInvitationRoute"
+    },
+    {
+      "id": "hunk:4",
+      "path": "src/api/routes/index.ts",
+      "oldStart": 8,
+      "oldLines": 5,
+      "newStart": 8,
+      "newLines": 7,
+      "patch": "@@ -8,5 +8,7 @@\n export function registerRoutes(app: Router) {\n   app.use(authMiddleware);\n-  app.post(\"/invites\", sendLegacyInvite);\n+  app.post(\"/workspaces/:workspaceId/invitations\", createInvitationRoute);\n+  app.post(\"/invitations/:token/accept\", acceptInvitationRoute);\n+  app.delete(\"/invitations/:id\", revokeInvitationRoute);\n   app.get(\"/health\", healthCheck);\n }",
+      "added": 3,
+      "removed": 1,
+      "owner": "symbol:src/api/routes/index.ts#registerRoutes"
+    },
+    {
+      "id": "hunk:5",
+      "path": "src/api/routes/legacyInvite.ts",
+      "oldStart": 1,
+      "oldLines": 5,
+      "newStart": 0,
+      "newLines": 0,
+      "patch": "@@ -1,5 +0,0 @@\n-export async function sendLegacyInvite(req: Request, res: Response) {\n-  const { email } = req.body;\n-  await mailer.send({ to: email, subject: \"Join us\", text: \"Sign up at \" + process.env.APP_URL });\n-  res.json({ ok: true });\n-}",
+      "added": 0,
+      "removed": 5,
+      "owner": "symbol:src/api/routes/legacyInvite.ts#sendLegacyInvite"
+    },
+    {
+      "id": "hunk:6",
+      "path": "src/services/invitations/service.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 10,
+      "newLines": 6,
+      "patch": "@@ -0,0 +10,6 @@\n+export class InvitationService {\n+  constructor(\n+    private readonly users: UserService,\n+    private readonly workspaces: WorkspaceService,\n+    private readonly hooks: Record<string, () => void> = {},\n+  ) {}",
+      "added": 6,
+      "removed": 0,
+      "owner": "symbol:src/services/invitations/service.ts#InvitationService"
+    },
+    {
+      "id": "hunk:7",
+      "path": "src/services/invitations/service.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 22,
+      "newLines": 14,
+      "patch": "@@ -0,0 +22,14 @@\n+  async createInvitation(input: CreateInvitationInput): Promise<Invitation> {\n+    const existing = await this.users.findByEmail(input.email);\n+    if (existing && (await this.workspaces.isMember(input.workspaceId, existing.id))) {\n+      throw new ConflictError(\"User is already a member\");\n+    }\n+    const invitation = await insertInvitation({\n+      ...input,\n+      token: generateToken(),\n+      expiresAt: new Date(Date.now() + INVITE_TTL_MS),\n+    });\n+    await sendInviteEmail(invitation);\n+    this.hooks[\"invitation.created\"]?.();\n+    return invitation;\n+  }",
+      "added": 14,
+      "removed": 0,
+      "owner": "symbol:src/services/invitations/service.ts#InvitationService.createInvitation"
+    },
+    {
+      "id": "hunk:8",
+      "path": "src/services/invitations/service.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 50,
+      "newLines": 7,
+      "patch": "@@ -0,0 +50,7 @@\n+  async acceptInvitation(token: string, userId: string) {\n+    const invitation = await findInvitationByToken(token);\n+    if (!invitation || invitation.expiresAt.getTime() < Date.now()) {\n+      throw new NotFoundError(\"Invitation expired or invalid\");\n+    }\n+    return this.workspaces.addMember(invitation.workspaceId, userId, invitation.role);\n+  }",
+      "added": 7,
+      "removed": 0,
+      "owner": "symbol:src/services/invitations/service.ts#InvitationService.acceptInvitation"
+    },
+    {
+      "id": "hunk:9",
+      "path": "src/services/invitations/service.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 80,
+      "newLines": 4,
+      "patch": "@@ -0,0 +80,4 @@\n+  async revokeInvitation(id: string) {\n+    const table = this.tableFor(\"invitations\");\n+    await db(table).where({ id }).update({ revokedAt: new Date() });\n+  }",
+      "added": 4,
+      "removed": 0,
+      "owner": "symbol:src/services/invitations/service.ts#InvitationService.revokeInvitation"
+    },
+    {
+      "id": "hunk:10",
+      "path": "src/services/invitations/token.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 1,
+      "newLines": 5,
+      "patch": "@@ -0,0 +1,5 @@\n+export const INVITE_TTL_MS = 7 * 24 * 60 * 60 * 1000;\n+\n+export function generateToken(): string {\n+  return randomBytes(24).toString(\"base64url\");\n+}",
+      "added": 5,
+      "removed": 0,
+      "owner": "symbol:src/services/invitations/token.ts#generateToken"
+    },
+    {
+      "id": "hunk:11",
+      "path": "src/services/workspaces/service.ts",
+      "oldStart": 41,
+      "oldLines": 4,
+      "newStart": 41,
+      "newLines": 4,
+      "patch": "@@ -41,4 +41,4 @@\n   async addMember(workspaceId: string, userId: string, role: Role = \"member\") {\n-    await addMemberRow(workspaceId, userId);\n+    await addMemberRow(workspaceId, userId, role);\n     await this.audit.log(\"workspace.member_added\", { workspaceId, userId });\n   }",
+      "added": 1,
+      "removed": 1,
+      "owner": "symbol:src/services/workspaces/service.ts#WorkspaceService.addMember"
+    },
+    {
+      "id": "hunk:12",
+      "path": "src/services/email/invite.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 5,
+      "newLines": 5,
+      "patch": "@@ -0,0 +5,5 @@\n+export async function sendInviteEmail(invitation: Invitation) {\n+  const link = `${process.env.APP_URL}/invite/${invitation.token}`;\n+  const { subject, html } = renderInviteTemplate({ link, role: invitation.role });\n+  await mailer.send({ to: invitation.email, subject, html });\n+}",
+      "added": 5,
+      "removed": 0,
+      "owner": "symbol:src/services/email/invite.ts#sendInviteEmail"
+    },
+    {
+      "id": "hunk:13",
+      "path": "src/services/email/invite.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 30,
+      "newLines": 6,
+      "patch": "@@ -0,0 +30,6 @@\n+function renderInviteTemplate(args: { link: string; role: string }) {\n+  return {\n+    subject: \"You have been invited to a workspace\",\n+    html: `<p>Join as <b>${args.role}</b>: <a href=\"${args.link}\">Accept invitation</a></p>`,\n+  };\n+}",
+      "added": 6,
+      "removed": 0,
+      "owner": "symbol:src/services/email/invite.ts#renderInviteTemplate"
+    },
+    {
+      "id": "hunk:14",
+      "path": "src/services/email/mailer.ts",
+      "oldStart": 14,
+      "oldLines": 3,
+      "newStart": 14,
+      "newLines": 3,
+      "patch": "@@ -14,3 +14,3 @@\n   async send(msg: Message) {\n-    return smtpTransport.sendMail({ from: FROM, ...msg, text: msg.text });\n+    return smtpTransport.sendMail({ from: FROM, ...msg });\n   }",
+      "added": 1,
+      "removed": 1,
+      "owner": "symbol:src/services/email/mailer.ts#Mailer.send"
+    },
+    {
+      "id": "hunk:15",
+      "path": "src/db/migrations/0042_create_invitations.sql",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 1,
+      "newLines": 11,
+      "patch": "@@ -0,0 +1,11 @@\n+CREATE TABLE invitations (\n+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),\n+  workspace_id uuid NOT NULL REFERENCES workspaces(id),\n+  email text NOT NULL,\n+  role text NOT NULL DEFAULT 'member',\n+  token text NOT NULL UNIQUE,\n+  invited_by uuid NOT NULL REFERENCES users(id),\n+  expires_at timestamptz NOT NULL,\n+  revoked_at timestamptz\n+);\n+CREATE INDEX invitations_workspace_idx ON invitations (workspace_id);",
+      "added": 11,
+      "removed": 0,
+      "owner": "file:src/db/migrations/0042_create_invitations.sql"
+    },
+    {
+      "id": "hunk:16",
+      "path": "src/db/models/invitation.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 1,
+      "newLines": 10,
+      "patch": "@@ -0,0 +1,10 @@\n+export interface Invitation {\n+  id: string;\n+  workspaceId: string;\n+  email: string;\n+  role: Role;\n+  token: string;\n+  invitedBy: string;\n+  expiresAt: Date;\n+  revokedAt: Date | null;\n+}",
+      "added": 10,
+      "removed": 0,
+      "owner": "symbol:src/db/models/invitation.ts#Invitation"
+    },
+    {
+      "id": "hunk:17",
+      "path": "src/db/repos/invitationRepo.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 6,
+      "newLines": 4,
+      "patch": "@@ -0,0 +6,4 @@\n+export async function insertInvitation(row: NewInvitation): Promise<Invitation> {\n+  const [created] = await db(\"invitations\").insert(toColumns(row)).returning(\"*\");\n+  return fromColumns(created);\n+}",
+      "added": 4,
+      "removed": 0,
+      "owner": "symbol:src/db/repos/invitationRepo.ts#insertInvitation"
+    },
+    {
+      "id": "hunk:18",
+      "path": "src/db/repos/invitationRepo.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 22,
+      "newLines": 4,
+      "patch": "@@ -0,0 +22,4 @@\n+export async function findInvitationByToken(token: string) {\n+  const row = await db(\"invitations\").where({ token }).whereNull(\"revoked_at\").first();\n+  return row ? fromColumns(row) : undefined;\n+}",
+      "added": 4,
+      "removed": 0,
+      "owner": "symbol:src/db/repos/invitationRepo.ts#findInvitationByToken"
+    },
+    {
+      "id": "hunk:19",
+      "path": "src/db/schema.ts",
+      "oldStart": 40,
+      "oldLines": 3,
+      "newStart": 40,
+      "newLines": 4,
+      "patch": "@@ -40,3 +40,4 @@\n   workspaces: workspaceTable,\n   members: memberTable,\n+  invitations: invitationTable,\n } as const;",
+      "added": 1,
+      "removed": 0,
+      "owner": "symbol:src/db/schema.ts#schema"
+    },
+    {
+      "id": "hunk:20",
+      "path": "web/src/components/InviteDialog.tsx",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 8,
+      "newLines": 12,
+      "patch": "@@ -0,0 +8,12 @@\n+export function InviteDialog({ workspaceId, onClose }: Props) {\n+  const { invite, pending, error } = useInvitations(workspaceId);\n+  const [email, setEmail] = useState(\"\");\n+  return (\n+    <dialog open aria-labelledby=\"invite-title\">\n+      <h2 id=\"invite-title\">Invite a teammate</h2>\n+      <input value={email} onChange={(e) => setEmail(e.target.value)} type=\"email\" />\n+      <Button disabled={pending} onClick={() => invite(email, \"member\").then(onClose)}>Send invite</Button>\n+      {error && <p role=\"alert\">{error.message}</p>}\n+    </dialog>\n+  );\n+}",
+      "added": 12,
+      "removed": 0,
+      "owner": "symbol:web/src/components/InviteDialog.tsx#InviteDialog"
+    },
+    {
+      "id": "hunk:21",
+      "path": "web/src/hooks/useInvitations.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 4,
+      "newLines": 10,
+      "patch": "@@ -0,0 +4,10 @@\n+export function useInvitations(workspaceId: string) {\n+  const [pending, setPending] = useState(false);\n+  const [error, setError] = useState<Error | null>(null);\n+  const invite = async (email: string, role: Role) => {\n+    setPending(true);\n+    try { await inviteMember(workspaceId, email, role); } catch (e) { setError(e as Error); }\n+    finally { setPending(false); }\n+  };\n+  return { invite, pending, error };\n+}",
+      "added": 10,
+      "removed": 0,
+      "owner": "symbol:web/src/hooks/useInvitations.ts#useInvitations"
+    },
+    {
+      "id": "hunk:22",
+      "path": "web/src/pages/MembersPage.tsx",
+      "oldStart": 20,
+      "oldLines": 5,
+      "newStart": 20,
+      "newLines": 8,
+      "patch": "@@ -20,5 +20,8 @@\n   const members = useMembers(workspaceId);\n+  const [inviting, setInviting] = useState(false);\n   return (\n     <Page title=\"Members\">\n+      <Button onClick={() => setInviting(true)}>Invite</Button>\n+      {inviting && <InviteDialog workspaceId={workspaceId} onClose={() => setInviting(false)} />}\n       <MemberList members={members} />\n     </Page>",
+      "added": 3,
+      "removed": 0,
+      "owner": "symbol:web/src/pages/MembersPage.tsx#MembersPage"
+    },
+    {
+      "id": "hunk:23",
+      "path": "web/src/pages/MembersPage.tsx",
+      "oldStart": 1,
+      "oldLines": 2,
+      "newStart": 1,
+      "newLines": 3,
+      "patch": "@@ -1,2 +1,3 @@\n import { MemberList } from \"../components/MemberList\";\n+import { InviteDialog } from \"../components/InviteDialog\";\n import { useMembers } from \"../hooks/useMembers\";",
+      "added": 1,
+      "removed": 0,
+      "owner": "symbol:web/src/pages/MembersPage.tsx#MembersPage"
+    },
+    {
+      "id": "hunk:24",
+      "path": "web/src/api/invitations.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 3,
+      "newLines": 3,
+      "patch": "@@ -0,0 +3,3 @@\n+export function inviteMember(workspaceId: string, email: string, role: Role) {\n+  return http(`/workspaces/${workspaceId}/invitations`, { method: \"POST\", body: { email, role } });\n+}",
+      "added": 3,
+      "removed": 0,
+      "owner": "symbol:web/src/api/invitations.ts#inviteMember"
+    },
+    {
+      "id": "hunk:25",
+      "path": "web/src/pages/AcceptInvitePage.tsx",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 6,
+      "newLines": 10,
+      "patch": "@@ -0,0 +6,10 @@\n+export function AcceptInvitePage() {\n+  const { token } = useParams();\n+  const [state, setState] = useState<\"idle\" | \"ok\" | \"failed\">(\"idle\");\n+  useEffect(() => {\n+    http(`/invitations/${token}/accept`, { method: \"POST\" })\n+      .then(() => setState(\"ok\"))\n+      .catch(() => setState(\"failed\"));\n+  }, [token]);\n+  return state === \"failed\" ? <p>This invitation has expired.</p> : <Spinner />;\n+}",
+      "added": 10,
+      "removed": 0,
+      "owner": "symbol:web/src/pages/AcceptInvitePage.tsx#AcceptInvitePage"
+    },
+    {
+      "id": "hunk:26",
+      "path": ".env.example",
+      "oldStart": 1,
+      "oldLines": 2,
+      "newStart": 1,
+      "newLines": 4,
+      "patch": "@@ -1,2 +1,4 @@\n DATABASE_URL=postgres://localhost/app\n+APP_URL=http://localhost:3000\n+INVITE_FROM=invites@example.com\n SESSION_SECRET=change-me",
+      "added": 2,
+      "removed": 0,
+      "owner": "file:.env.example"
+    },
+    {
+      "id": "hunk:27",
+      "path": "src/services/invitations/service.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 90,
+      "newLines": 1,
+      "patch": "@@ -0,0 +90,1 @@\n+}",
+      "added": 1,
+      "removed": 0,
+      "owner": "symbol:src/services/invitations/service.ts#InvitationService"
+    }
+  ],
+  "skippedFiles": [
+    {
+      "path": "package-lock.json",
+      "reason": "lockfile: diff not rendered (+340 -12)"
+    }
+  ],
+  "limits": [
+    "External types not resolved (node_modules not installed in the sandbox)",
+    "Dynamic calls such as this.hooks[event] are shown as unresolved edges",
+    "Cross-service HTTP edges (web -> api) are inferred from URL patterns, not type-checked"
+  ],
+  "stats": {
+    "files": 19,
+    "added": 485,
+    "removed": 20,
+    "durationMs": 4210
+  }
+}
