@@ -2,7 +2,7 @@ import type {
   ApplyRisk, ChangeGraph, FileStatus, GraphNode, Hunk, Risk, RiskLevel, RiskReason,
 } from '@lens/core';
 import { LENS_POLICY_RULE, DEPS_MANIFEST_RULE } from './rules.js';
-import { analyzeDeps } from './deps.js';
+import { analyzeDeps, analyzeJvmDeps } from './deps.js';
 import { compileRule, hunkText, matchContent, type CompiledRule } from './match.js';
 
 export const LEVEL_ORDER: Record<RiskLevel, number> = { low: 0, med: 1, high: 2, blocker: 3 };
@@ -31,7 +31,15 @@ function evalRule(c: CompiledRule, units: Unit[], symbol: string | undefined, co
   if (c.rule === DEPS_MANIFEST_RULE) {
     // Default deps rule: only dependency entry changes count; one merged reason per node.
     const pkgs = units.filter((u) => u.path !== undefined && c.paths!.included(u.path));
-    const res = pkgs.length ? analyzeDeps(pkgs.flatMap((u) => u.hunks)) : null;
+    const hs = pkgs.flatMap((u) => u.hunks);
+    const isJvm = (h: Hunk) => /(^|\/)(pom\.xml|build\.gradle(\.kts)?)$/.test(h.path);
+    const found = [analyzeDeps(hs.filter((h) => !isJvm(h))), analyzeJvmDeps(hs.filter(isJvm))].filter((r) => r !== null);
+    // One merged reason per node (a node normally holds a single manifest).
+    const res = found.length === 0 ? null : {
+      level: found.reduce<RiskLevel>((m, r) => maxLevel(m, r.level), 'low'),
+      message: found.map((r) => r.message).join('; '),
+      hunkIds: [...new Set(found.flatMap((r) => r.hunkIds))].sort(),
+    };
     return res ? { ruleId: c.rule.id, message: res.message, level: res.level, hunkIds: res.hunkIds } : null;
   }
   const hasLocation = c.paths?.hasIncludes === true || c.symbols.length > 0;

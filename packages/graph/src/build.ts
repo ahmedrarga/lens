@@ -4,6 +4,9 @@ import type {
 } from '@lens/core';
 import { PIPELINE_VERSION } from '@lens/core';
 import { changedLines } from './changed-lines.js';
+import { createModuleResolver, moduleDir, type ModuleInfo } from './jvm.js';
+
+export { moduleDir };
 
 const MAX_GHOSTS_PER_NODE = 3;
 const MAX_GHOSTS = 60;
@@ -15,16 +18,20 @@ const NOISE_LABEL: Record<NoiseKind, string> = {
 };
 const TEST_RE = /(^|\/)(__tests__|tests?)\//;
 const TEST_FILE_RE = /\.(test|spec)\.[^/.]+$/;
-export const isTestPath = (p: string) => TEST_RE.test(p) || TEST_FILE_RE.test(p);
-const stemOf = (p: string) => (p.split('/').pop() ?? p).replace(/\.(test|spec)(?=\.)/, '').replace(/\.[^.]+$/, '');
+// JVM: anything under src/test/, or Foo{Test,Tests,IT,TestCase}.{java,kt} (lowercase/digit before the suffix, so `WAIT.java` is not a test).
+const JVM_TEST_DIR_RE = /(^|\/)src\/test\//;
+const JVM_TEST_FILE_RE = /[a-z0-9](Tests?|IT|TestCase)\.(java|kt|kts|groovy|scala)$/;
+export const isTestPath = (p: string) => TEST_RE.test(p) || TEST_FILE_RE.test(p) || JVM_TEST_DIR_RE.test(p) || JVM_TEST_FILE_RE.test(p);
+const JVM_TEST_SUFFIX_RE = /(?<=[a-z0-9])(Integration|Unit|Component)?(TestCase|Tests|Test|IT)$/;
+/** File stem with test markers removed: `a.test.ts` -> `a`, `OrderServiceTest.java` -> `OrderService`. */
+const stemOf = (p: string) => {
+  const name = (p.split('/').pop() ?? p).replace(/\.(test|spec)(?=\.)/, '').replace(/\.[^.]+$/, '');
+  return JVM_TEST_FILE_RE.test(p) ? name.replace(JVM_TEST_SUFFIX_RE, '') || name : name;
+};
 const cmp = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
 const symNode = (id: string) => `symbol:${id}`;
 const fileNode = (path: string) => `file:${path}`;
 
-export function moduleDir(path: string): string {
-  const dirs = path.split('/').slice(0, -1);
-  return dirs.length ? dirs.slice(0, 2).join('/') : '.';
-}
 const dirOf = (path: string) => path.split('/').slice(0, -1).join('/') || '.';
 const slug = (s: string) => s.replace(/[^A-Za-z0-9._-]+/g, '-');
 
@@ -232,7 +239,13 @@ export function buildGraph(input: BuildGraphInput, opts: { now?: () => Date } = 
   }
 
   // ---- modules and clusters ----
-  const modOf = (path: string) => moduleDir(path);
+  const resolveModule = createModuleResolver([...files.map((f) => f.path), ...files.flatMap((f) => (f.oldPath ? [f.oldPath] : []))]);
+  const modInfos = new Map<string, ModuleInfo>();
+  const modOf = (path: string) => {
+    const m = resolveModule(path);
+    modInfos.set(m.key, m);
+    return m.key;
+  };
   const ghostPath = (id: string) => (id.startsWith('file:') ? id.slice(5) : headById.get(id.slice(7))!.path);
   const infosAll = [...changed.values()].sort((a, b) => cmp(a.id, b.id));
   const changedEdges = edges.filter((e) => changed.has(e.from) && changed.has(e.to));
@@ -283,7 +296,11 @@ export function buildGraph(input: BuildGraphInput, opts: { now?: () => Date } = 
     if (!isTestPath(t.path)) continue;
     const score = new Map<string, number>();
     for (const [o, w] of adj.get(t.id) ?? []) if (grpOf.has(o) && !isTestPath(changed.get(o)!.path)) score.set(o, (score.get(o) ?? 0) + w);
-    for (const i of infosAll) if (!isTestPath(i.path) && stemOf(i.path) === stemOf(t.path)) score.set(i.id, (score.get(i.id) ?? 0) + 0.5);
+    // Name fallback (`OrderServiceTest` -> `OrderService`); same module breaks ties between equal names.
+    for (const i of infosAll) {
+      if (isTestPath(i.path) || stemOf(i.path) !== stemOf(t.path)) continue;
+      score.set(i.id, (score.get(i.id) ?? 0) + 0.5 + (modOf(i.path) === modOf(t.path) ? 0.1 : 0));
+    }
     const best = [...score].sort(([a, x], [b, y]) => y - x || cmp(a, b))[0];
     if (best) {
       const g = grpOf.get(best[0])!;
@@ -362,7 +379,7 @@ export function buildGraph(input: BuildGraphInput, opts: { now?: () => Date } = 
   for (const dir of new Set([...byModule.keys(), ...ghostModules])) {
     const members = byModule.get(dir) ?? [];
     nodes.push({
-      id: `module:${dir}`, kind: 'module', level: 0, label: dir, path: dir === '.' ? undefined : dir,
+      id: `module:${dir}`, kind: 'module', level: 0, label: modInfos.get(dir)?.label ?? dir, path: modInfos.get(dir)?.path,
       state: members.length ? aggregate(members.map((m) => m.state)) : 'unchanged',
       ...(members.length ? { stats: sum(members) } : {}),
     });

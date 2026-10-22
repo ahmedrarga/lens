@@ -75,3 +75,168 @@ export function analyzeDeps(hunks: Hunk[]): DepsChange | null {
   void runtimeNames;
   return { level, message, hunkIds: [...new Set(hunkIds)].sort() };
 }
+
+// ---------- JVM: pom.xml and build.gradle(.kts) ----------
+
+const GRADLE_CONFIGS = '(?:implementation|api|runtimeOnly|compileOnly|compile|runtime|annotationProcessor|developmentOnly|kapt|ksp|testImplementation|testRuntimeOnly|testCompileOnly|testAnnotationProcessor|testFixturesApi|testFixturesImplementation|integrationTestImplementation)';
+const GRADLE_DEP = new RegExp(`^\\s*(${GRADLE_CONFIGS})\\b\\s*\\(?\\s*(?:platform\\(\\s*|enforcedPlatform\\(\\s*)?["']([^"']+)["']`);
+const GRADLE_DEP_MAP = new RegExp(`^\\s*(${GRADLE_CONFIGS})\\b\\s*\\(?\\s*group\\s*[:=]\\s*["']([^"']+)["']\\s*,\\s*name\\s*[:=]\\s*["']([^"']+)["'](?:\\s*,\\s*version\\s*[:=]\\s*["']([^"']+)["'])?`);
+const GRADLE_DEP_CATALOG = new RegExp(`^\\s*(${GRADLE_CONFIGS})\\b\\s*\\(?\\s*(libs\\.[\\w.]+)`);
+const GRADLE_BOOT_PLUGIN = /\bid\s*\(?\s*["']org\.springframework\.boot["']\s*\)?\s*version\s*\(?\s*["']([^"']+)["']/;
+const MVN_TAG = /^\s*<([\w.-]+)>\s*([^<]*?)\s*<\/\1>\s*$/;
+
+interface JvmEnt { removed?: string; added?: string; dev: boolean; boot: boolean }
+
+/** Analyse pom.xml / build.gradle(.kts) hunks for dependency changes. Null when none changed. */
+export function analyzeJvmDeps(hunks: Hunk[]): DepsChange | null {
+  const ents = new Map<string, JvmEnt>();
+  const hunkIds: string[] = [];
+  let bootFrom: string | undefined;
+  let bootTo: string | undefined;
+  let boot = false;
+  const note = (key: string, kind: '+' | '-', version: string | undefined, dev: boolean, isBoot: boolean) => {
+    const e = ents.get(key) ?? { dev, boot: isBoot };
+    if (kind === '+') e.added = version ?? ''; else e.removed = version ?? '';
+    e.dev &&= dev;
+    e.boot ||= isBoot;
+    ents.set(key, e);
+  };
+
+  for (const h of hunks) {
+    const lines = h.patch.split('\n').slice(1).filter((l) => !l.startsWith('\\'));
+    let hit = false;
+    if (/\.gradle(\.kts)?$/.test(h.path)) {
+      for (const line of lines) {
+        const kind = line[0];
+        if (kind !== '+' && kind !== '-') continue;
+        const text = line.slice(1);
+        const plug = GRADLE_BOOT_PLUGIN.exec(text);
+        if (plug) {
+          boot = true; hit = true;
+          if (kind === '+') bootTo = plug[1]; else bootFrom = plug[1];
+          continue;
+        }
+        let m = GRADLE_DEP.exec(text);
+        let cfg: string, key: string, version: string | undefined;
+        if (m) {
+          const parts = m[2]!.split(':');
+          if (parts.length < 2) continue;
+          cfg = m[1]!; key = `${parts[0]}:${parts[1]}`; version = parts[2];
+        } else if ((m = GRADLE_DEP_MAP.exec(text))) {
+          cfg = m[1]!; key = `${m[2]}:${m[3]}`; version = m[4];
+        } else if ((m = GRADLE_DEP_CATALOG.exec(text))) {
+          cfg = m[1]!; key = m[2]!; version = undefined;
+        } else continue;
+        const isBoot = key.startsWith('org.springframework.boot:');
+        note(key, kind, version, cfg.startsWith('test') || cfg === 'compileOnly' || cfg === 'annotationProcessor', isBoot);
+        hit = true;
+      }
+    } else {
+      // Maven: group the hunk's lines (context included) into <dependency>/<parent>/<plugin> blocks.
+      type Blk = { type: 'dependency' | 'parent' | 'plugin' | 'unknown'; fields: Map<string, { '+'?: string; '-'?: string; ' '?: string }> };
+      const blocks: Blk[] = [];
+      let cur: Blk = { type: 'unknown', fields: new Map() };
+      blocks.push(cur);
+      let inProps = false;
+      for (const line of lines) {
+        const kind = (line[0] === '+' || line[0] === '-' ? line[0] : ' ') as '+' | '-' | ' ';
+        const text = line.slice(1);
+        const open = /^\s*<(dependency|parent|plugin)>\s*$/.exec(text) ?? /^\s*<(dependency|parent|plugin)>/.exec(text);
+        if (open) {
+          cur = { type: open[1] as Blk['type'], fields: new Map() };
+          blocks.push(cur);
+          continue;
+        }
+        if (/^\s*<\/(dependency|parent|plugin)>/.test(text)) { cur = { type: 'unknown', fields: new Map() }; blocks.push(cur); continue; }
+        if (/^\s*<properties>/.test(text)) inProps = true;
+        if (/^\s*<\/properties>/.test(text)) inProps = false;
+        const t = MVN_TAG.exec(text);
+        if (!t) continue;
+        const [, name, value] = t as unknown as [string, string, string];
+        if (inProps || (cur.type === 'unknown' && /(\.version|-version|Version)$/.test(name) && kind !== ' ')) {
+          if (kind !== ' ' && /(\.version|-version|Version)$/.test(name)) {
+            note(`property:${name}`, kind, value, false, /^spring[-.]?boot[-.]?version$/i.test(name));
+            hit = true;
+          }
+          continue;
+        }
+        const f = cur.fields.get(name) ?? {};
+        f[kind] = value;
+        cur.fields.set(name, f);
+      }
+      for (const b of blocks) {
+        const art = b.fields.get('artifactId');
+        const artifact = art?.['+'] ?? art?.['-'] ?? art?.[' '];
+        if (!artifact) continue;
+        const group = b.fields.get('groupId');
+        const groupId = group?.['+'] ?? group?.['-'] ?? group?.[' '] ?? '';
+        const changed = [...b.fields.values()].some((f) => f['+'] !== undefined || f['-'] !== undefined);
+        if (!changed) continue;
+        let type = b.type;
+        if (type === 'unknown') type = /(^|-)maven-.*-plugin$|-maven-plugin$|^maven-.*plugin$/.test(artifact) ? 'plugin' : 'dependency';
+        const isBoot = groupId === 'org.springframework.boot' || artifact.startsWith('spring-boot');
+        const ver = b.fields.get('version');
+        if (type === 'parent' || (type === 'plugin' && artifact === 'spring-boot-maven-plugin')) {
+          if (ver && ver['+'] !== ver['-'] && (ver['+'] !== undefined || ver['-'] !== undefined)) {
+            boot ||= isBoot; bootTo ??= ver['+']; bootFrom ??= ver['-'];
+            hit = true;
+          }
+          continue;
+        }
+        if (type !== 'dependency') continue;
+        const key = `${groupId}:${artifact}`;
+        const dev = (b.fields.get('scope')?.['+'] ?? b.fields.get('scope')?.['-'] ?? b.fields.get('scope')?.[' ']) === 'test';
+        const a = art!;
+        if (a['+'] !== undefined && a['-'] === undefined && a[' '] === undefined) note(key, '+', ver?.['+'], dev, isBoot);
+        else if (a['-'] !== undefined && a['+'] === undefined && a[' '] === undefined) note(key, '-', ver?.['-'], dev, isBoot);
+        else {
+          // artifact unchanged: version/scope edited in place
+          if (ver && ver['+'] !== ver['-']) { note(key, '-', ver['-'] ?? '', dev, isBoot); note(key, '+', ver['+'] ?? '', dev, isBoot); }
+          else continue;
+        }
+        hit = true;
+      }
+    }
+    if (hit) hunkIds.push(h.id);
+  }
+
+  for (const [k, e] of [...ents]) {
+    if (e.added !== undefined && e.removed !== undefined && e.added === e.removed) { ents.delete(k); continue; }
+    const isBootProp = k.startsWith('property:') && e.boot;
+    if ((isBootProp || k === 'org.springframework.boot:spring-boot-gradle-plugin') && e.added !== undefined && e.removed !== undefined) {
+      boot = true; bootFrom ??= e.removed; bootTo ??= e.added;
+      ents.delete(k);
+    }
+  }
+  const bootBump = boot && bootFrom !== bootTo;
+  if (ents.size === 0 && !bootBump) return null;
+
+  const counts = { added: 0, removed: 0, bumped: 0 };
+  let level: RiskLevel = 'low';
+  const names = new Set<string>();
+  for (const [key, e] of ents) {
+    const pretty = key.startsWith('property:') ? key.slice(9) : key.includes(':') ? key.split(':')[1]! : key;
+    names.add(pretty);
+    if (e.added !== undefined && e.removed !== undefined) counts.bumped++;
+    else if (e.added !== undefined) { counts.added++; if (!e.dev) level = 'med'; }
+    else { counts.removed++; if (!e.dev) level = 'med'; }
+  }
+  if (bootBump) level = 'med';
+  const verbs = [
+    counts.added ? `adds ${counts.added}` : '', counts.removed ? `removes ${counts.removed}` : '',
+    counts.bumped ? `changes ${counts.bumped}` : '',
+  ].filter(Boolean);
+  const list = [...names].sort();
+  const shown = list.slice(0, 6).join(', ') + (list.length > 6 ? ', …' : '');
+  const parts: string[] = [];
+  if (verbs.length) {
+    const sentence = verbs.join(', ').replace(/^./, (c) => c.toUpperCase());
+    parts.push(`${sentence} ${list.length === 1 ? 'dependency' : 'dependencies'}: ${shown}`);
+  }
+  if (bootBump) {
+    parts.push(`Spring Boot version ${bootFrom ?? '?'} -> ${bootTo ?? '?'} (framework upgrade changes defaults for the whole app)`);
+  }
+  let message = parts.join('; ');
+  if (level === 'low') message += ' (version bumps or test/compile-only)';
+  return { level, message, hunkIds: [...new Set(hunkIds)].sort() };
+}

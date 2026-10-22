@@ -50,3 +50,10 @@ blocker + mustReview; it cannot be disabled or overridden, and `.lens/**` is alw
 auth, auth-guard-removed, permissions, secrets, hardcoded-secret, crypto, crypto-api, payments, db-migration, db-schema,
 sql-raw, data-delete, infra, ci, deps-manifest, env-config, env-read, deleted-tests, skipped-tests, weakened-test,
 error-swallow, security-headers, unsafe-eval, deletion, lens-policy. See `src/rules.ts`.
+
+Spring/Java rules (each message states why): jpa-entity, jpa-entity-schema (must-review on removed/changed column or
+nullable/unique/length), spring-security, spring-security-open (permitAll, csrf disable, wildcard CORS),
+spring-security-annotation(-removed), transactional, native-query, native-query-concat, spring-config-{ddl,secret,
+actuator-open,actuator,tls,datasource,profile,prod}, scheduled-jobs, java-throws-broad. `db-migration`/`db-schema` also
+cover Flyway/Liquibase, `error-swallow` covers Java catch blocks, `deps-manifest` reads pom.xml and build.gradle(.kts)
+(new runtime dependency = med, version bump = low, Spring Boot parent/plugin bump = med).
