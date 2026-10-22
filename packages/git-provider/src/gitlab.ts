@@ -2,6 +2,7 @@ import { Readable } from 'node:stream';
 import { createGunzip } from 'node:zlib';
 import type { GitProvider, PrFile, PrRef } from '@lens/core';
 import { untar } from './tar.js';
+import { nodeFetch } from './node-fetch.js';
 
 const DEFAULT_MAX_FILE_BYTES = 512 * 1024;
 const MAX_GET_FILE_BYTES = 1024 * 1024;
@@ -47,9 +48,8 @@ export function createGitLabProvider(
   const base = /^https?:\/\//i.test(rawHost) ? rawHost : `https://${rawHost}`;
   const host = base.replace(/^https?:\/\//i, '').toLowerCase();
   const token = opts.token ?? process.env.GITLAB_TOKEN;
-  const doFetch = opts.fetch ?? fetch;
+  const doFetch = opts.fetch ?? (nodeFetch as typeof fetch);
 
-  // No custom user-agent: gitlab.com's edge answers archive downloads from unknown agents with 406.
   const headers = (): Record<string, string> => ({
     accept: '*/*',
     ...(token ? { 'private-token': token } : {}),
