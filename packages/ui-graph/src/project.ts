@@ -1,5 +1,7 @@
 // Pure projection of the ChangeGraph IR into the nodes/edges visible at a zoom focus.
-import type { ChangeGraph, ChangeState, EdgeKind, GraphNode, NodeKind, Provenance, SymbolKind } from '@lens/core';
+import type { ChangeGraph, ChangeState, CollapsedSummary, EdgeKind, GraphNode, NodeKind, Provenance, Risk, SymbolKind } from '@lens/core';
+import { describeChange, isCollapsedId, isNoiseNode, memberNames, plainName, readingOrder } from './guide.js';
+import { RISK_RANK } from './risk.js';
 
 export type Level = 0 | 1 | 2;
 export interface Focus {
@@ -8,7 +10,13 @@ export interface Focus {
   parentId?: string;
 }
 
-export const DEFAULT_BUDGET = 40;
+/** Few, big boxes: the rest collapses into "+N more". */
+export const DEFAULT_BUDGET = 14;
+
+export interface ProjectOptions {
+  /** Show unchanged neighbours ("surrounding code"). Default false. */
+  ghosts?: boolean;
+}
 
 export interface ProjNode {
   id: string;
@@ -35,6 +43,22 @@ export interface ProjNode {
   drill?: Focus;
   /** The underlying IR node (absent for "+N more"). */
   node?: GraphNode;
+  /** Plain-language identity, e.g. noun "Function", name "generateSizeGate". */
+  noun: string;
+  name: string;
+  /** One deterministic sentence about what changed. */
+  sentence: string;
+  /** Top member names (containers) and how many more there are. */
+  members: string[];
+  moreMembers: number;
+  risk?: Risk;
+  /** Containers: number of risky descendants (risk.inheritedFrom). */
+  riskInside: number;
+  /** Noise: group nodes and the `~collapsed` module/cluster. */
+  collapsed: boolean;
+  group?: CollapsedSummary;
+  /** Suggested reading order (1-based) among the visible changed nodes. */
+  order?: number;
 }
 
 export interface ProjEdge {
@@ -69,7 +93,8 @@ function dominant<K extends string>(m: Partial<Record<K, number>>): K {
   return best as K;
 }
 
-export function project(graph: ChangeGraph, focus: Focus, budget = DEFAULT_BUDGET): Projection {
+export function project(graph: ChangeGraph, focus: Focus, budget = DEFAULT_BUDGET, opts: ProjectOptions = {}): Projection {
+  const ghosts = opts.ghosts ?? false;
   const byId = new Map(graph.nodes.map((n) => [n.id, n]));
   const chain = (id: string): GraphNode[] => {
     const out: GraphNode[] = []; const seen = new Set<string>();
@@ -85,6 +110,7 @@ export function project(graph: ChangeGraph, focus: Focus, budget = DEFAULT_BUDGE
   const rep = (id: string): Rep | null => {
     const c = chain(id);
     if (!c.length) return null;
+    if (!ghosts && c[0]!.state === 'unchanged') return null;
     const unit = c.find((n) => n.level === unitLevel(level) && n.kind !== 'hunk');
     if (unit && !(level === 2 && isGhost(unit))) {
       const inside = !focus.parentId || c.some((n) => n.id === focus.parentId);
@@ -122,6 +148,7 @@ export function project(graph: ChangeGraph, focus: Focus, budget = DEFAULT_BUDGE
     if (n.kind === 'hunk') return false;
     if (n.level !== unitLevel(level)) return false;
     if (level === 2 && isGhost(n)) return false;
+    if (!ghosts && n.state === 'unchanged') return false;
     return !focus.parentId || chain(n.id).some((c) => c.id === focus.parentId);
   });
   for (const n of scope) scopeIds.add(n.id);
@@ -131,18 +158,39 @@ export function project(graph: ChangeGraph, focus: Focus, budget = DEFAULT_BUDGE
   for (const n of graph.nodes) if (n.parent && n.state !== 'unchanged' && n.kind !== 'hunk') (children.get(n.parent) ?? children.set(n.parent, []).get(n.parent)!).push(n);
   const descendants = (id: string): GraphNode[] => (children.get(id) ?? []).flatMap((c) => [c, ...descendants(c.id)]);
 
+  const collapsedBy = new Map((graph.collapsed ?? []).map((c) => [c.id, c]));
+  const newCalls = new Map<string, Set<string>>();
+  for (const e of graph.edges) {
+    if (e.kind !== 'calls' || e.from === e.to || byId.get(e.to)?.state !== 'added') continue;
+    (newCalls.get(e.from) ?? newCalls.set(e.from, new Set()).get(e.from)!).add(e.to);
+  }
+  const reading = readingOrder(graph);
+  const readKey = (id: string) => {
+    let best: number | undefined;
+    for (const d of [byId.get(id)!, ...descendants(id)]) { const o = reading.get(d.id); if (o != null && (best == null || o < best)) best = o; }
+    return best;
+  };
+
   const toProj = (id: string): ProjNode => {
     const n = byId.get(id)!;
     const kids = children.get(id) ?? [];
     const notes = n.notes ?? [];
-    const noteCount = notes.length + descendants(id).reduce((s, d) => s + (d.notes?.length ?? 0), 0);
+    const desc = descendants(id);
+    const noteCount = notes.length + desc.reduce((s, d) => s + (d.notes?.length ?? 0), 0);
     let drill: Focus | undefined;
     if (kids.length && n.kind === 'module') drill = { level: 1, parentId: n.id };
     else if (kids.length && n.kind === 'cluster') drill = { level: 2, parentId: n.id };
+    const group = n.collapsedId ? collapsedBy.get(n.collapsedId) : undefined;
+    const { members, more } = n.kind === 'module' || n.kind === 'cluster' ? memberNames(kids) : { members: [], more: 0 };
+    const leaves = desc.filter((d) => (d.kind === 'symbol' || d.kind === 'file') && !isNoiseNode(d));
+    const { noun, name } = plainName(n);
     return {
       id, kind: n.kind, label: n.label, state: n.state, symbolKind: n.symbolKind, path: n.path, range: n.range,
       stats: n.stats, childCount: kids.length, notes, noteCount, unresolved: unresolvedBy.get(id) ?? 0,
       ghost: n.state === 'unchanged', context: !scopeIds.has(id), drill, node: n,
+      noun, name, members, moreMembers: more, risk: n.risk, riskInside: n.risk?.inheritedFrom?.length ?? 0,
+      collapsed: isNoiseNode(n), group,
+      sentence: describeChange(n, { leaves, kids, newCalls: newCalls.get(id)?.size ?? 0, group }),
     };
   };
 
@@ -153,6 +201,8 @@ export function project(graph: ChangeGraph, focus: Focus, budget = DEFAULT_BUDGE
   const ordered = candidates.sort((a, b) => {
     const sa = scopeIds.has(a) ? 0 : 1; const sb = scopeIds.has(b) ? 0 : 1;
     if (sa !== sb) return sa - sb;
+    const rk = sa === 0 ? (RISK_RANK[byId.get(b)?.risk?.level ?? 'low'] + (byId.get(b)?.risk?.mustReview ? 4 : 0)) - (RISK_RANK[byId.get(a)?.risk?.level ?? 'low'] + (byId.get(a)?.risk?.mustReview ? 4 : 0)) : 0;
+    if (rk) return rk;
     const d = sa === 0 ? size(b) - size(a) : (degree.get(b) ?? 0) - (degree.get(a) ?? 0);
     return d || cmp(a, b);
   });
@@ -164,7 +214,7 @@ export function project(graph: ChangeGraph, focus: Focus, budget = DEFAULT_BUDGE
     const hidden = ordered.slice(budget - 1);
     const moreId = `more:${focus.level}:${focus.parentId ?? '*'}`;
     nodes = [...keep].map(toProj);
-    nodes.push({ id: moreId, kind: 'more', label: `+${hidden.length} more`, state: 'unchanged', childCount: 0, notes: [], noteCount: 0, unresolved: 0, ghost: false, context: false, moreCount: hidden.length });
+    nodes.push({ id: moreId, kind: 'more', label: `+${hidden.length} more`, state: 'unchanged', childCount: 0, notes: [], noteCount: 0, unresolved: 0, ghost: false, context: false, moreCount: hidden.length, noun: 'More', name: `${hidden.length} more`, sentence: 'Collapsed to keep this view readable. Zoom into a parent or use a filter.', members: [], moreMembers: 0, riskInside: 0, collapsed: false });
     // Re-aggregate edges that touched hidden nodes onto the "+N more" node.
     const re = new Map<string, ProjEdge>();
     for (const e of agg.values()) {
@@ -180,6 +230,9 @@ export function project(graph: ChangeGraph, focus: Focus, budget = DEFAULT_BUDGE
     }
     edges = [...re.values()];
   }
+  // Suggested reading order, ranked across the visible changed nodes.
+  const keyed = nodes.filter((p) => p.kind !== 'more' && !p.ghost && !p.context).map((p) => [p, readKey(p.id)] as const).filter(([, k]) => k != null);
+  if (keyed.length > 1) keyed.sort((a, b) => a[1]! - b[1]! || cmp(a[0].id, b[0].id)).forEach(([p], i) => { p.order = i + 1; });
   nodes.sort((a, b) => cmp(a.id, b.id));
   edges.sort((a, b) => cmp(a.id, b.id));
   return { focus, nodes, edges };

@@ -16,14 +16,31 @@ const overlaps = (a: { start: number; end: number }, b: { start: number; end: nu
 
 /** Hunks for a symbol/file: owned by it, or in the same path overlapping its range. */
 export function hunksForLeaf(graph: ChangeGraph, node: GraphNode): Hunk[] {
+  const d = diffForLeaf(graph, { byId: new Map(graph.nodes.map((n) => [n.id, n])) }, node);
+  return [...d.own, ...d.alsoTouches.map((a) => a.hunk)].sort((a, b) => a.newStart - b.newStart);
+}
+
+export interface LeafDiff {
+  /** Hunks this node owns: shown in full. */
+  own: Hunk[];
+  /** Overlapping hunks owned by another node: shown as a one-line link, never the foreign hunk. */
+  alsoTouches: { hunk: Hunk; owner: GraphNode }[];
+}
+
+export function diffForLeaf(graph: ChangeGraph, idx: Pick<GraphIndex, 'byId'>, node: GraphNode): LeafDiff {
   const removed = node.state === 'removed';
-  const out = graph.hunks.filter((h) => {
-    if (h.owner === node.id) return true;
-    if (node.kind === 'file') return h.path === node.path;
-    if (node.kind !== 'symbol' || !node.path || !node.range || h.path !== node.path) return false;
-    return overlaps(node.range, removed ? span(h.oldStart, h.oldLines) : span(h.newStart, h.newLines));
-  });
-  return out.sort((a, b) => a.newStart - b.newStart);
+  const own: Hunk[] = []; const also: LeafDiff['alsoTouches'] = [];
+  for (const h of graph.hunks) {
+    if (h.owner === node.id) { own.push(h); continue; }
+    const hit = node.kind === 'file'
+      ? h.path === node.path
+      : node.kind === 'symbol' && !!node.path && !!node.range && h.path === node.path
+        && overlaps(node.range, removed ? span(h.oldStart, h.oldLines) : span(h.newStart, h.newLines));
+    const owner = idx.byId.get(h.owner);
+    if (hit && owner) also.push({ hunk: h, owner });
+  }
+  const by = (a: Hunk, b: Hunk) => a.newStart - b.newStart;
+  return { own: own.sort(by), alsoTouches: also.sort((a, b) => by(a.hunk, b.hunk)) };
 }
 
 export interface FileHunks { path: string; hunks: Hunk[]; added: number; removed: number }

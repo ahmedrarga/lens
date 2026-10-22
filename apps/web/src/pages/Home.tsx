@@ -1,14 +1,16 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { createAnalysis, listAnalyses, type AnalysisSummary } from '../api.js';
+import { ApiError, createAnalysis, listAnalyses, type AnalysisSummary } from '../api.js';
+import { AuthBadge, SignInPrompt } from '../auth.js';
 
-const PR_RE = /^https:\/\/github\.com\/[^/\s]+\/[^/\s]+\/pull\/\d+/;
+const PR_RE = /^https?:\/\/(github\.com\/[^/\s]+\/[^/\s]+\/pull\/\d+|[^/\s]+\/\S+\/-\/merge_requests\/\d+)/;
 
 export function Home() {
   const nav = useNavigate();
   const [url, setUrl] = useState('');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [needSignIn, setNeedSignIn] = useState(false);
   const [recent, setRecent] = useState<AnalysisSummary[] | null>(null);
   const [recentErr, setRecentErr] = useState(false);
 
@@ -17,24 +19,28 @@ export function Home() {
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     const v = url.trim();
-    if (!PR_RE.test(v)) { setErr('Enter a GitHub pull request URL, e.g. https://github.com/owner/repo/pull/123'); return; }
+    if (!PR_RE.test(v)) { setErr('Enter a GitHub pull request or GitLab merge request URL, e.g. https://github.com/owner/repo/pull/123 or https://gitlab.com/group/project/-/merge_requests/45'); return; }
     setBusy(true); setErr(null);
-    try { nav(`/a/${(await createAnalysis(v)).id}`); } catch (x) { setErr((x as Error).message); setBusy(false); }
+    try { nav(`/a/${(await createAnalysis(v)).id}`); } catch (x) {
+      if (x instanceof ApiError && x.status === 401) { setNeedSignIn(true); setErr(null); } else setErr((x as Error).message);
+      setBusy(false);
+    }
   };
 
   return (
     <div className="home">
-      <h1>◐ Lens</h1>
+      <div className="home__top"><h1>◐ Lens</h1><AuthBadge /></div>
       <p className="tagline">Review AI-written PRs by navigating a graph of the change, not by reading a diff.</p>
       <form onSubmit={submit} className="home__form">
-        <label htmlFor="pr">GitHub pull request URL</label>
+        <label htmlFor="pr">Pull request / merge request URL (GitHub or GitLab)</label>
         <div className="row">
-          <input id="pr" type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://github.com/owner/repo/pull/123" aria-invalid={!!err} aria-describedby={err ? 'pr-err' : undefined} autoFocus />
+          <input id="pr" type="url" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="GitHub PR or GitLab MR URL" aria-invalid={!!err} aria-describedby={err ? 'pr-err' : undefined} autoFocus />
           <button className="btn btn--primary" disabled={busy}>{busy ? 'Starting…' : 'Analyze'}</button>
         </div>
+        {needSignIn && <SignInPrompt message="You need to sign in to analyze pull requests." />}
         {err && <p id="pr-err" className="error-text" role="alert">{err}</p>}
       </form>
-      <p><Link to="/sample">Open sample →</Link> <span className="muted">(a fixture PR, works without the backend)</span></p>
+      <p><Link to="/repos">Repos →</Link> · <Link to="/sample">Open sample →</Link> <span className="muted">(a fixture PR, works without the backend)</span></p>
 
       <section aria-labelledby="recent-h">
         <h2 id="recent-h">Recent analyses</h2>

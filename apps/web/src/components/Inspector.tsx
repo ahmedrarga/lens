@@ -1,25 +1,45 @@
 import { useMemo } from 'react';
 import type { ChangeGraph, GraphNode } from '@lens/core';
-import { edgesFor, groupByFile, hunksForContainer, hunksForLeaf, type GraphIndex } from '../graphUtils.js';
-import { FileGroups, Stat } from './DiffView.js';
+import { isReviewItem, RISK_ICON, RISK_LABEL } from '@lens/ui-graph/model';
+import { diffForLeaf, edgesFor, groupByFile, hunksForContainer, type GraphIndex } from '../graphUtils.js';
+import { AlsoTouches, FileGroups, Stat } from './DiffView.js';
+import { GroupInspector } from './GroupInspector.js';
 
-interface Props { graph: ChangeGraph; idx: GraphIndex; node: GraphNode | null; onJump: (id: string) => void }
+interface Props {
+  graph: ChangeGraph; idx: GraphIndex; node: GraphNode | null; onJump: (id: string) => void;
+  reviewed: ReadonlySet<string>; onToggleReviewed: (id: string) => void;
+}
 
-export function Inspector({ graph, idx, node, onJump }: Props) {
+export function Onboarding() {
+  return (
+    <div className="inspector__empty">
+      <h3>How to read this</h3>
+      <ul className="howto">
+        <li><b>Boxes</b> are pieces of code that changed. The sentence in each says what happened to it.</li>
+        <li><b>Lines</b> show which code calls or uses which. Hover a line to see its meaning.</li>
+        <li><b>Click</b> a box to see its code here. <b>Double-click</b> to zoom into what is inside it.</li>
+      </ul>
+      <p className="muted small">Numbered boxes suggest a reading order. Backspace goes back up a level.</p>
+    </div>
+  );
+}
+
+export function Inspector({ graph, idx, node, onJump, reviewed, onToggleReviewed }: Props) {
   const data = useMemo(() => {
     if (!node) return null;
     const container = node.kind === 'module' || node.kind === 'cluster';
-    const hunks = container ? hunksForContainer(graph, idx, node) : hunksForLeaf(graph, node);
-    return { container, files: groupByFile(hunks), edges: edgesFor(graph, idx, node) };
+    const leaf = container || node.kind === 'group' ? null : diffForLeaf(graph, idx, node);
+    const files = container ? groupByFile(hunksForContainer(graph, idx, node)) : groupByFile(leaf?.own ?? []);
+    const group = node.collapsedId ? graph.collapsed?.find((c) => c.id === node.collapsedId) : undefined;
+    return { container, files, leaf, group, edges: edgesFor(graph, idx, node) };
   }, [graph, idx, node]);
 
-  if (!node || !data) {
-    return <div className="inspector__empty"><h3>Nothing selected</h3><p className="muted">Click a node to inspect it and see its diff hunks. Double-click (or press Enter on) a module or cluster to drill in; Backspace goes back up.</p></div>;
-  }
+  if (!node || !data) return <Onboarding />;
   const ghost = node.state === 'unchanged';
   const parents = idx.chain(node.id).slice(1).reverse();
   const out = data.edges.filter((r) => r.dir === 'out');
   const inn = data.edges.filter((r) => r.dir === 'in');
+  const risk = node.risk;
   return (
     <div className="inspector">
       <header>
@@ -36,9 +56,46 @@ export function Inspector({ graph, idx, node, onJump }: Props) {
         {node.stats && <p><Stat {...node.stats} /></p>}
       </header>
 
+      {risk && risk.level !== 'low' || risk?.reasons.length ? (
+        <section className={`risk-box risk-box--${risk!.level}`}>
+          <h4>Risk</h4>
+          <div className="chips">
+            <span className={`chip chip--risk-${risk!.level}`}>{RISK_ICON[risk!.level]} {RISK_LABEL[risk!.level]}</span>
+            {risk!.mustReview && <span className="chip chip--risk-high">⚑ must review</span>}
+          </div>
+          {risk!.reasons.length > 0 && (
+            <ul className="reasons">
+              {risk!.reasons.map((r, i) => (
+                <li key={i}><b>{r.message}</b> <span className="muted small">{r.ruleId}{r.hunkIds?.length ? ` · ${r.hunkIds.join(', ')}` : ''}</span></li>
+              ))}
+            </ul>
+          )}
+          {risk!.inheritedFrom?.length ? (
+            <>
+              <h5>Risky inside ({risk!.inheritedFrom.length})</h5>
+              <ul className="edges">
+                {risk!.inheritedFrom.map((id) => {
+                  const n = idx.byId.get(id);
+                  return n ? <li key={id}><button className="link" onClick={() => onJump(id)}>{n.label}</button><span className="muted small">{n.risk?.level}{reviewed.has(id) ? ' · ✓ reviewed' : ''}</span></li> : null;
+                })}
+              </ul>
+            </>
+          ) : null}
+        </section>
+      ) : null}
+
+      {isReviewItem(node) && (
+        <label className="reviewed-check">
+          <input type="checkbox" checked={reviewed.has(node.id)} onChange={() => onToggleReviewed(node.id)} />
+          <span>I have reviewed this</span>
+        </label>
+      )}
+
       {node.notes?.length ? (
         <section><h4>Notes</h4><ul className="notes">{node.notes.map((n, i) => <li key={i}>{n}</li>)}</ul></section>
       ) : null}
+
+      {data.group && <GroupInspector graph={graph} group={data.group} onJump={onJump} />}
 
       <section>
         <h4>Connections</h4>
@@ -62,10 +119,18 @@ export function Inspector({ graph, idx, node, onJump }: Props) {
         ) : null)}
       </section>
 
-      <section>
-        <h4>{data.container ? 'Files in this ' + node.kind : 'Diff (Z3)'}</h4>
-        {ghost ? <p className="muted small">Unchanged code connected to the change; no diff.</p> : <FileGroups files={data.files} open={!data.container} />}
-      </section>
+      {!data.group && (
+        <section>
+          <h4>{data.container ? 'Files in this ' + node.kind : 'Diff (Z3)'}</h4>
+          {ghost ? <p className="muted small">Unchanged code connected to the change; no diff.</p> : (
+            <>
+              <FileGroups files={data.files} open={!data.container} />
+              {data.leaf && <AlsoTouches items={data.leaf.alsoTouches} onJump={onJump} />}
+              {data.leaf && !data.files.length && !data.leaf.alsoTouches.length && <p className="muted small">No diff hunks for this selection.</p>}
+            </>
+          )}
+        </section>
+      )}
     </div>
   );
 }

@@ -1,12 +1,14 @@
 // Deterministic ELK layered layout (left to right), memoized per projection.
-import ELK from 'elkjs/lib/elk.bundled.js';
+import type { ELK } from 'elkjs/lib/elk-api.js';
 import type { Projection } from './project.js';
 
-export const NODE_W = 220;
-export const NODE_H = 84;
+export const NODE_W = 264;
+export const NODE_H = 120;
 export type Positions = Map<string, { x: number; y: number }>;
 
-const elk = new ELK();
+// elkjs is ~1.4MB: load it on first layout, not at startup.
+let elkPromise: Promise<ELK> | undefined;
+const getElk = () => (elkPromise ??= import('elkjs/lib/elk.bundled.js').then((m) => new (m.default as unknown as new () => ELK)()));
 const cache = new Map<string, Promise<Positions>>();
 
 /** Cache key: identical node/edge sets always yield identical layouts. */
@@ -20,21 +22,21 @@ export function layoutProjection(p: Projection): Promise<Positions> {
   if (hit) return hit;
   const nodes = [...p.nodes].sort((a, b) => (a.id < b.id ? -1 : 1));
   const edges = [...p.edges].sort((a, b) => (a.id < b.id ? -1 : 1));
-  const job = elk
-    .layout({
+  const job = getElk()
+    .then((elk) => elk.layout({
       id: 'root',
       layoutOptions: {
         'elk.algorithm': 'layered',
         'elk.direction': 'RIGHT',
         'elk.randomSeed': '1',
-        'elk.spacing.nodeNode': '32',
-        'elk.layered.spacing.nodeNodeBetweenLayers': '90',
+        'elk.spacing.nodeNode': '40',
+        'elk.layered.spacing.nodeNodeBetweenLayers': '110',
         'elk.separateConnectedComponents': 'true',
         'elk.spacing.componentComponent': '48',
       },
       children: nodes.map((n) => ({ id: n.id, width: NODE_W, height: NODE_H })),
       edges: edges.map((e) => ({ id: e.id, sources: [e.from], targets: [e.to] })),
-    })
+    }))
     .then((res) => {
       const out: Positions = new Map();
       for (const c of res.children ?? []) out.set(c.id, { x: Math.round(c.x ?? 0), y: Math.round(c.y ?? 0) });

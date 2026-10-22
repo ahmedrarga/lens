@@ -86,3 +86,26 @@ code, .mono, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; 
 
 .dialog { border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--text); max-width: 560px; width: calc(100% - 32px); padding: 18px 22px; }
 .dialog::backdrop { background: rgba(0, 0, 0, .4); } .dialog h2 { margin-bottom: 8px; } .dialog h3 { margin: 14px 0 6px; font-size: 14px; } .dialog ul { padding-left: 18px; }
+
+/* Accounts, review, group UI */
+.btn--small { padding: 2px 10px; font-size: 12.5px; }
+.home__top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.auth-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; } .avatar { border-radius: 50%; }
+.signin-prompt { background: var(--hunk-bg); border: 1px solid var(--border); padding: 8px 12px; border-radius: 6px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin: 8px 0 0; }
+.progress.is-done { color: var(--add); border-color: var(--add); } .progress[aria-pressed='true'] { background: var(--accent); color: #fff; border-color: transparent; }
+.chip--risk-blocker { color: #fff; background: #cf222e; border-color: #cf222e; font-weight: 600; }
+.chip--risk-high { color: #d9480f; border-color: #d9480f; font-weight: 600; } .chip--risk-med { color: var(--warn); border-color: var(--warn); } .chip--risk-low { color: var(--muted); }
+@media (prefers-color-scheme: dark) { .chip--risk-high { color: #ffa657; border-color: #ffa657; } }
+.risk-box { border-left: 3px solid var(--warn); padding-left: 10px; display: grid; gap: 6px; }
+.risk-box--high { border-color: #d9480f; } .risk-box--blocker { border-color: #cf222e; }
+.reasons { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.reviewed-check { display: flex; gap: 8px; align-items: center; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-weight: 600; cursor: pointer; }
+.queue { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.queue li { display: flex; gap: 8px; align-items: flex-start; padding: 6px 8px; border: 1px solid var(--border); border-radius: 6px; }
+.queue li.is-current { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.queue .link { display: grid; gap: 2px; } .queue__why { display: block; } b.is-reviewed { text-decoration: line-through; opacity: .6; }
+kbd { font: 11px ui-monospace, monospace; border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; padding: 0 4px; }
+.also-touches { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 4px; }
+.plain { list-style: none; margin: 0; padding: 0; } .warn-h { color: var(--warn); }
+.outlier { border: 1px dashed var(--warn); border-radius: 6px; padding: 6px; margin-bottom: 8px; }
+.howto { padding-left: 18px; display: grid; gap: 8px; margin: 8px 0; }

@@ -1,14 +1,34 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import type { ChangeGraph } from '@lens/core';
-import sampleJson from '../../../../fixtures/golden/sample.json';
 import { formatProgress, getAnalysis, type Analysis } from '../api.js';
 import { Workspace } from '../components/Workspace.js';
 
-const sample = sampleJson as unknown as ChangeGraph;
-
+/** The sample is a separate chunk: it is only fetched on /sample. */
 export function SamplePage() {
-  return <Workspace graph={sample} banner="sample" />;
+  return <FixturePage name="sample" banner="sample" />;
+}
+
+type Loader = () => Promise<{ default: unknown }>;
+const fixtures: Record<string, Loader> = import.meta.env.DEV
+  ? import.meta.glob<{ default: unknown }>('../../../../fixtures/golden/*.json')
+  : import.meta.glob<{ default: unknown }>('../../../../fixtures/golden/sample.json');
+
+/** Loads fixtures/golden/<name>.json. /sample is public; /fixture/:name is dev-only (see App). */
+export function FixturePage({ name: forced, banner }: { name?: string; banner?: string }) {
+  const params = useParams();
+  const name = forced ?? params.name ?? '';
+  const [graph, setGraph] = useState<ChangeGraph | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  useEffect(() => {
+    const load = fixtures[`../../../../fixtures/golden/${name}.json`];
+    setGraph(null); setErr(null);
+    if (!load) { setErr(`No fixture named "${name}"`); return; }
+    load().then((m) => setGraph(m.default as ChangeGraph), (e) => setErr(String(e)));
+  }, [name]);
+  if (err) return <div className="center-page"><h2>{err}</h2><Link to="/">Back home</Link></div>;
+  if (!graph) return <div className="center-page" aria-busy="true"><div className="spinner" aria-hidden="true" /></div>;
+  return <Workspace graph={graph} banner={banner ?? `fixture: ${name}`} storageKey={`fixture:${name}`} />;
 }
 
 export function AnalysisPage() {
@@ -35,7 +55,7 @@ export function AnalysisPage() {
     return () => { alive = false; clearTimeout(timer); ctl.abort(); };
   }, [id]);
 
-  if (a?.status === 'done' && a.graph) return <Workspace graph={a.graph} />;
+  if (a?.status === 'done' && a.graph) return <Workspace graph={a.graph} storageKey={id} />;
   return (
     <div className="center-page" role="status" aria-live="polite">
       <Link to="/" className="brand">◐ Lens</Link>

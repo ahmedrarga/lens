@@ -1,4 +1,4 @@
-import type { Hunk } from '@lens/core';
+import type { GraphNode, Hunk } from '@lens/core';
 import type { FileHunks } from '../graphUtils.js';
 
 interface Row { kind: 'add' | 'del' | 'ctx' | 'hdr' | 'meta'; oldNo?: number; newNo?: number; text: string }
@@ -54,5 +54,21 @@ export function FileGroups({ files, open }: { files: FileHunks[]; open?: boolean
         </details>
       ))}
     </div>
+  );
+}
+
+/** Overlapping hunks owned by another node: a link, not the foreign hunk. */
+export function AlsoTouches({ items, onJump }: { items: { hunk: Hunk; owner: GraphNode }[]; onJump: (id: string) => void }) {
+  if (!items.length) return null;
+  return (
+    <ul className="also-touches">
+      {items.map(({ hunk, owner }) => (
+        <li key={hunk.id}>
+          <span className="muted small">also touches:</span>{' '}
+          <button className="link" onClick={() => onJump(owner.id)} title={`${hunk.path}:${hunk.newStart}`}>{owner.label}</button>
+          <span className="muted small"> (lines {hunk.newStart}–{hunk.newStart + Math.max(hunk.newLines, 1) - 1})</span>
+        </li>
+      ))}
+    </ul>
   );
 }

@@ -26,6 +26,14 @@
       "stats": {
         "added": 24,
         "removed": 6
+      },
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "symbol:src/api/routes/index.ts#registerRoutes"
+        ]
       }
     },
     {
@@ -35,8 +43,17 @@
       "label": "src/services",
       "state": "modified",
       "stats": {
-        "added": 43,
+        "added": 54,
         "removed": 2
+      },
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "symbol:src/services/workspaces/service.ts#WorkspaceService.addMember",
+          "symbol:src/services/email/invite.ts#sendInviteEmail"
+        ]
       }
     },
     {
@@ -46,8 +63,16 @@
       "label": "src/db",
       "state": "modified",
       "stats": {
-        "added": 30,
+        "added": 31,
         "removed": 0
+      },
+      "risk": {
+        "level": "blocker",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:src/db/migrations/0042_create_invitations.sql"
+        ]
       }
     },
     {
@@ -68,8 +93,16 @@
       "label": "repo root",
       "state": "modified",
       "stats": {
-        "added": 342,
-        "removed": 12
+        "added": 3,
+        "removed": 0
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:package.json"
+        ]
       }
     },
     {
@@ -89,6 +122,14 @@
       "stats": {
         "added": 24,
         "removed": 6
+      },
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "symbol:src/api/routes/index.ts#registerRoutes"
+        ]
       }
     },
     {
@@ -102,8 +143,16 @@
         "Authorization check lives in the route layer, not in the service"
       ],
       "stats": {
-        "added": 31,
+        "added": 38,
         "removed": 1
+      },
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "symbol:src/services/workspaces/service.ts#WorkspaceService.addMember"
+        ]
       }
     },
     {
@@ -114,8 +163,16 @@
       "parent": "module:src/services",
       "state": "modified",
       "stats": {
-        "added": 12,
+        "added": 16,
         "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "symbol:src/services/email/invite.ts#sendInviteEmail"
+        ]
       }
     },
     {
@@ -129,8 +186,16 @@
         "Adds a table and a new schema entry; no backfill needed"
       ],
       "stats": {
-        "added": 30,
+        "added": 31,
         "removed": 0
+      },
+      "risk": {
+        "level": "blocker",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:src/db/migrations/0042_create_invitations.sql"
+        ]
       }
     },
     {
@@ -153,8 +218,16 @@
       "parent": "module:root",
       "state": "modified",
       "stats": {
-        "added": 342,
-        "removed": 12
+        "added": 3,
+        "removed": 0
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:package.json"
+        ]
       }
     },
     {
@@ -231,6 +304,20 @@
       "stats": {
         "added": 3,
         "removed": 1
+      },
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [
+          {
+            "ruleId": "auth.check-modified",
+            "message": "Route registration changed: the `requireAdmin` guard is no longer applied to the invitation endpoints",
+            "level": "high",
+            "hunkIds": [
+              "hunk:4"
+            ]
+          }
+        ]
       }
     },
     {
@@ -266,7 +353,7 @@
       },
       "exported": true,
       "stats": {
-        "added": 32,
+        "added": 7,
         "removed": 0
       }
     },
@@ -384,6 +471,20 @@
       "stats": {
         "added": 1,
         "removed": 1
+      },
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [
+          {
+            "ruleId": "authz.role-assignment",
+            "message": "Member role is now passed through to the membership row (privilege assignment)",
+            "level": "high",
+            "hunkIds": [
+              "hunk:11"
+            ]
+          }
+        ]
       }
     },
     {
@@ -401,8 +502,22 @@
       },
       "exported": true,
       "stats": {
-        "added": 5,
+        "added": 9,
         "removed": 0
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": true,
+        "reasons": [
+          {
+            "ruleId": "error.swallowed",
+            "message": "Delivery errors are caught and ignored; failed invitations are silent",
+            "level": "med",
+            "hunkIds": [
+              "hunk:12"
+            ]
+          }
+        ]
       }
     },
     {
@@ -439,6 +554,20 @@
       "stats": {
         "added": 1,
         "removed": 1
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "mail.payload-change",
+            "message": "Mail payload no longer forwards `text`",
+            "level": "low",
+            "hunkIds": [
+              "hunk:14"
+            ]
+          }
+        ]
       }
     },
     {
@@ -454,8 +583,22 @@
         "end": 18
       },
       "stats": {
-        "added": 11,
+        "added": 12,
         "removed": 0
+      },
+      "risk": {
+        "level": "blocker",
+        "mustReview": true,
+        "reasons": [
+          {
+            "ruleId": "migration.drop-column",
+            "message": "Migration contains DROP COLUMN workspaces.legacy_invite_code (irreversible data loss)",
+            "level": "blocker",
+            "hunkIds": [
+              "hunk:15"
+            ]
+          }
+        ]
       }
     },
     {
@@ -630,26 +773,6 @@
       }
     },
     {
-      "id": "file:package-lock.json",
-      "kind": "file",
-      "level": 2,
-      "label": "package-lock.json",
-      "parent": "cluster:deps-config",
-      "state": "modified",
-      "path": "package-lock.json",
-      "range": {
-        "start": 1,
-        "end": 1
-      },
-      "stats": {
-        "added": 340,
-        "removed": 12
-      },
-      "notes": [
-        "Lockfile: diff not shown"
-      ]
-    },
-    {
       "id": "file:.env.example",
       "kind": "file",
       "level": 2,
@@ -664,6 +787,20 @@
       "stats": {
         "added": 2,
         "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "config.env-change",
+            "message": "New environment variables documented",
+            "level": "low",
+            "hunkIds": [
+              "hunk:26"
+            ]
+          }
+        ]
       }
     },
     {
@@ -804,6 +941,125 @@
       "range": {
         "start": 6,
         "end": 24
+      }
+    },
+    {
+      "id": "file:package.json",
+      "kind": "file",
+      "level": 2,
+      "label": "package.json",
+      "parent": "cluster:deps-config",
+      "state": "modified",
+      "path": "package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps.new-dependency",
+            "message": "New dependency: nodemailer ^6.9.14",
+            "level": "med",
+            "hunkIds": [
+              "hunk:28"
+            ]
+          }
+        ]
+      },
+      "stats": {
+        "added": 1,
+        "removed": 0
+      }
+    },
+    {
+      "id": "module:~collapsed",
+      "kind": "module",
+      "level": 0,
+      "label": "Collapsed changes",
+      "state": "modified",
+      "stats": {
+        "added": 370,
+        "removed": 42
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "group:mechanical"
+        ]
+      }
+    },
+    {
+      "id": "cluster:~collapsed",
+      "kind": "cluster",
+      "level": 1,
+      "label": "Collapsed changes",
+      "parent": "module:~collapsed",
+      "state": "modified",
+      "stats": {
+        "added": 370,
+        "removed": 42
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "group:mechanical"
+        ]
+      }
+    },
+    {
+      "id": "group:formatting",
+      "kind": "group",
+      "level": 2,
+      "label": "Formatting only (prettier-style)",
+      "parent": "cluster:~collapsed",
+      "state": "modified",
+      "collapsedId": "collapsed:formatting",
+      "stats": {
+        "added": 24,
+        "removed": 24
+      }
+    },
+    {
+      "id": "group:lockfile",
+      "kind": "group",
+      "level": 2,
+      "label": "Lockfile: package-lock.json",
+      "parent": "cluster:~collapsed",
+      "state": "modified",
+      "collapsedId": "collapsed:lockfile",
+      "stats": {
+        "added": 340,
+        "removed": 12
+      }
+    },
+    {
+      "id": "group:mechanical",
+      "kind": "group",
+      "level": 2,
+      "label": "Replaced `logger.log(x)` with `logger.info(x)` at 6 sites",
+      "parent": "cluster:~collapsed",
+      "state": "modified",
+      "collapsedId": "collapsed:mechanical:a1b2c3",
+      "risk": {
+        "level": "med",
+        "mustReview": true,
+        "reasons": [
+          {
+            "ruleId": "collapsed.outlier",
+            "message": "1 of 6 call sites deviates from the pattern and passes an extra argument",
+            "level": "med",
+            "hunkIds": [
+              "hunk:39"
+            ]
+          }
+        ]
+      },
+      "stats": {
+        "added": 6,
+        "removed": 6
       }
     }
   ],
@@ -1270,7 +1526,7 @@
       "oldLines": 5,
       "newStart": 8,
       "newLines": 7,
-      "patch": "@@ -8,5 +8,7 @@\n export function registerRoutes(app: Router) {\n   app.use(authMiddleware);\n-  app.post(\"/invites\", sendLegacyInvite);\n+  app.post(\"/workspaces/:workspaceId/invitations\", createInvitationRoute);\n+  app.post(\"/invitations/:token/accept\", acceptInvitationRoute);\n+  app.delete(\"/invitations/:id\", revokeInvitationRoute);\n   app.get(\"/health\", healthCheck);\n }",
+      "patch": "@@ -8,5 +8,7 @@\n export function registerRoutes(app: Router) {\n   app.use(authMiddleware);\n-  app.post(\"/invites\", requireAdmin, sendLegacyInvite);\n+  app.post(\"/workspaces/:workspaceId/invitations\", createInvitationRoute);\n+  app.post(\"/invitations/:token/accept\", acceptInvitationRoute);\n+  app.delete(\"/invitations/:id\", revokeInvitationRoute);\n   app.get(\"/health\", healthCheck);\n }",
       "added": 3,
       "removed": 1,
       "owner": "symbol:src/api/routes/index.ts#registerRoutes"
@@ -1365,9 +1621,9 @@
       "oldStart": 0,
       "oldLines": 0,
       "newStart": 5,
-      "newLines": 5,
-      "patch": "@@ -0,0 +5,5 @@\n+export async function sendInviteEmail(invitation: Invitation) {\n+  const link = `${process.env.APP_URL}/invite/${invitation.token}`;\n+  const { subject, html } = renderInviteTemplate({ link, role: invitation.role });\n+  await mailer.send({ to: invitation.email, subject, html });\n+}",
-      "added": 5,
+      "newLines": 9,
+      "patch": "@@ -0,0 +5,9 @@\n+export async function sendInviteEmail(invitation: Invitation) {\n+  const link = `${process.env.APP_URL}/invite/${invitation.token}`;\n+  const { subject, html } = renderInviteTemplate({ link, role: invitation.role });\n+  try {\n+    await mailer.send({ to: invitation.email, subject, html });\n+  } catch {\n+    // ignore delivery failures\n+  }\n+}",
+      "added": 9,
       "removed": 0,
       "owner": "symbol:src/services/email/invite.ts#sendInviteEmail"
     },
@@ -1401,9 +1657,9 @@
       "oldStart": 0,
       "oldLines": 0,
       "newStart": 1,
-      "newLines": 11,
-      "patch": "@@ -0,0 +1,11 @@\n+CREATE TABLE invitations (\n+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),\n+  workspace_id uuid NOT NULL REFERENCES workspaces(id),\n+  email text NOT NULL,\n+  role text NOT NULL DEFAULT 'member',\n+  token text NOT NULL UNIQUE,\n+  invited_by uuid NOT NULL REFERENCES users(id),\n+  expires_at timestamptz NOT NULL,\n+  revoked_at timestamptz\n+);\n+CREATE INDEX invitations_workspace_idx ON invitations (workspace_id);",
-      "added": 11,
+      "newLines": 12,
+      "patch": "@@ -0,0 +1,12 @@\n+CREATE TABLE invitations (\n+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),\n+  workspace_id uuid NOT NULL REFERENCES workspaces(id),\n+  email text NOT NULL,\n+  role text NOT NULL DEFAULT 'member',\n+  token text NOT NULL UNIQUE,\n+  invited_by uuid NOT NULL REFERENCES users(id),\n+  expires_at timestamptz NOT NULL,\n+  revoked_at timestamptz\n+);\n+CREATE INDEX invitations_workspace_idx ON invitations (workspace_id);\n+ALTER TABLE workspaces DROP COLUMN legacy_invite_code;",
+      "added": 12,
       "removed": 0,
       "owner": "file:src/db/migrations/0042_create_invitations.sql"
     },
@@ -1550,23 +1806,272 @@
       "added": 1,
       "removed": 0,
       "owner": "symbol:src/services/invitations/service.ts#InvitationService"
-    }
-  ],
-  "skippedFiles": [
+    },
     {
+      "id": "hunk:28",
+      "path": "package.json",
+      "oldStart": 12,
+      "oldLines": 3,
+      "newStart": 12,
+      "newLines": 4,
+      "patch": "@@ -12,3 +12,4 @@\n   \"dependencies\": {\n+    \"nodemailer\": \"^6.9.14\",\n     \"express\": \"^4.19.2\"\n   }",
+      "added": 1,
+      "removed": 0,
+      "owner": "file:package.json"
+    },
+    {
+      "id": "hunk:29",
       "path": "package-lock.json",
-      "reason": "lockfile: diff not rendered (+340 -12)"
+      "oldStart": 40,
+      "oldLines": 6,
+      "newStart": 40,
+      "newLines": 200,
+      "patch": "@@ -40,6 +40,200 @@\n-      \"resolved\": \"https://registry.npmjs.org/dep-0/-/dep-0-1.0.0.tgz\",\n-      \"resolved\": \"https://registry.npmjs.org/dep-1/-/dep-1-1.0.1.tgz\",\n-      \"resolved\": \"https://registry.npmjs.org/dep-2/-/dep-2-1.0.2.tgz\",\n-      \"resolved\": \"https://registry.npmjs.org/dep-3/-/dep-3-1.0.3.tgz\",\n-      \"resolved\": \"https://registry.npmjs.org/dep-4/-/dep-4-1.0.4.tgz\",\n-      \"resolved\": \"https://registry.npmjs.org/dep-5/-/dep-5-1.0.5.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-0/-/dep-0-2.0.0.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-1/-/dep-1-2.0.1.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-2/-/dep-2-2.0.2.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-3/-/dep-3-2.0.3.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-4/-/dep-4-2.0.4.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-5/-/dep-5-2.0.5.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-6/-/dep-6-2.0.6.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-7/-/dep-7-2.0.7.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-8/-/dep-8-2.0.8.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-9/-/dep-9-2.0.9.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-10/-/dep-10-2.0.10.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-11/-/dep-11-2.0.11.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-12/-/dep-12-2.0.12.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-13/-/dep-13-2.0.13.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-14/-/dep-14-2.0.14.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-15/-/dep-15-2.0.15.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-16/-/dep-16-2.0.16.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-17/-/dep-17-2.0.17.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-18/-/dep-18-2.0.18.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-19/-/dep-19-2.0.19.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-20/-/dep-20-2.0.20.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-21/-/dep-21-2.0.21.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-22/-/dep-22-2.0.22.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-23/-/dep-23-2.0.23.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-24/-/dep-24-2.0.24.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-25/-/dep-25-2.0.25.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-26/-/dep-26-2.0.26.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-27/-/dep-27-2.0.27.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-28/-/dep-28-2.0.28.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-29/-/dep-29-2.0.29.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-30/-/dep-30-2.0.30.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-31/-/dep-31-2.0.31.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-32/-/dep-32-2.0.32.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-33/-/dep-33-2.0.33.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-34/-/dep-34-2.0.34.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-35/-/dep-35-2.0.35.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-36/-/dep-36-2.0.36.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-37/-/dep-37-2.0.37.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-38/-/dep-38-2.0.38.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-39/-/dep-39-2.0.39.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-40/-/dep-40-2.0.40.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-41/-/dep-41-2.0.41.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-42/-/dep-42-2.0.42.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-43/-/dep-43-2.0.43.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-44/-/dep-44-2.0.44.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-45/-/dep-45-2.0.45.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-46/-/dep-46-2.0.46.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-47/-/dep-47-2.0.47.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-48/-/dep-48-2.0.48.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-49/-/dep-49-2.0.49.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-50/-/dep-50-2.0.50.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-51/-/dep-51-2.0.51.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-52/-/dep-52-2.0.52.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-53/-/dep-53-2.0.53.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-54/-/dep-54-2.0.54.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-55/-/dep-55-2.0.55.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-56/-/dep-56-2.0.56.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-57/-/dep-57-2.0.57.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-58/-/dep-58-2.0.58.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-59/-/dep-59-2.0.59.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-60/-/dep-60-2.0.60.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-61/-/dep-61-2.0.61.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-62/-/dep-62-2.0.62.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-63/-/dep-63-2.0.63.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-64/-/dep-64-2.0.64.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-65/-/dep-65-2.0.65.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-66/-/dep-66-2.0.66.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-67/-/dep-67-2.0.67.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-68/-/dep-68-2.0.68.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-69/-/dep-69-2.0.69.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-70/-/dep-70-2.0.70.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-71/-/dep-71-2.0.71.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-72/-/dep-72-2.0.72.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-73/-/dep-73-2.0.73.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-74/-/dep-74-2.0.74.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-75/-/dep-75-2.0.75.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-76/-/dep-76-2.0.76.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-77/-/dep-77-2.0.77.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-78/-/dep-78-2.0.78.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-79/-/dep-79-2.0.79.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-80/-/dep-80-2.0.80.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-81/-/dep-81-2.0.81.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-82/-/dep-82-2.0.82.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-83/-/dep-83-2.0.83.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-84/-/dep-84-2.0.84.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-85/-/dep-85-2.0.85.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-86/-/dep-86-2.0.86.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-87/-/dep-87-2.0.87.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-88/-/dep-88-2.0.88.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-89/-/dep-89-2.0.89.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-90/-/dep-90-2.0.90.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-91/-/dep-91-2.0.91.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-92/-/dep-92-2.0.92.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-93/-/dep-93-2.0.93.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-94/-/dep-94-2.0.94.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-95/-/dep-95-2.0.95.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-96/-/dep-96-2.0.96.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-97/-/dep-97-2.0.97.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-98/-/dep-98-2.0.98.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-99/-/dep-99-2.0.99.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-100/-/dep-100-2.0.100.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-101/-/dep-101-2.0.101.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-102/-/dep-102-2.0.102.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-103/-/dep-103-2.0.103.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-104/-/dep-104-2.0.104.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-105/-/dep-105-2.0.105.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-106/-/dep-106-2.0.106.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-107/-/dep-107-2.0.107.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-108/-/dep-108-2.0.108.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-109/-/dep-109-2.0.109.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-110/-/dep-110-2.0.110.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-111/-/dep-111-2.0.111.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-112/-/dep-112-2.0.112.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-113/-/dep-113-2.0.113.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-114/-/dep-114-2.0.114.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-115/-/dep-115-2.0.115.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-116/-/dep-116-2.0.116.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-117/-/dep-117-2.0.117.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-118/-/dep-118-2.0.118.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-119/-/dep-119-2.0.119.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-120/-/dep-120-2.0.120.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-121/-/dep-121-2.0.121.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-122/-/dep-122-2.0.122.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-123/-/dep-123-2.0.123.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-124/-/dep-124-2.0.124.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-125/-/dep-125-2.0.125.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-126/-/dep-126-2.0.126.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-127/-/dep-127-2.0.127.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-128/-/dep-128-2.0.128.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-129/-/dep-129-2.0.129.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-130/-/dep-130-2.0.130.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-131/-/dep-131-2.0.131.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-132/-/dep-132-2.0.132.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-133/-/dep-133-2.0.133.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-134/-/dep-134-2.0.134.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-135/-/dep-135-2.0.135.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-136/-/dep-136-2.0.136.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-137/-/dep-137-2.0.137.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-138/-/dep-138-2.0.138.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-139/-/dep-139-2.0.139.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-140/-/dep-140-2.0.140.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-141/-/dep-141-2.0.141.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-142/-/dep-142-2.0.142.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-143/-/dep-143-2.0.143.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-144/-/dep-144-2.0.144.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-145/-/dep-145-2.0.145.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-146/-/dep-146-2.0.146.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-147/-/dep-147-2.0.147.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-148/-/dep-148-2.0.148.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-149/-/dep-149-2.0.149.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-150/-/dep-150-2.0.150.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-151/-/dep-151-2.0.151.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-152/-/dep-152-2.0.152.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-153/-/dep-153-2.0.153.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-154/-/dep-154-2.0.154.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-155/-/dep-155-2.0.155.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-156/-/dep-156-2.0.156.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-157/-/dep-157-2.0.157.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-158/-/dep-158-2.0.158.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-159/-/dep-159-2.0.159.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-160/-/dep-160-2.0.160.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-161/-/dep-161-2.0.161.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-162/-/dep-162-2.0.162.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-163/-/dep-163-2.0.163.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-164/-/dep-164-2.0.164.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-165/-/dep-165-2.0.165.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-166/-/dep-166-2.0.166.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-167/-/dep-167-2.0.167.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-168/-/dep-168-2.0.168.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-169/-/dep-169-2.0.169.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-170/-/dep-170-2.0.170.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-171/-/dep-171-2.0.171.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-172/-/dep-172-2.0.172.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-173/-/dep-173-2.0.173.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-174/-/dep-174-2.0.174.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-175/-/dep-175-2.0.175.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-176/-/dep-176-2.0.176.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-177/-/dep-177-2.0.177.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-178/-/dep-178-2.0.178.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-179/-/dep-179-2.0.179.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-180/-/dep-180-2.0.180.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-181/-/dep-181-2.0.181.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-182/-/dep-182-2.0.182.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-183/-/dep-183-2.0.183.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-184/-/dep-184-2.0.184.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-185/-/dep-185-2.0.185.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-186/-/dep-186-2.0.186.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-187/-/dep-187-2.0.187.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-188/-/dep-188-2.0.188.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-189/-/dep-189-2.0.189.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-190/-/dep-190-2.0.190.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-191/-/dep-191-2.0.191.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-192/-/dep-192-2.0.192.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-193/-/dep-193-2.0.193.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-194/-/dep-194-2.0.194.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-195/-/dep-195-2.0.195.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-196/-/dep-196-2.0.196.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-197/-/dep-197-2.0.197.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-198/-/dep-198-2.0.198.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-199/-/dep-199-2.0.199.tgz\",",
+      "added": 200,
+      "removed": 6,
+      "owner": "group:lockfile",
+      "noise": {
+        "kind": "lockfile"
+      }
+    },
+    {
+      "id": "hunk:30",
+      "path": "package-lock.json",
+      "oldStart": 900,
+      "oldLines": 6,
+      "newStart": 900,
+      "newLines": 140,
+      "patch": "@@ -900,6 +900,140 @@\n-      \"resolved\": \"https://registry.npmjs.org/pkg-0/-/pkg-0-1.0.0.tgz\",\n-      \"resolved\": \"https://registry.npmjs.org/pkg-1/-/pkg-1-1.0.1.tgz\",\n-      \"resolved\": \"https://registry.npmjs.org/pkg-2/-/pkg-2-1.0.2.tgz\",\n-      \"resolved\": \"https://registry.npmjs.org/pkg-3/-/pkg-3-1.0.3.tgz\",\n-      \"resolved\": \"https://registry.npmjs.org/pkg-4/-/pkg-4-1.0.4.tgz\",\n-      \"resolved\": \"https://registry.npmjs.org/pkg-5/-/pkg-5-1.0.5.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-0/-/pkg-0-2.0.0.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-1/-/pkg-1-2.0.1.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-2/-/pkg-2-2.0.2.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-3/-/pkg-3-2.0.3.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-4/-/pkg-4-2.0.4.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-5/-/pkg-5-2.0.5.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-6/-/pkg-6-2.0.6.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-7/-/pkg-7-2.0.7.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-8/-/pkg-8-2.0.8.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-9/-/pkg-9-2.0.9.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-10/-/pkg-10-2.0.10.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-11/-/pkg-11-2.0.11.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-12/-/pkg-12-2.0.12.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-13/-/pkg-13-2.0.13.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-14/-/pkg-14-2.0.14.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-15/-/pkg-15-2.0.15.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-16/-/pkg-16-2.0.16.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-17/-/pkg-17-2.0.17.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-18/-/pkg-18-2.0.18.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-19/-/pkg-19-2.0.19.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-20/-/pkg-20-2.0.20.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-21/-/pkg-21-2.0.21.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-22/-/pkg-22-2.0.22.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-23/-/pkg-23-2.0.23.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-24/-/pkg-24-2.0.24.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-25/-/pkg-25-2.0.25.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-26/-/pkg-26-2.0.26.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-27/-/pkg-27-2.0.27.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-28/-/pkg-28-2.0.28.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-29/-/pkg-29-2.0.29.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-30/-/pkg-30-2.0.30.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-31/-/pkg-31-2.0.31.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-32/-/pkg-32-2.0.32.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-33/-/pkg-33-2.0.33.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-34/-/pkg-34-2.0.34.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-35/-/pkg-35-2.0.35.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-36/-/pkg-36-2.0.36.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-37/-/pkg-37-2.0.37.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-38/-/pkg-38-2.0.38.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-39/-/pkg-39-2.0.39.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-40/-/pkg-40-2.0.40.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-41/-/pkg-41-2.0.41.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-42/-/pkg-42-2.0.42.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-43/-/pkg-43-2.0.43.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-44/-/pkg-44-2.0.44.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-45/-/pkg-45-2.0.45.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-46/-/pkg-46-2.0.46.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-47/-/pkg-47-2.0.47.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-48/-/pkg-48-2.0.48.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-49/-/pkg-49-2.0.49.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-50/-/pkg-50-2.0.50.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-51/-/pkg-51-2.0.51.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-52/-/pkg-52-2.0.52.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-53/-/pkg-53-2.0.53.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-54/-/pkg-54-2.0.54.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-55/-/pkg-55-2.0.55.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-56/-/pkg-56-2.0.56.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-57/-/pkg-57-2.0.57.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-58/-/pkg-58-2.0.58.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-59/-/pkg-59-2.0.59.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-60/-/pkg-60-2.0.60.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-61/-/pkg-61-2.0.61.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-62/-/pkg-62-2.0.62.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-63/-/pkg-63-2.0.63.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-64/-/pkg-64-2.0.64.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-65/-/pkg-65-2.0.65.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-66/-/pkg-66-2.0.66.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-67/-/pkg-67-2.0.67.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-68/-/pkg-68-2.0.68.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-69/-/pkg-69-2.0.69.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-70/-/pkg-70-2.0.70.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-71/-/pkg-71-2.0.71.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-72/-/pkg-72-2.0.72.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-73/-/pkg-73-2.0.73.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-74/-/pkg-74-2.0.74.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-75/-/pkg-75-2.0.75.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-76/-/pkg-76-2.0.76.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-77/-/pkg-77-2.0.77.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-78/-/pkg-78-2.0.78.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-79/-/pkg-79-2.0.79.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-80/-/pkg-80-2.0.80.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-81/-/pkg-81-2.0.81.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-82/-/pkg-82-2.0.82.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-83/-/pkg-83-2.0.83.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-84/-/pkg-84-2.0.84.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-85/-/pkg-85-2.0.85.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-86/-/pkg-86-2.0.86.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-87/-/pkg-87-2.0.87.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-88/-/pkg-88-2.0.88.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-89/-/pkg-89-2.0.89.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-90/-/pkg-90-2.0.90.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-91/-/pkg-91-2.0.91.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-92/-/pkg-92-2.0.92.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-93/-/pkg-93-2.0.93.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-94/-/pkg-94-2.0.94.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-95/-/pkg-95-2.0.95.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-96/-/pkg-96-2.0.96.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-97/-/pkg-97-2.0.97.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-98/-/pkg-98-2.0.98.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-99/-/pkg-99-2.0.99.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-100/-/pkg-100-2.0.100.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-101/-/pkg-101-2.0.101.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-102/-/pkg-102-2.0.102.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-103/-/pkg-103-2.0.103.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-104/-/pkg-104-2.0.104.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-105/-/pkg-105-2.0.105.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-106/-/pkg-106-2.0.106.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-107/-/pkg-107-2.0.107.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-108/-/pkg-108-2.0.108.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-109/-/pkg-109-2.0.109.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-110/-/pkg-110-2.0.110.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-111/-/pkg-111-2.0.111.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-112/-/pkg-112-2.0.112.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-113/-/pkg-113-2.0.113.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-114/-/pkg-114-2.0.114.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-115/-/pkg-115-2.0.115.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-116/-/pkg-116-2.0.116.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-117/-/pkg-117-2.0.117.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-118/-/pkg-118-2.0.118.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-119/-/pkg-119-2.0.119.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-120/-/pkg-120-2.0.120.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-121/-/pkg-121-2.0.121.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-122/-/pkg-122-2.0.122.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-123/-/pkg-123-2.0.123.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-124/-/pkg-124-2.0.124.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-125/-/pkg-125-2.0.125.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-126/-/pkg-126-2.0.126.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-127/-/pkg-127-2.0.127.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-128/-/pkg-128-2.0.128.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-129/-/pkg-129-2.0.129.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-130/-/pkg-130-2.0.130.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-131/-/pkg-131-2.0.131.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-132/-/pkg-132-2.0.132.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-133/-/pkg-133-2.0.133.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-134/-/pkg-134-2.0.134.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-135/-/pkg-135-2.0.135.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-136/-/pkg-136-2.0.136.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-137/-/pkg-137-2.0.137.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-138/-/pkg-138-2.0.138.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-139/-/pkg-139-2.0.139.tgz\",",
+      "added": 140,
+      "removed": 6,
+      "owner": "group:lockfile",
+      "noise": {
+        "kind": "lockfile"
+      }
+    },
+    {
+      "id": "hunk:31",
+      "path": "src/utils/format.ts",
+      "oldStart": 3,
+      "oldLines": 8,
+      "newStart": 3,
+      "newLines": 8,
+      "patch": "@@ -3,8 +3,8 @@\n-const f0 = {a:1,b:2}\n-const f1 = {a:1,b:2}\n-const f2 = {a:1,b:2}\n-const f3 = {a:1,b:2}\n-const f4 = {a:1,b:2}\n-const f5 = {a:1,b:2}\n-const f6 = {a:1,b:2}\n-const f7 = {a:1,b:2}\n+const f0 = { a: 1, b: 2 };\n+const f1 = { a: 1, b: 2 };\n+const f2 = { a: 1, b: 2 };\n+const f3 = { a: 1, b: 2 };\n+const f4 = { a: 1, b: 2 };\n+const f5 = { a: 1, b: 2 };\n+const f6 = { a: 1, b: 2 };\n+const f7 = { a: 1, b: 2 };",
+      "added": 8,
+      "removed": 8,
+      "owner": "group:formatting",
+      "noise": {
+        "kind": "formatting",
+        "detail": "prettier-style whitespace/semicolons"
+      }
+    },
+    {
+      "id": "hunk:32",
+      "path": "src/utils/format.ts",
+      "oldStart": 40,
+      "oldLines": 8,
+      "newStart": 40,
+      "newLines": 8,
+      "patch": "@@ -40,8 +40,8 @@\n-const g0 = {a:1,b:2}\n-const g1 = {a:1,b:2}\n-const g2 = {a:1,b:2}\n-const g3 = {a:1,b:2}\n-const g4 = {a:1,b:2}\n-const g5 = {a:1,b:2}\n-const g6 = {a:1,b:2}\n-const g7 = {a:1,b:2}\n+const g0 = { a: 1, b: 2 };\n+const g1 = { a: 1, b: 2 };\n+const g2 = { a: 1, b: 2 };\n+const g3 = { a: 1, b: 2 };\n+const g4 = { a: 1, b: 2 };\n+const g5 = { a: 1, b: 2 };\n+const g6 = { a: 1, b: 2 };\n+const g7 = { a: 1, b: 2 };",
+      "added": 8,
+      "removed": 8,
+      "owner": "group:formatting",
+      "noise": {
+        "kind": "formatting",
+        "detail": "prettier-style whitespace/semicolons"
+      }
+    },
+    {
+      "id": "hunk:33",
+      "path": "src/legacy/helpers.ts",
+      "oldStart": 5,
+      "oldLines": 8,
+      "newStart": 5,
+      "newLines": 8,
+      "patch": "@@ -5,8 +5,8 @@\n-const h0 = {a:1,b:2}\n-const h1 = {a:1,b:2}\n-const h2 = {a:1,b:2}\n-const h3 = {a:1,b:2}\n-const h4 = {a:1,b:2}\n-const h5 = {a:1,b:2}\n-const h6 = {a:1,b:2}\n-const h7 = {a:1,b:2}\n+const h0 = { a: 1, b: 2 };\n+const h1 = { a: 1, b: 2 };\n+const h2 = { a: 1, b: 2 };\n+const h3 = { a: 1, b: 2 };\n+const h4 = { a: 1, b: 2 };\n+const h5 = { a: 1, b: 2 };\n+const h6 = { a: 1, b: 2 };\n+const h7 = { a: 1, b: 2 };",
+      "added": 8,
+      "removed": 8,
+      "owner": "group:formatting",
+      "noise": {
+        "kind": "formatting",
+        "detail": "prettier-style whitespace/semicolons"
+      }
+    },
+    {
+      "id": "hunk:34",
+      "path": "src/jobs/cleanup.ts",
+      "oldStart": 12,
+      "oldLines": 1,
+      "newStart": 12,
+      "newLines": 1,
+      "patch": "@@ -12,1 +12,1 @@\n-  logger.log(`job done`);\n+  logger.info(`job done`);",
+      "added": 1,
+      "removed": 1,
+      "owner": "group:mechanical",
+      "noise": {
+        "kind": "mechanical",
+        "detail": "logger.log(x) -> logger.info(x)"
+      }
+    },
+    {
+      "id": "hunk:35",
+      "path": "src/jobs/digest.ts",
+      "oldStart": 31,
+      "oldLines": 1,
+      "newStart": 31,
+      "newLines": 1,
+      "patch": "@@ -31,1 +31,1 @@\n-  logger.log(`digest done`);\n+  logger.info(`digest done`);",
+      "added": 1,
+      "removed": 1,
+      "owner": "group:mechanical",
+      "noise": {
+        "kind": "mechanical",
+        "detail": "logger.log(x) -> logger.info(x)"
+      }
+    },
+    {
+      "id": "hunk:36",
+      "path": "src/services/billing/invoice.ts",
+      "oldStart": 77,
+      "oldLines": 1,
+      "newStart": 77,
+      "newLines": 1,
+      "patch": "@@ -77,1 +77,1 @@\n-  logger.log(`invoice done`);\n+  logger.info(`invoice done`);",
+      "added": 1,
+      "removed": 1,
+      "owner": "group:mechanical",
+      "noise": {
+        "kind": "mechanical",
+        "detail": "logger.log(x) -> logger.info(x)"
+      }
+    },
+    {
+      "id": "hunk:37",
+      "path": "src/services/billing/refund.ts",
+      "oldStart": 20,
+      "oldLines": 1,
+      "newStart": 20,
+      "newLines": 1,
+      "patch": "@@ -20,1 +20,1 @@\n-  logger.log(`refund done`);\n+  logger.info(`refund done`);",
+      "added": 1,
+      "removed": 1,
+      "owner": "group:mechanical",
+      "noise": {
+        "kind": "mechanical",
+        "detail": "logger.log(x) -> logger.info(x)"
+      }
+    },
+    {
+      "id": "hunk:38",
+      "path": "src/api/routes/health.ts",
+      "oldStart": 9,
+      "oldLines": 1,
+      "newStart": 9,
+      "newLines": 1,
+      "patch": "@@ -9,1 +9,1 @@\n-  logger.log(`health done`);\n+  logger.info(`health done`);",
+      "added": 1,
+      "removed": 1,
+      "owner": "group:mechanical",
+      "noise": {
+        "kind": "mechanical",
+        "detail": "logger.log(x) -> logger.info(x)"
+      }
+    },
+    {
+      "id": "hunk:39",
+      "path": "src/services/billing/webhook.ts",
+      "oldStart": 58,
+      "oldLines": 1,
+      "newStart": 58,
+      "newLines": 1,
+      "patch": "@@ -58,1 +58,1 @@\n-  logger.log(`webhook retry`, err);\n+  logger.info(`webhook retry`, err, { suppress: true });",
+      "added": 1,
+      "removed": 1,
+      "owner": "group:mechanical",
+      "noise": {
+        "kind": "mechanical",
+        "detail": "logger.log(x) -> logger.info(x)"
+      }
     }
   ],
+  "skippedFiles": [],
   "limits": [
     "External types not resolved (node_modules not installed in the sandbox)",
     "Dynamic calls such as this.hooks[event] are shown as unresolved edges",
     "Cross-service HTTP edges (web -> api) are inferred from URL patterns, not type-checked"
   ],
   "stats": {
-    "files": 19,
-    "added": 485,
-    "removed": 20,
+    "files": 28,
+    "added": 521,
+    "removed": 50,
     "durationMs": 4210
+  },
+  "collapsed": [
+    {
+      "id": "collapsed:formatting",
+      "kind": "formatting",
+      "label": "Formatting only (prettier-style)",
+      "hunkIds": [
+        "hunk:31",
+        "hunk:32",
+        "hunk:33"
+      ],
+      "files": [
+        "src/legacy/helpers.ts",
+        "src/utils/format.ts"
+      ],
+      "added": 24,
+      "removed": 24,
+      "verified": true
+    },
+    {
+      "id": "collapsed:lockfile",
+      "kind": "lockfile",
+      "label": "Lockfile: package-lock.json",
+      "hunkIds": [
+        "hunk:29",
+        "hunk:30"
+      ],
+      "files": [
+        "package-lock.json"
+      ],
+      "added": 340,
+      "removed": 12,
+      "verified": false
+    },
+    {
+      "id": "collapsed:mechanical:a1b2c3",
+      "kind": "mechanical",
+      "label": "Replaced `logger.log(x)` with `logger.info(x)` at 6 sites",
+      "hunkIds": [
+        "hunk:34",
+        "hunk:35",
+        "hunk:36",
+        "hunk:37",
+        "hunk:38",
+        "hunk:39"
+      ],
+      "files": [
+        "src/api/routes/health.ts",
+        "src/jobs/cleanup.ts",
+        "src/jobs/digest.ts",
+        "src/services/billing/invoice.ts",
+        "src/services/billing/refund.ts",
+        "src/services/billing/webhook.ts"
+      ],
+      "added": 6,
+      "removed": 6,
+      "verified": false,
+      "exemplarHunkId": "hunk:34",
+      "outlierHunkIds": [
+        "hunk:39"
+      ]
+    }
+  ],
+  "policy": {
+    "source": "repo",
+    "path": ".lens/policy.yml",
+    "changedInPr": false,
+    "errors": []
   }
 }

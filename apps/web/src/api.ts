@@ -11,11 +11,16 @@ export interface Analysis {
 }
 export interface AnalysisSummary { id: string; prUrl: string; status: AnalysisStatus; title?: string; createdAt: string }
 
+/** HTTP failure with its status, so callers can react to 401 (sign in) or 404 (endpoint missing). */
+export class ApiError extends Error {
+  constructor(message: string, readonly status: number) { super(message); }
+}
+
 async function json<T>(res: Response): Promise<T> {
   if (!res.ok) {
     let msg = `${res.status} ${res.statusText}`;
     try { const b = await res.json(); if (b?.error) msg = typeof b.error === 'string' ? b.error : b.error.message ?? msg; } catch { /* not json */ }
-    throw new Error(msg);
+    throw new ApiError(msg, res.status);
   }
   return res.json() as Promise<T>;
 }
@@ -39,3 +44,17 @@ export function formatProgress(p: unknown): string {
   }
   return String(p);
 }
+
+// ---------- accounts ----------
+
+export interface Me { authEnabled: boolean; user: { login: string; name?: string | null; avatarUrl?: string } | null }
+/** Resolves to "auth disabled" when the endpoint is missing or the API is down. */
+export const getMe = (): Promise<Me> =>
+  fetch('/api/me').then((r) => json<Me>(r)).catch(() => ({ authEnabled: false, user: null }));
+export const logout = () => fetch('/auth/logout', { method: 'POST' }).catch(() => undefined);
+
+export interface RepoSummary { owner: string; name: string; private: boolean; analysesCount?: number; pushedAt?: string }
+export interface PullSummary { number: number; title: string; author?: string | null; updatedAt?: string; url: string; analysis?: { id: string; status: AnalysisStatus } }
+export const listRepos = () => fetch('/api/repos').then((r) => json<RepoSummary[]>(r));
+export const listPulls = (owner: string, repo: string) =>
+  fetch(`/api/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/pulls`).then((r) => json<PullSummary[]>(r));
