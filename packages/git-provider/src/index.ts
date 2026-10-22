@@ -3,7 +3,10 @@ import { createGunzip } from 'node:zlib';
 import type { GitProvider, PrFile, PrRef } from '@lens/core';
 import { untar } from './tar.js';
 
+import { createGitLabProvider, parseGitLabUrl } from './gitlab.js';
+
 export { untar } from './tar.js';
+export { createGitLabProvider, parseGitLabUrl, stripDiffHeaders, countPatch } from './gitlab.js';
 
 const API = 'https://api.github.com';
 const DEFAULT_MAX_FILE_BYTES = 512 * 1024;
@@ -68,7 +71,7 @@ export function createGitHubProvider(opts: { token?: string; fetch?: typeof fetc
       const { owner, repo, number } = parsePrUrl(url);
       const pr = await api<any>(`/repos/${owner}/${repo}/pulls/${number}`, `PR ${owner}/${repo}#${number}`);
       const ref: PrRef = {
-        provider: 'github', owner, repo, number,
+        provider: 'github', host: 'github.com', owner, repo, number,
         url: `https://github.com/${owner}/${repo}/pull/${number}`,
         title: pr.title,
         body: pr.body ?? null,
@@ -129,4 +132,31 @@ export function createGitHubProvider(opts: { token?: string; fetch?: typeof fetc
       return files;
     },
   };
+}
+
+export type AnyPrRef = { provider: 'github' | 'gitlab'; owner: string; repo: string; number: number; host: string };
+
+/** Parse a GitHub PR (URL or `o/r#n`) or a GitLab MR URL (anything with `/-/merge_requests/`). */
+export function parseAnyPrUrl(url: string): AnyPrRef {
+  const s = url.trim();
+  if (s.includes('/-/merge_requests/')) {
+    const { owner, repo, number, host } = parseGitLabUrl(s);
+    return { provider: 'gitlab', owner, repo, number, host };
+  }
+  if (/^https?:\/\/(?:www\.)?github\.com\//i.test(s) || /^[\w.-]+\/[\w.-]+#\d+$/.test(s)) {
+    return { provider: 'github', host: 'github.com', ...parsePrUrl(s) };
+  }
+  throw new Error(
+    `Unrecognized PR URL "${url}". Use https://github.com/owner/repo/pull/123, owner/repo#123, or a GitLab merge request URL like https://gitlab.com/group/project/-/merge_requests/45`,
+  );
+}
+
+export function providerForUrl(
+  url: string,
+  opts: { githubToken?: string; gitlabToken?: string; fetch?: typeof fetch } = {},
+): GitProvider {
+  const ref = parseAnyPrUrl(url);
+  return ref.provider === 'gitlab'
+    ? createGitLabProvider({ host: `${parseGitLabUrl(url).scheme}://${ref.host}`, token: opts.gitlabToken, fetch: opts.fetch })
+    : createGitHubProvider({ token: opts.githubToken, fetch: opts.fetch });
 }

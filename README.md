@@ -46,3 +46,14 @@ For GitHub login, register an OAuth App at https://github.com/settings/developer
 for public repos only. The web app and API must be same-site (the session cookie is `SameSite=Lax`).
 Postgres tests: `DATABASE_URL=postgres://lens:lens@localhost:5433/lens npx vitest run packages/db apps/api`
 (without `DATABASE_URL` they are skipped).
+
+## Testing with a private GitLab MR
+
+Works with gitlab.com and self-hosted GitLab (the host is taken from the MR URL).
+
+1. In GitLab: Preferences > Access tokens > create a personal access token with scopes `read_api` and `read_repository`.
+2. Put it in a `.env` file at the repo root (git-ignored): `GITLAB_TOKEN=glpat-...`
+3. Restart the API (`npx tsx apps/api/src/server.ts`); it loads `.env` on start. Real environment variables win over `.env`.
+4. Analyze a URL like `https://gitlab.com/group/subgroup/project/-/merge_requests/45`.
+
+GitLab analyses currently need local mode (no `GITHUB_CLIENT_ID`); with GitHub login enabled the API returns 400.

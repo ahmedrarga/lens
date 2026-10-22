@@ -1,6 +1,9 @@
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { serve } from '@hono/node-server';
 import type { AnalysisStore } from '@lens/core';
-import { createGitHubProvider, parsePrUrl } from '@lens/git-provider';
+import { parseAnyPrUrl, providerForUrl } from '@lens/git-provider';
 import { analyzePr } from '@lens/pipeline';
 import {
   createPgAnalysisStore, createPool, createSession, deleteSession, ensureLocalTenant, failStaleAnalyses,
@@ -9,6 +12,11 @@ import {
 import { createApp, type AppDeps, type AuthConfig } from './app.js';
 import { failStaleRuns, STALE_AFTER_MS } from './stale.js';
 import { createFileStore } from './store.js';
+
+// Load .env from the repo root or cwd (node >= 20.12). Real environment variables win.
+for (const f of [resolve(process.cwd(), '.env'), fileURLToPath(new URL('../../../.env', import.meta.url))]) {
+  if (existsSync(f)) { try { process.loadEnvFile(f); } catch { /* old node or unreadable: ignore */ } }
+}
 
 const env = process.env;
 const port = Number(env.PORT ?? 8787);
@@ -64,10 +72,12 @@ const app = createApp({
   auth,
   appUrl,
   defaultGithubToken: env.GITHUB_TOKEN,
-  parsePrUrl,
+  parsePrUrl: parseAnyPrUrl,
   analyze: (prUrl, onProgress, ctx) =>
     // With a user token, always use a provider bound to it (never fall back to the server's GITHUB_TOKEN).
-    analyzePr(prUrl, ctx.githubToken ? { provider: createGitHubProvider({ token: ctx.githubToken }) } : {}, onProgress),
+    analyzePr(prUrl, {
+      provider: providerForUrl(prUrl, { githubToken: authEnabled ? ctx.githubToken : env.GITHUB_TOKEN, gitlabToken: env.GITLAB_TOKEN }),
+    }, onProgress),
 });
 
 serve({ fetch: app.fetch, port }, (info) =>

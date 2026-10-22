@@ -8,7 +8,7 @@ import { createQueue, createRateLimiter, type Queue } from './queue.js';
 
 export interface AnalyzeCtx { githubToken?: string }
 export type AnalyzeFn = (prUrl: string, onProgress: (step: string) => void, ctx: AnalyzeCtx) => Promise<ChangeGraph>;
-export type ParsePrUrl = (url: string) => { owner: string; repo: string; number: number };
+export type ParsePrUrl = (url: string) => { owner: string; repo: string; number: number; provider?: 'github' | 'gitlab'; host?: string };
 
 /** Who is calling. `tenantId` selects the store; `githubToken` is the user's own token (auth enabled only). */
 export interface Principal {
@@ -224,6 +224,10 @@ export function createApp(deps: AppDeps) {
     } catch (e) {
       return c.json({ error: e instanceof Error ? e.message : 'Invalid PR URL' }, 400);
     }
+    const isGitLab = ref.provider === 'gitlab';
+    if (auth && isGitLab) {
+      return c.json({ error: 'GitLab analyses require auth disabled (local mode) for now' }, 400);
+    }
     if (auth) {
       const retry = limiter.take(p.userId ?? p.tenantId);
       if (retry) return c.json({ error: 'Too many analyses, slow down' }, 429, { 'retry-after': String(retry) });
@@ -235,7 +239,9 @@ export function createApp(deps: AppDeps) {
         return ghError(c, e);
       }
     }
-    const normalized = `https://github.com/${ref.owner}/${ref.repo}/pull/${ref.number}`;
+    const normalized = isGitLab
+      ? `https://${ref.host}/${ref.owner}/${ref.repo}/-/merge_requests/${ref.number}`
+      : `https://github.com/${ref.owner}/${ref.repo}/pull/${ref.number}`;
     const store = storeFor(p);
     const rec = await store.create(normalized);
     const token = auth ? p.githubToken : undefined;
