@@ -433,7 +433,8 @@ export function buildGraph(input: BuildGraphInput, opts: { now?: () => Date } = 
   };
 
   for (const info of changed.values()) {
-    const notes = [...(notesFor(info) ?? []), ...(outlierNotes.get(info.id) ?? [])];
+    const facts = info.sym ? (info.state === 'removed' ? input.base : input.head).annotations?.[info.sym.id] ?? [] : [];
+    const notes = [...facts, ...(notesFor(info) ?? []), ...(outlierNotes.get(info.id) ?? [])];
     const base = {
       id: info.id, level: 2 as const, state: info.state, path: info.path, parent: clusterOf.get(info.id)!,
       stats: { added: info.added, removed: info.removed }, ...(notes.length ? { notes } : {}),

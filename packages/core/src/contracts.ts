@@ -84,6 +84,8 @@ export interface IndexResult {
   references: IndexedReference[];
   /** Human-readable limits hit while indexing. */
   limits: string[];
+  /** Framework facts per symbol id, e.g. "route: POST /api/orders/{id}", "bean: @Service", "transactional". */
+  annotations?: Record<string, string[]>;
 }
 
 export interface Indexer {

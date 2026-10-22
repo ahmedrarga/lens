@@ -121,7 +121,12 @@ function rankedStarts(graph: ChangeGraph) {
 
 export function startHere(graph: ChangeGraph): StartHere {
   const { fresh, exported, rest, leaves, callers, callees } = rankedStarts(graph);
-  const pick = [...fresh.filter((n) => callers.has(n.id)), ...exported.filter((n) => callers.has(n.id)), ...fresh, ...exported, ...rest];
+  // Entry points (HTTP routes) first; tests only if nothing else changed.
+  const isRoute = (n: GraphNode) => !!n.notes?.some((t) => t.startsWith('route:'));
+  const ranked = [...new Set([...fresh, ...exported, ...rest].filter(isRoute)),
+    ...fresh.filter((n) => callers.has(n.id)), ...exported.filter((n) => callers.has(n.id)), ...fresh, ...exported, ...rest];
+  const nonTest = ranked.filter((n) => !TEST_RE.test(n.path ?? ''));
+  const pick = nonTest.length ? nonTest : ranked;
   const starts: StartNode[] = [...new Set(pick)].slice(0, 3).map((n) => {
     const inn = [...(callers.get(n.id) ?? [])].map((i) => leaves.get(i)!).sort((a, b) => size(b) - size(a) || cmp(a.id, b.id));
     const out = [...(callees.get(n.id) ?? [])].map((i) => leaves.get(i)!).sort((a, b) => size(b) - size(a) || cmp(a.id, b.id));
