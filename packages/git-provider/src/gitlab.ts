@@ -49,8 +49,9 @@ export function createGitLabProvider(
   const token = opts.token ?? process.env.GITLAB_TOKEN;
   const doFetch = opts.fetch ?? fetch;
 
-  const headers = () => ({
-    'user-agent': 'lens-code-review',
+  // No custom user-agent: gitlab.com's edge answers archive downloads from unknown agents with 406.
+  const headers = (): Record<string, string> => ({
+    accept: '*/*',
     ...(token ? { 'private-token': token } : {}),
   });
 
@@ -146,9 +147,11 @@ export function createGitLabProvider(
       const max = o.maxFileBytes ?? DEFAULT_MAX_FILE_BYTES;
       const url = `/projects/${projectId(pr)}/repository/archive.tar.gz?sha=${encodeURIComponent(sha)}`;
       let res = await get(url);
-      // GitLab occasionally answers the first archive request with a transient 406/5xx.
-      for (let attempt = 1; attempt < 3 && (res.status === 406 || res.status >= 500); attempt++) {
-        await new Promise((r) => setTimeout(r, 1000 * attempt));
+      // gitlab.com rate-limits archive downloads (~5/min per user): honour Retry-After; retry transient errors.
+      for (let attempt = 1; attempt < 4 && (res.status === 429 || res.status === 406 || res.status >= 500); attempt++) {
+        const wait = res.status === 429 ? Math.min(Number(res.headers.get('retry-after')) || 20, 60) * 1000 : 1000 * attempt;
+        await res.body?.cancel();
+        await new Promise((r) => setTimeout(r, wait));
         res = await get(url);
       }
       if (!res.ok || !res.body) fail(res, `archive of ${pr.owner}/${pr.repo}@${sha}`);
