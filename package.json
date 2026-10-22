@@ -1,0 +1,19 @@
+{
+  "name": "lens",
+  "private": true,
+  "type": "module",
+  "workspaces": ["packages/*", "apps/*"],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "vitest run",
+    "dev": "npm run dev --workspace=@lens/api & npm run dev --workspace=@lens/web"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8",
+    "tsx": "^4.19.2",
+    "@types/node": "^20.17.0"
+  },
+  "engines": { "node": ">=20" }
+}

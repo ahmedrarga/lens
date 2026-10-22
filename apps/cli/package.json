@@ -1,0 +1,10 @@
+{
+  "name": "@lens/cli",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": { "typecheck": "tsc --noEmit -p .", "analyze": "tsx src/index.ts" },
+  "dependencies": { "@lens/core": "*", "@lens/pipeline": "*" }
+}
