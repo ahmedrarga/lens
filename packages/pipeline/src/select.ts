@@ -95,6 +95,7 @@ export function makeSourceFilter(extensions: string[]): (path: string) => boolea
   return (path) => {
     if (!extensions.some((e) => path.endsWith(e))) return false;
     if (/(^|\/)(node_modules|dist|build)\//.test(path)) return false;
+    if (path.endsWith('.java') && /(^|\/)(target|out)\//.test(path)) return false; // Maven/IDE output
     if (/\.min\.[cm]?js$/.test(path)) return false;
     return true;
   };

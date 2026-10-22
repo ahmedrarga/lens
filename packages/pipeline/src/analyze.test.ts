@@ -151,4 +151,30 @@ describe('analyzePr', () => {
       expect.objectContaining({ id: 'collapsed:formatting', hunkIds: ['h:src/a.ts'], files: ['src/a.ts'], added: 2, removed: 1 }),
     ]);
   });
+
+  it('dispatches files by extension to several indexers and merges results', async () => {
+    const s = setup();
+    s.provider.listFiles = async () => [
+      files[0]!,
+      { path: 'src/main/java/p/A.java', status: 'modified', additions: 1, deletions: 1, patch: '@@ -1 +1 @@\n-x\n+y' },
+    ];
+    s.provider.getSourceFiles = async () => new Map([...headSrc, ['src/main/java/p/A.java', 'package p; class A {}']]);
+    const seen: string[][] = [];
+    const mk = (ext: string): Indexer => ({
+      extensions: [ext],
+      index: async (sn) => {
+        seen.push([...sn.files.keys()].sort());
+        return {
+          symbols: [{ id: `x${ext}`, path: 'p', name: 'n', qualifiedName: 'n', kind: 'class', range: { start: 1, end: 1 }, exported: false }],
+          references: [], limits: [`l${ext}`],
+        };
+      },
+    });
+    await analyzePr('url', { ...s, indexer: undefined, indexers: [mk('.ts'), mk('.java')], assertCoverage: () => [] });
+    expect(seen).toContainEqual(['src/main/java/p/A.java']);
+    expect(seen.some((f) => f.includes('src/a.ts') && !f.some((p) => p.endsWith('.java')))).toBe(true);
+    const input = s.buildGraph.mock.calls[0]![0];
+    expect(input.head.symbols.map((x: { id: string }) => x.id).sort()).toEqual(['x.java', 'x.ts']);
+    expect(input.head.limits).toEqual(expect.arrayContaining(['l.ts', 'l.java']));
+  });
 });

@@ -1,9 +1,10 @@
 import type {
-  ApplyRisk, BuildGraph, ChangeGraph, DetectNoise, GitProvider, Indexer, NoiseResult, ParsedHunk, ParseFilePatch,
-  PrFile, RiskPolicy,
+  ApplyRisk, BuildGraph, ChangeGraph, DetectNoise, GitProvider, Indexer, IndexResult, NoiseResult, ParsedHunk,
+  ParseFilePatch, PrFile, RiskPolicy,
 } from '@lens/core';
 import { applyNeverCollapse } from './noise.js';
 import { makeSourceFilter, selectSnapshot } from './select.js';
+import { selectJavaSnapshot } from './select-java.js';
 
 export const POLICY_PATH = '.lens/policy.yml';
 /** Files above this are not read for noise detection (matches the provider's archive default). */
@@ -12,7 +13,10 @@ const MAX_NOISE_BYTES = 512 * 1024;
 export interface PipelineDeps {
   provider: GitProvider;
   parseFilePatch: ParseFilePatch;
-  indexer: Indexer;
+  /** One indexer, or several: files are dispatched by extension and the results merged. */
+  indexer: Indexer | Indexer[];
+  /** Alias for `indexer` (takes precedence when both are given). */
+  indexers?: Indexer[];
   buildGraph: BuildGraph;
   /** Optional invariant check (defaults to @lens/graph assertCoverage). */
   assertCoverage?: (graph: ChangeGraph) => string[];
@@ -39,7 +43,10 @@ async function defaultDeps(missing: (keyof PipelineDeps)[], prUrl: string): Prom
       : gp.createGitHubProvider(process.env.GITHUB_TOKEN ? { token: process.env.GITHUB_TOKEN } : {});
   }
   if (missing.includes('parseFilePatch')) out.parseFilePatch = (await load('@lens/diff')).parseFilePatch;
-  if (missing.includes('indexer')) out.indexer = (await load('@lens/indexer')).createTsIndexer();
+  if (missing.includes('indexer')) {
+    const ix = await load('@lens/indexer');
+    out.indexer = typeof ix.createDefaultIndexers === 'function' ? ix.createDefaultIndexers() : ix.createTsIndexer();
+  }
   if (missing.includes('buildGraph') || missing.includes('assertCoverage')) {
     const g = await load('@lens/graph');
     out.buildGraph = g.buildGraph;
@@ -52,6 +59,33 @@ async function defaultDeps(missing: (keyof PipelineDeps)[], prUrl: string): Prom
     out.loadPolicy = r.loadPolicy;
   }
   return out;
+}
+
+/** Merge several IndexResults (symbol ids are path-prefixed, so they never collide across languages). */
+export function mergeIndexResults(results: IndexResult[]): IndexResult {
+  if (results.length === 1) return results[0]!;
+  const limits: string[] = [];
+  const annotations: Record<string, string[]> = {};
+  for (const r of results) {
+    for (const l of r.limits) if (!limits.includes(l)) limits.push(l);
+    Object.assign(annotations, (r as IndexResult & { annotations?: Record<string, string[]> }).annotations);
+  }
+  return {
+    symbols: results.flatMap((r) => r.symbols),
+    references: results.flatMap((r) => r.references),
+    limits,
+    ...(Object.keys(annotations).length ? { annotations } : {}),
+  } as IndexResult;
+}
+
+/** Dispatch each file to the indexer owning its extension and merge the results. */
+export async function indexWith(indexers: Indexer[], files: Map<string, string>): Promise<IndexResult> {
+  const results = await Promise.all(indexers.map((ix) => {
+    const own = new Map<string, string>();
+    for (const [p, c] of files) if (ix.extensions.some((e) => p.endsWith(e))) own.set(p, c);
+    return ix.index({ files: own });
+  }));
+  return mergeIndexResults(results);
 }
 
 async function mapLimit<T, R>(items: T[], n: number, fn: (item: T) => Promise<R>): Promise<R[]> {
@@ -75,10 +109,12 @@ export async function analyzePr(
 ): Promise<ChangeGraph> {
   const started = Date.now();
   const wanted: (keyof PipelineDeps)[] = ['provider', 'parseFilePatch', 'indexer', 'buildGraph', 'detectNoise', 'applyRisk', 'loadPolicy'];
-  const missing = wanted.filter((k) => !deps[k]);
+  const missing = wanted.filter((k) => !deps[k] && !(k === 'indexer' && deps.indexers));
   if (!deps.assertCoverage) missing.push('assertCoverage');
   const d = { ...(missing.length ? await defaultDeps(missing, prUrl) : {}), ...stripUndefined(deps) } as PipelineDeps;
-  const { provider, indexer } = d;
+  const { provider } = d;
+  const indexers: Indexer[] = d.indexers ?? (Array.isArray(d.indexer) ? d.indexer : [d.indexer]);
+  const extensions = [...new Set(indexers.flatMap((i) => i.extensions))];
   const limits: string[] = [];
 
   onProgress('fetching PR');
@@ -110,7 +146,7 @@ export async function analyzePr(
   }
 
   onProgress('downloading sources');
-  const indexable = (p: string) => indexer.extensions.some((e) => p.endsWith(e));
+  const indexable = (p: string) => extensions.some((e) => p.endsWith(e));
   const changedIndexable = files.filter((f) => indexable(f.path) || (f.oldPath && indexable(f.oldPath)));
   const headChanged = changedIndexable.filter((f) => f.status !== 'removed' && indexable(f.path));
 
@@ -121,7 +157,7 @@ export async function analyzePr(
   const noiseBase = new Map<string, string>();
   const headTextPaths = new Set(files.filter((f) => f.status !== 'removed').map((f) => f.path));
   if (headTextPaths.size > 0 || changedIndexable.length > 0) {
-    const isSource = makeSourceFilter(indexer.extensions);
+    const isSource = makeSourceFilter(extensions);
     const all = await provider.getSourceFiles(pr, pr.headSha, (p) => headTextPaths.has(p) || isSource(p));
     for (const p of headTextPaths) {
       const c = all.get(p);
@@ -136,9 +172,20 @@ export async function analyzePr(
       else limits.push(`Could not fetch ${p} at head; it is shown at file level only.`);
     });
 
-    const sel = selectSnapshot({ allFiles: all, changed: changedPaths, extensions: indexer.extensions });
-    limits.push(...sel.limits);
-    for (const p of sel.paths) headFiles.set(p, all.get(p) as string);
+    // Per-indexer selection (Java uses package/import scans, everything else relative imports); results are unioned.
+    const selected: string[] = [];
+    for (const ix of indexers) {
+      const ownExt = (p: string) => ix.extensions.some((e) => p.endsWith(e));
+      const own = new Map<string, string>();
+      for (const [p, c] of all) if (ownExt(p)) own.set(p, c);
+      const ownChanged = changedPaths.filter(ownExt);
+      const sel = ix.extensions.includes('.java')
+        ? selectJavaSnapshot({ allFiles: own, changed: ownChanged })
+        : selectSnapshot({ allFiles: own, changed: ownChanged, extensions: ix.extensions });
+      limits.push(...sel.limits);
+      selected.push(...sel.paths);
+    }
+    for (const p of selected) headFiles.set(p, all.get(p) as string);
 
     // Unchanged neighbours are identical at base, so only changed files need a base fetch.
     const changedSet = new Set(changedPaths);
@@ -166,10 +213,7 @@ export async function analyzePr(
   }
 
   onProgress('indexing');
-  const [head, base] = await Promise.all([
-    indexer.index({ files: headFiles }),
-    indexer.index({ files: baseFiles }),
-  ]);
+  const [head, base] = await Promise.all([indexWith(indexers, headFiles), indexWith(indexers, baseFiles)]);
   limits.push(...[...head.limits, ...base.limits].filter((l) => !limits.includes(l)));
 
   onProgress('detecting noise');
