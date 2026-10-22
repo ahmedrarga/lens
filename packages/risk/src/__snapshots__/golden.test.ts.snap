@@ -11,6 +11,13 @@ symbol:src/router/reg-exp-router/router.ts#findMiddleware :: deletion (med)
 symbol:src/router/reg-exp-router/router.ts#wildcardRegExpCache :: deletion (med)"
 `;
 
+exports[`golden risk precision > spring-petclinic-owner-pagination.json 1`] = `
+"symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController :: spring-security-annotation (med)
+symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController.listOwnersPage :: spring-security-annotation (med)
+symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl :: transactional (low)
+symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl.findOwners :: transactional (low)"
+`;
+
 exports[`golden risk precision > trpc-eslint-upgrade-lockfile.json 1`] = `
 "file:examples/.test/diagnostics-big-router/package.json :: deps-manifest (low)
 file:examples/.test/ssg-infinite-serialization/package.json :: deps-manifest (low)

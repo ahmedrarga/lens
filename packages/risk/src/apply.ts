@@ -5,6 +5,24 @@ import { LENS_POLICY_RULE, DEPS_MANIFEST_RULE } from './rules.js';
 import { analyzeDeps, analyzeJvmDeps } from './deps.js';
 import { compileRule, hunkText, matchContent, type CompiledRule } from './match.js';
 
+/** Reasons whose mustReview is switched off by a post-pass (duplicates within a file, additions of normal code). */
+const noMust = new WeakSet<RiskReason>();
+const ADDED_ONLY_TRANSACTIONAL = 'Adds @Transactional on new code (normal; confirm the transaction boundary is intended)';
+const LINE_CAP = 8;
+
+/** New-file line numbers of added `catch` lines in a hunk whose block matches one of the swallow patterns. */
+function swallowLines(h: Hunk, patterns: RegExp[]): number[] {
+  const rows = h.patch.split('\n').slice(1).filter((l) => !l.startsWith('\\') && !l.startsWith('-'));
+  const out: number[] = [];
+  for (let i = 0; i < rows.length; i++) {
+    if (!rows[i]!.startsWith('+') || !/\bcatch\b/.test(rows[i]!)) continue;
+    const snippet = rows.slice(i, i + 8).map((l) => l.slice(1)).join('\n');
+    const at = snippet.indexOf('catch');
+    if (patterns.some((re) => { const y = new RegExp(re.source, 'y'); y.lastIndex = at; return y.test(snippet); })) out.push(h.newStart + i);
+  }
+  return out;
+}
+
 export const LEVEL_ORDER: Record<RiskLevel, number> = { low: 0, med: 1, high: 2, blocker: 3 };
 const maxLevel = (a: RiskLevel, b: RiskLevel): RiskLevel => (LEVEL_ORDER[a] >= LEVEL_ORDER[b] ? a : b);
 export const MAX_INHERITED = 20;
@@ -152,7 +170,55 @@ export const applyRisk: ApplyRisk = (graph, policy, ctx) => {
   }
 
   const mustByRule = new Map(rules.map((r) => [r.id, r.mustReview]));
-  const mustOf = (r: RiskReason) => r.ruleId === 'collapsed-risky' || mustByRule.get(r.ruleId) === true;
+  const mustOf = (r: RiskReason) => !noMust.has(r) && (r.ruleId === 'collapsed-risky' || mustByRule.get(r.ruleId) === true);
+  const nodeById = new Map(graph.nodes.map((n) => [n.id, n]));
+
+  // Post-pass 1: @Transactional only on newly added code is normal -> low, not must-review.
+  const addedOwner = (h: Hunk) => nodeById.get(h.owner)?.state === 'added' || statusByPath.get(h.path) === 'added';
+  for (const reasons of own.values()) {
+    for (const r of reasons) {
+      if (r.ruleId !== 'transactional') continue;
+      const hs = (r.hunkIds ?? []).map((id) => hunkById.get(id)).filter((h): h is Hunk => !!h);
+      const existing = hs.filter((h) => !addedOwner(h));
+      if (hs.length && existing.length === 0) {
+        r.level = 'low'; r.message = ADDED_ONLY_TRANSACTIONAL; noMust.add(r);
+      } else if (existing.length < hs.length) r.hunkIds = existing.map((h) => h.id).sort();
+    }
+  }
+
+  // Post-pass 2: one must-review item per (rule, file). The primary node is the one with the most evidence (class, then
+  // file node, win ties); the others keep the reason but are not must-review and point at the primary.
+  const kindRank = (n: GraphNode) => (n.kind === 'symbol' && n.symbolKind === 'class' ? 0 : n.kind === 'file' ? 1 : 2);
+  const groups = new Map<string, { n: GraphNode; r: RiskReason }[]>();
+  for (const n of graph.nodes) {
+    if (!n.path || !leafKinds.has(n.kind) || isGhost(n)) continue;
+    for (const r of own.get(n.id) ?? []) {
+      if (!mustOf(r) || r.ruleId === LENS_POLICY_RULE.id) continue;
+      const k = `${r.ruleId}\u0000${n.path}`;
+      (groups.get(k) ?? groups.set(k, []).get(k)!).push({ n, r });
+    }
+  }
+  for (const members of groups.values()) {
+    const ranked = [...members].sort((a, b) =>
+      (b.r.hunkIds?.length ?? 0) - (a.r.hunkIds?.length ?? 0) || kindRank(a.n) - kindRank(b.n) || (a.n.id < b.n.id ? -1 : 1));
+    const primary = ranked[0]!;
+    const ruleId = primary.r.ruleId;
+    if (ruleId === 'error-swallow') {
+      const rule = compiled.find((c) => c.rule.id === ruleId)!;
+      const pats = rule.content.filter((c) => c.mode !== 'removed' && c.mode !== 'net-removed').map((c) => c.re);
+      const ids = [...new Set(members.flatMap((m) => m.r.hunkIds ?? []))];
+      const lines = [...new Set(ids.flatMap((id) => { const h = hunkById.get(id); return h ? swallowLines(h, pats) : []; }))].sort((a, b) => a - b);
+      if (lines.length) {
+        const shown = lines.slice(0, LINE_CAP).join(', ') + (lines.length > LINE_CAP ? ', …' : '');
+        primary.r.message = `${lines.length} catch block${lines.length > 1 ? 's' : ''} swallow errors (empty, or only log and continue) (lines ${shown})`;
+      }
+    }
+    for (const m of ranked.slice(1)) {
+      noMust.add(m.r);
+      m.r.message += ` (see ${primary.n.label})`;
+    }
+  }
+
   const riskOf = (reasons: RiskReason[]): Risk => ({
     level: reasons.reduce<RiskLevel>((m, r) => maxLevel(m, r.level), 'low'),
     mustReview: reasons.some(mustOf),
@@ -160,7 +226,6 @@ export const applyRisk: ApplyRisk = (graph, policy, ctx) => {
   });
 
   // Bubble up: each risky leaf contributes to every ancestor.
-  const nodeById = new Map(graph.nodes.map((n) => [n.id, n]));
   const leafRisk = new Map<string, Risk>();
   for (const [id, reasons] of own) leafRisk.set(id, riskOf(reasons));
   const inherit = new Map<string, { level: RiskLevel; must: boolean; from: { id: string; level: RiskLevel }[] }>();

@@ -107,7 +107,8 @@ export const DEFAULT_RULES: RiskRule[] = [
     ],
   }),
   rule('db-schema', 'Alters or drops database schema', 'high', true, {
-    content: ['added:(?i)\\bDROP\\s+(TABLE|COLUMN|INDEX|SCHEMA|DATABASE)\\b', 'added:(?i)\\bALTER\\s+TABLE\\b', 'added:(?i)\\bTRUNCATE\\s+(TABLE\\s+)?\\w', 'added:\\.(dropTable|dropColumn|dropIndex)\\(',
+    content: [// `DROP TABLE IF EXISTS t` followed later in the same change by `CREATE TABLE t` is a re-create, not data loss
+      'added:(?i)\\bDROP\\s+(TABLE|COLUMN|INDEX|SCHEMA|DATABASE)\\b(?!\\s+IF\\s+EXISTS\\s+([\\w."`]+)(?![\\w])[\\s\\S]*?\\bCREATE\\s+(?:UNIQUE\\s+)?\\1\\s+(?:IF\\s+NOT\\s+EXISTS\\s+)?\\2(?![\\w]))', 'added:(?i)\\bALTER\\s+TABLE\\b', 'added:(?i)\\bTRUNCATE\\s+(TABLE\\s+)?\\w', 'added:\\.(dropTable|dropColumn|dropIndex)\\(',
       'added:\\bRENAME\\s+(TABLE|COLUMN)\\b', 'added:\\bsp_rename\\b',
       // Liquibase XML / YAML changes
       'added:<(dropTable|dropColumn|dropForeignKeyConstraint|dropIndex|renameTable|renameColumn|modifyDataType|dropNotNullConstraint)\\b',
