@@ -59,13 +59,18 @@ export function validateContent(src: string): void {
 
 export interface HunkText { id: string; added: string; removed: string }
 
+const SQL_COMMENT_LINE = /^\s*(--|\/\*|\*|#)/;
+
 const textCache = new WeakMap<Hunk, HunkText>();
 export function hunkText(h: Hunk): HunkText {
   let t = textCache.get(h);
   if (!t) {
     const added: string[] = [];
     const removed: string[] = [];
+    const isSql = /\.sql$/i.test(h.path);
     for (const line of h.patch.split('\n').slice(1)) {
+      // SQL comment lines (e.g. rollback notes "-- DROP TABLE x") are not executed; don't match them.
+      if (isSql && SQL_COMMENT_LINE.test(line.slice(1))) continue;
       if (line.startsWith('+') && !line.startsWith('+++')) added.push(line.slice(1));
       else if (line.startsWith('-') && !line.startsWith('---')) removed.push(line.slice(1));
     }
