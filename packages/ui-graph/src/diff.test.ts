@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { ChangeGraph } from '@lens/core';
-import { BIG_DIFF_LINES, BIG_DIFF_PREVIEW, canExpand, CODE_MAX_H, countRows, diffForLeaf, expandedSize, EXPANDED_W, formatExpanded, parseExpanded, parsePatch } from './diff.js';
+import { BIG_DIFF_LINES, BIG_DIFF_PREVIEW, canExpand, CODE_MAX_H, countRows, diffForLeaf, expandedSize, EXPANDED_W, formatExpanded, parseExpanded, parsePatch, sliceHunk } from './diff.js';
 import { layoutKey, layoutProjection, NODE_H, sizeOf } from './layout.js';
 import { project } from './project.js';
 
@@ -44,10 +44,11 @@ describe('layout input', () => {
 });
 
 describe('hunks for a node', () => {
-  it('owned hunks in full, overlapping foreign hunks as links, never the foreign hunk itself', () => {
+  it('owned hunks in full, slices of hunks owned by an enclosing node, other foreign hunks only as links', () => {
     for (const n of g.nodes) {
       const d = diffForLeaf(g, { byId }, n);
-      expect(d.own.every((h) => h.owner === n.id)).toBe(true);
+      // Own hunks, or slices (id `…~start-end`) of a hunk owned by an enclosing file/class.
+      expect(d.own.every((h) => h.owner === n.id || h.id.includes('~'))).toBe(true);
       expect(d.alsoTouches.every((a) => a.owner.id !== n.id && a.hunk.owner === a.owner.id)).toBe(true);
     }
     const withOwn = g.nodes.find((n) => canExpand({ kind: n.kind, ghost: false, node: n }) && g.hunks.some((h) => h.owner === n.id))!;
@@ -72,5 +73,21 @@ describe('expanded URL param', () => {
     expect(parseExpanded('a, b,,a,symbol:x#y')).toEqual(['a', 'b', 'symbol:x#y']);
     expect(formatExpanded([])).toBeNull();
     expect(parseExpanded(formatExpanded(['a', 'b']))).toEqual(['a', 'b']);
+  });
+});
+
+describe('sliceHunk', () => {
+  const h = {
+    id: 'hunk:A.java:0', path: 'A.java', oldStart: 0, oldLines: 0, newStart: 1, newLines: 6,
+    patch: '@@ -0,0 +1,6 @@\n+class A {\n+  void a() {\n+    x();\n+  }\n+  void b() {}\n+}',
+    added: 6, removed: 0, owner: 'file:A.java',
+  };
+  it('cuts a new-file hunk down to one method', () => {
+    const s = sliceHunk(h, { start: 2, end: 4 })!;
+    expect(s.patch).toBe('@@ -0,0 +2,3 @@\n+  void a() {\n+    x();\n+  }');
+    expect([s.added, s.newStart, s.newLines]).toEqual([3, 2, 3]);
+  });
+  it('returns null when nothing changed inside the range', () => {
+    expect(sliceHunk(h, { start: 20, end: 30 })).toBeNull();
   });
 });

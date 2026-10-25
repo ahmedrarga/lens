@@ -24,10 +24,35 @@ const span = (start: number, lines: number) => ({ start, end: start + Math.max(l
 const overlaps = (a: { start: number; end: number }, b: { start: number; end: number }) => a.start <= b.end && b.start <= a.end;
 
 export interface LeafDiff {
-  /** Hunks this node owns: shown in full. */
+  /** Hunks this node owns, plus slices of foreign hunks within its own line range. */
   own: Hunk[];
-  /** Overlapping hunks owned by another node: shown as a one-line link, never the foreign hunk. */
+  /** Overlapping hunks owned by another node that this node can't show a slice of: a one-line link. */
   alsoTouches: { hunk: Hunk; owner: GraphNode }[];
+}
+
+/**
+ * The rows of `h` that fall inside `range` (head lines; base lines for removed symbols), as a
+ * standalone hunk with a fresh header. Null when nothing changed inside the range.
+ */
+export function sliceHunk(h: Hunk, range: { start: number; end: number }, removed = false): Hunk | null {
+  const inside = (r: Row) => {
+    const no = removed ? r.oldNo : r.newNo ?? r.oldNo;
+    return no !== undefined && no >= range.start && no <= range.end;
+  };
+  const rows = parsePatch(h.patch).filter((r) => r.kind !== 'hdr' && r.kind !== 'meta' && inside(r));
+  if (!rows.some((r) => r.kind !== 'ctx')) return null;
+  const first = rows[0]!;
+  const oldStart = rows.find((r) => r.oldNo !== undefined)?.oldNo ?? h.oldStart;
+  const newStart = rows.find((r) => r.newNo !== undefined)?.newNo ?? first.newNo ?? h.newStart;
+  const oldLines = rows.filter((r) => r.kind !== 'add').length;
+  const newLines = rows.filter((r) => r.kind !== 'del').length;
+  const mark = { add: '+', del: '-', ctx: ' ' } as const;
+  const body = rows.map((r) => mark[r.kind as 'add' | 'del' | 'ctx'] + r.text);
+  return {
+    ...h, id: `${h.id}~${range.start}-${range.end}`, oldStart, oldLines, newStart, newLines,
+    patch: [`@@ -${oldStart},${oldLines} +${newStart},${newLines} @@`, ...body].join('\n'),
+    added: rows.filter((r) => r.kind === 'add').length, removed: rows.filter((r) => r.kind === 'del').length,
+  };
 }
 
 /** The inspector's (and the in-graph code view's) hunk filter for one node. */
@@ -41,7 +66,13 @@ export function diffForLeaf(graph: ChangeGraph, idx: { byId: ReadonlyMap<string,
       : node.kind === 'symbol' && !!node.path && !!node.range && h.path === node.path
         && overlaps(node.range, removed ? span(h.oldStart, h.oldLines) : span(h.newStart, h.newLines));
     const owner = idx.byId.get(h.owner);
-    if (hit && owner) also.push({ hunk: h, owner });
+    if (!hit || !owner) continue;
+    // A symbol inside a hunk owned elsewhere (e.g. a method in a brand-new file) shows its own slice of it.
+    // Only when the owner encloses this node (its file or class); a sibling's code stays a link.
+    const encloses = owner.kind === 'file' || (!!owner.range && !!node.range
+      && owner.range.start <= node.range.start && owner.range.end >= node.range.end);
+    const slice = encloses && node.kind === 'symbol' && node.range ? sliceHunk(h, node.range, removed) : null;
+    if (slice) own.push(slice); else also.push({ hunk: h, owner });
   }
   const by = (a: Hunk, b: Hunk) => a.newStart - b.newStart;
   return { own: own.sort(by), alsoTouches: also.sort((a, b) => by(a.hunk, b.hunk)) };
