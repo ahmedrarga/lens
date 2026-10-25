@@ -1,0 +1,2385 @@
+{
+  "schema": 1,
+  "pr": {
+    "provider": "github",
+    "host": "github.com",
+    "owner": "honojs",
+    "repo": "hono",
+    "number": 5556,
+    "url": "https://github.com/honojs/hono/pull/5556",
+    "title": "fix(reg-exp-router): correct wildcard middleware coverage",
+    "body": "Fix wildcard middleware coverage in `RegExpRouter`. This PR targets `v5` and relates to #5544.\n\nThe current implementation determines middleware coverage using regular expressions built from route strings. This can disagree with the trie matcher, causing missing or extra middleware when routes contain non-final wildcards, named parameters, or custom patterns.\n\nDerive coverage from the trie's node keys instead, and collect every covering middleware in registration order.\n\n## Changes\n\n- Preserve middleware parameter captures on dynamic and static routes, including serialization in `PreparedRegExpRouter`.\n- Correct the matching order of overlapping tail wildcards so all applicable handlers are retained.\n- Align empty-tail matching in `TrieRouter` and `LinearRouter`, keeping non-final standalone `*` segments non-empty and preserving literal asterisks within segments.\n- Reuse handler parameter maps and retain only referenced captures for static routes.\n- Add regression tests for wildcard coverage, registration order, HTTP methods, parameter captures, and serialization.\n\n## Matching changes\n\n### RegExpRouter\n\n| Registered routes | Request path | Before | After |\n| --- | --- | --- | --- |\n| `M: /v1/*/*`<br>`H: /v1/:a/:b` | `/v1/x/y` | `[H]` | `[M, H]` |\n| `M: /v1/:a/*`<br>`H: /v1/*/b` | `/v1/foo/b` | `[H]` | `[M, H]` |\n| `M1: /v1/:a/*`<br>`M2: /v1/*/b/*` | `/v1/foo/b/c` | `[M2]` | `[M1, M2]` |\n| `M1: /:a/b/*`<br>`M2: /:aaaaaaa/*`<br>`H: /:x/b/c` | `/q/b/c` | `[M2, H]` | `[M1, M2, H]` |\n| `M: /v1/*/fixed/*`<br>`H: /v1/:a{[^/]+}/fixed/:b` | `/v1/x/fixed/y` | `[H]` | `[M, H]` |\n| `M: /prefix/:x{a}/*`<br>`H: /prefix/a/static` | `/prefix/a/static` | `[H]` | `[M, H]` |\n| `M: /p/x*/*`<br>`H: /p/x` | `/p/x` | `[H]` | `[M, H]` |\n| `M1: /x/a*`<br>`M2: /x/a/*` | `/x/a/q` | `[M1]` | `[M1, M2]` |\n\n### TrieRouter\n\n| Registered routes | Request path | Before | After |\n| --- | --- | --- | --- |\n| `H: /x*/*` | `/x` | `[]` | `[H]` |\n| `H: /foo/*/*` | `/foo/x` | `[]` | `[H]` |\n| `M: /p/x*/*`<br>`H: /p/x` | `/p/x` | `[H]` | `[M, H]` |\n| `H: /x*/y*/*` | `/x*/y/z` | `[H, H]` | `[H]` |\n\n### LinearRouter\n\n| Registered routes | Request path | Before | After |\n| --- | --- | --- | --- |\n| `H: /x*/*` | `/x` | `[]` | `[H]` |\n| `H: /foo/*/*` | `/foo/x` | `[]` | `[H]` |\n| `H: /foo/*/*` | `/foo//bar/baz` | `[H]` | `[]` |\n| `M: /p/x*/*`<br>`H: /p/x` | `/p/x` | `[H]` | `[M, H]` |\n| `H: /x*y` | `/x*y` | `[]` | `[H]` |\n| `H: /x*y/*` | `/x*y` | `[]` | `[H]` |\n\n### The author should do the following, if applicable\n\n- [x] Add tests\n- [x] Run tests\n- [x] `pnpm run check:fix` to format and lint the code\n",
+    "author": "usualoma",
+    "baseSha": "b0d28c42987c0c8a4e3c99cdbbbb57450e06dfda",
+    "headSha": "e5d54623d7c62dc2fde2295d23d7d0bae48d0b3f",
+    "baseRef": "v5",
+    "headRef": "fix-regexp-router-mid-wildcard-v5"
+  },
+  "generatedAt": "2026-10-22T18:03:48.946Z",
+  "pipelineVersion": "m1-0.1.0",
+  "nodes": [
+    {
+      "id": "cluster:src/router:src-router-linear-router-router.ts-LinearRouter.match",
+      "kind": "cluster",
+      "level": 1,
+      "label": "LinearRouter.match (+2)",
+      "parent": "module:src/router",
+      "state": "modified",
+      "stats": {
+        "added": 25,
+        "removed": 7
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:src/router:src-router-reg-exp-router-prepared-router.ts-serializeInitParams",
+      "kind": "cluster",
+      "level": 1,
+      "label": "serializeInitParams (+2)",
+      "parent": "module:src/router",
+      "state": "modified",
+      "stats": {
+        "added": 5,
+        "removed": 5
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:src/router:src-router-reg-exp-router-router.ts",
+      "kind": "cluster",
+      "level": 1,
+      "label": "router.ts (+3)",
+      "parent": "module:src/router",
+      "state": "modified",
+      "stats": {
+        "added": 49,
+        "removed": 16
+      },
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:src/router/reg-exp-router/router.test.ts"
+        ]
+      }
+    },
+    {
+      "id": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.-buildMatcher",
+      "kind": "cluster",
+      "level": 1,
+      "label": "RegExpRouter.#buildMatcher (+5)",
+      "parent": "module:src/router",
+      "state": "modified",
+      "stats": {
+        "added": 52,
+        "removed": 23
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.add",
+      "kind": "cluster",
+      "level": 1,
+      "label": "RegExpRouter.add (+8)",
+      "parent": "module:src/router",
+      "state": "modified",
+      "stats": {
+        "added": 21,
+        "removed": 74
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:src/router:src-router-trie-router-node.ts-Node.search",
+      "kind": "cluster",
+      "level": 1,
+      "label": "Node.search",
+      "parent": "module:src/router",
+      "state": "modified",
+      "stats": {
+        "added": 11,
+        "removed": 14
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:src/router:tests-src-router",
+      "kind": "cluster",
+      "level": 1,
+      "label": "Tests: src/router",
+      "parent": "module:src/router",
+      "state": "modified",
+      "stats": {
+        "added": 260,
+        "removed": 1
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:src/router/linear-router/router.test.ts",
+      "level": 2,
+      "state": "modified",
+      "path": "src/router/linear-router/router.test.ts",
+      "parent": "cluster:src/router:src-router-linear-router-router.ts-LinearRouter.match",
+      "stats": {
+        "added": 13,
+        "removed": 0
+      },
+      "kind": "file",
+      "label": "src/router/linear-router/router.test.ts",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:src/router/pattern-router/router.test.ts",
+      "kind": "file",
+      "level": 2,
+      "label": "src/router/pattern-router/router.test.ts (top-level)",
+      "parent": "module:src/router",
+      "state": "unchanged",
+      "path": "src/router/pattern-router/router.test.ts"
+    },
+    {
+      "id": "file:src/router/reg-exp-router/prepared-router.test.ts",
+      "level": 2,
+      "state": "modified",
+      "path": "src/router/reg-exp-router/prepared-router.test.ts",
+      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts",
+      "stats": {
+        "added": 45,
+        "removed": 0
+      },
+      "kind": "file",
+      "label": "src/router/reg-exp-router/prepared-router.test.ts",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:src/router/reg-exp-router/prepared-router.ts",
+      "level": 2,
+      "state": "modified",
+      "path": "src/router/reg-exp-router/prepared-router.ts",
+      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "kind": "file",
+      "label": "src/router/reg-exp-router/prepared-router.ts",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:src/router/reg-exp-router/router.test.ts",
+      "level": 2,
+      "state": "modified",
+      "path": "src/router/reg-exp-router/router.test.ts",
+      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts",
+      "stats": {
+        "added": 0,
+        "removed": 14
+      },
+      "kind": "file",
+      "label": "src/router/reg-exp-router/router.test.ts",
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [
+          {
+            "ruleId": "weakened-test",
+            "message": "Removes assertions from a test (expect()",
+            "level": "high",
+            "hunkIds": [
+              "hunk:src/router/reg-exp-router/router.test.ts:0"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:src/router/reg-exp-router/router.ts",
+      "level": 2,
+      "state": "modified",
+      "path": "src/router/reg-exp-router/router.ts",
+      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts",
+      "stats": {
+        "added": 3,
+        "removed": 1
+      },
+      "kind": "file",
+      "label": "src/router/reg-exp-router/router.ts",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:src/router/smart-router/router.test.ts",
+      "kind": "file",
+      "level": 2,
+      "label": "src/router/smart-router/router.test.ts (top-level)",
+      "parent": "module:src/router",
+      "state": "unchanged",
+      "path": "src/router/smart-router/router.test.ts"
+    },
+    {
+      "id": "file:src/router/trie-router/node.test.ts",
+      "kind": "file",
+      "level": 2,
+      "label": "src/router/trie-router/node.test.ts (top-level)",
+      "parent": "module:src/router",
+      "state": "unchanged",
+      "path": "src/router/trie-router/node.test.ts"
+    },
+    {
+      "id": "file:src/router/trie-router/router.test.ts",
+      "kind": "file",
+      "level": 2,
+      "label": "src/router/trie-router/router.test.ts (top-level)",
+      "parent": "module:src/router",
+      "state": "unchanged",
+      "path": "src/router/trie-router/router.test.ts"
+    },
+    {
+      "id": "module:src",
+      "kind": "module",
+      "level": 0,
+      "label": "src",
+      "path": "src",
+      "state": "unchanged",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "module:src/router",
+      "kind": "module",
+      "level": 0,
+      "label": "src/router",
+      "path": "src/router",
+      "state": "modified",
+      "stats": {
+        "added": 423,
+        "removed": 140
+      },
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:src/router/reg-exp-router/router.test.ts"
+        ]
+      }
+    },
+    {
+      "id": "symbol:src/router.ts#MESSAGE_MATCHER_IS_ALREADY_BUILT",
+      "kind": "symbol",
+      "level": 2,
+      "label": "MESSAGE_MATCHER_IS_ALREADY_BUILT",
+      "parent": "module:src",
+      "state": "unchanged",
+      "symbolKind": "variable",
+      "path": "src/router.ts",
+      "range": {
+        "start": 18,
+        "end": 22
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/router.ts#METHOD_NAME_ALL",
+      "kind": "symbol",
+      "level": 2,
+      "label": "METHOD_NAME_ALL",
+      "parent": "module:src",
+      "state": "unchanged",
+      "symbolKind": "variable",
+      "path": "src/router.ts",
+      "range": {
+        "start": 1,
+        "end": 9
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/router.ts#ParamIndexMap",
+      "kind": "symbol",
+      "level": 2,
+      "label": "ParamIndexMap",
+      "parent": "module:src",
+      "state": "unchanged",
+      "symbolKind": "type",
+      "path": "src/router.ts",
+      "range": {
+        "start": 54,
+        "end": 57
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/router.ts#Params",
+      "kind": "symbol",
+      "level": 2,
+      "label": "Params",
+      "parent": "module:src",
+      "state": "unchanged",
+      "symbolKind": "type",
+      "path": "src/router.ts",
+      "range": {
+        "start": 62,
+        "end": 65
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/router.ts#Result",
+      "kind": "symbol",
+      "level": 2,
+      "label": "Result",
+      "parent": "module:src",
+      "state": "unchanged",
+      "symbolKind": "type",
+      "path": "src/router.ts",
+      "range": {
+        "start": 66,
+        "end": 98
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/router.ts#Router",
+      "kind": "symbol",
+      "level": 2,
+      "label": "Router",
+      "parent": "module:src",
+      "state": "unchanged",
+      "symbolKind": "interface",
+      "path": "src/router.ts",
+      "range": {
+        "start": 24,
+        "end": 52
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/router/common.case.test.ts#runTest",
+      "level": 2,
+      "state": "modified",
+      "path": "src/router/common.case.test.ts",
+      "parent": "cluster:src/router:tests-src-router",
+      "stats": {
+        "added": 260,
+        "removed": 1
+      },
+      "notes": [
+        "calls 4 unresolved targets: name.startsWith(), path.slice(), s.tests.some(), …"
+      ],
+      "kind": "symbol",
+      "label": "runTest",
+      "symbolKind": "function",
+      "range": {
+        "start": 16,
+        "end": 1543
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/router/linear-router/router.ts#LinearRouter.match",
+      "level": 2,
+      "state": "modified",
+      "path": "src/router/linear-router/router.ts",
+      "parent": "cluster:src/router:src-router-linear-router-router.ts-LinearRouter.match",
+      "stats": {
+        "added": 11,
+        "removed": 6
+      },
+      "notes": [
+        "calls 15 unresolved targets: name.charCodeAt(), name.indexOf(), name.slice(), …"
+      ],
+      "kind": "symbol",
+      "label": "LinearRouter.match",
+      "symbolKind": "method",
+      "range": {
+        "start": 33,
+        "end": 175
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/router/linear-router/router.ts#splitByStarRe",
+      "level": 2,
+      "state": "modified",
+      "path": "src/router/linear-router/router.ts",
+      "parent": "cluster:src/router:src-router-linear-router-router.ts-LinearRouter.match",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "kind": "symbol",
+      "label": "splitByStarRe",
+      "symbolKind": "variable",
+      "range": {
+        "start": 10,
+        "end": 10
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/matcher.ts#HandlerData",
+      "kind": "symbol",
+      "level": 2,
+      "label": "HandlerData",
+      "parent": "module:src/router",
+      "state": "unchanged",
+      "symbolKind": "type",
+      "path": "src/router/reg-exp-router/matcher.ts",
+      "range": {
+        "start": 4,
+        "end": 4
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/matcher.ts#Matcher",
+      "kind": "symbol",
+      "level": 2,
+      "label": "Matcher",
+      "parent": "module:src/router",
+      "state": "unchanged",
+      "symbolKind": "type",
+      "path": "src/router/reg-exp-router/matcher.ts",
+      "range": {
+        "start": 6,
+        "end": 6
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/matcher.ts#MatcherMap",
+      "kind": "symbol",
+      "level": 2,
+      "label": "MatcherMap",
+      "parent": "module:src/router",
+      "state": "unchanged",
+      "symbolKind": "type",
+      "path": "src/router/reg-exp-router/matcher.ts",
+      "range": {
+        "start": 7,
+        "end": 7
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/matcher.ts#StaticMap",
+      "kind": "symbol",
+      "level": 2,
+      "label": "StaticMap",
+      "parent": "module:src/router",
+      "state": "unchanged",
+      "symbolKind": "type",
+      "path": "src/router/reg-exp-router/matcher.ts",
+      "range": {
+        "start": 5,
+        "end": 5
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/matcher.ts#match",
+      "kind": "symbol",
+      "level": 2,
+      "label": "match",
+      "parent": "module:src/router",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "src/router/reg-exp-router/matcher.ts",
+      "range": {
+        "start": 10,
+        "end": 33
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/node.ts#Context",
+      "kind": "symbol",
+      "level": 2,
+      "label": "Context",
+      "parent": "module:src/router",
+      "state": "unchanged",
+      "symbolKind": "interface",
+      "path": "src/router/reg-exp-router/node.ts",
+      "range": {
+        "start": 11,
+        "end": 13
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/node.ts#LABEL_REG_EXP_STR",
+      "kind": "symbol",
+      "level": 2,
+      "label": "LABEL_REG_EXP_STR",
+      "parent": "module:src/router",
+      "state": "unchanged",
+      "symbolKind": "variable",
+      "path": "src/router/reg-exp-router/node.ts",
+      "range": {
+        "start": 3,
+        "end": 3
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/node.ts#Node",
+      "kind": "symbol",
+      "level": 2,
+      "label": "Node",
+      "parent": "module:src/router",
+      "state": "unchanged",
+      "symbolKind": "class",
+      "path": "src/router/reg-exp-router/node.ts",
+      "range": {
+        "start": 49,
+        "end": 185
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/node.ts#Node.buildRegExpStr",
+      "kind": "symbol",
+      "level": 2,
+      "label": "Node.buildRegExpStr",
+      "parent": "module:src/router",
+      "state": "unchanged",
+      "symbolKind": "method",
+      "path": "src/router/reg-exp-router/node.ts",
+      "range": {
+        "start": 154,
+        "end": 184
+      },
+      "exported": false
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/node.ts#Node.insert",
+      "level": 2,
+      "state": "modified",
+      "path": "src/router/reg-exp-router/node.ts",
+      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.-buildMatcher",
+      "stats": {
+        "added": 4,
+        "removed": 2
+      },
+      "notes": [
+        "calls 3 unresolved targets: regExpMetaChars.has(), regexpStr.replace(), token.match()"
+      ],
+      "kind": "symbol",
+      "label": "Node.insert",
+      "symbolKind": "method",
+      "range": {
+        "start": 55,
+        "end": 152
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/node.ts#ONLY_WILDCARD_REG_EXP_STR",
+      "kind": "symbol",
+      "level": 2,
+      "label": "ONLY_WILDCARD_REG_EXP_STR",
+      "parent": "module:src/router",
+      "state": "unchanged",
+      "symbolKind": "variable",
+      "path": "src/router/reg-exp-router/node.ts",
+      "range": {
+        "start": 5,
+        "end": 5
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/node.ts#PREFIXED_WILDCARD_REG_EXP_STR",
+      "level": 2,
+      "state": "modified",
+      "path": "src/router/reg-exp-router/node.ts",
+      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.-buildMatcher",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "kind": "symbol",
+      "label": "PREFIXED_WILDCARD_REG_EXP_STR",
+      "symbolKind": "variable",
+      "range": {
+        "start": 6,
+        "end": 6
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/node.ts#ParamAssocArray",
+      "kind": "symbol",
+      "level": 2,
+      "label": "ParamAssocArray",
+      "parent": "module:src/router",
+      "state": "unchanged",
+      "symbolKind": "type",
+      "path": "src/router/reg-exp-router/node.ts",
+      "range": {
+        "start": 10,
+        "end": 10
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/node.ts#TAIL_WILDCARD_REG_EXP_STR",
+      "kind": "symbol",
+      "level": 2,
+      "label": "TAIL_WILDCARD_REG_EXP_STR",
+      "parent": "module:src/router",
+      "state": "unchanged",
+      "symbolKind": "variable",
+      "path": "src/router/reg-exp-router/node.ts",
+      "range": {
+        "start": 7,
+        "end": 7
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/node.ts#compareKey",
+      "level": 2,
+      "state": "modified",
+      "path": "src/router/reg-exp-router/node.ts",
+      "parent": "cluster:src/router:src-router-reg-exp-router-prepared-router.ts-serializeInitParams",
+      "stats": {
+        "added": 2,
+        "removed": 2
+      },
+      "kind": "symbol",
+      "label": "compareKey",
+      "symbolKind": "function",
+      "range": {
+        "start": 17,
+        "end": 47
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/prepared-router.ts#PreparedRegExpRouter",
+      "kind": "symbol",
+      "level": 2,
+      "label": "PreparedRegExpRouter",
+      "parent": "module:src/router",
+      "state": "unchanged",
+      "symbolKind": "class",
+      "path": "src/router/reg-exp-router/prepared-router.ts",
+      "range": {
+        "start": 9,
+        "end": 93
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/prepared-router.ts#PreparedRegExpRouter.add",
+      "level": 2,
+      "state": "modified",
+      "path": "src/router/reg-exp-router/prepared-router.ts",
+      "parent": "cluster:src/router:src-router-reg-exp-router-prepared-router.ts-serializeInitParams",
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "notes": [
+        "calls 2 unresolved targets: all[2][key][0].slice(), list.slice()"
+      ],
+      "kind": "symbol",
+      "label": "PreparedRegExpRouter.add",
+      "symbolKind": "method",
+      "range": {
+        "start": 47,
+        "end": 86
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/prepared-router.ts#buildInitParams",
+      "level": 2,
+      "state": "modified",
+      "path": "src/router/reg-exp-router/prepared-router.ts",
+      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.add",
+      "stats": {
+        "added": 3,
+        "removed": 2
+      },
+      "notes": [
+        "calls 4 unresolved targets: all[2][path2][0].forEach(), list.forEach(), relocateMap[path][0][0].includes(), …"
+      ],
+      "kind": "symbol",
+      "label": "buildInitParams",
+      "symbolKind": "function",
+      "range": {
+        "start": 95,
+        "end": 155
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/prepared-router.ts#serializeInitParams",
+      "level": 2,
+      "state": "modified",
+      "path": "src/router/reg-exp-router/prepared-router.ts",
+      "parent": "cluster:src/router:src-router-reg-exp-router-prepared-router.ts-serializeInitParams",
+      "stats": {
+        "added": 2,
+        "removed": 2
+      },
+      "notes": [
+        "calls 1 unresolved target: str.replace()"
+      ],
+      "kind": "symbol",
+      "label": "serializeInitParams",
+      "symbolKind": "function",
+      "range": {
+        "start": 157,
+        "end": 166
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter",
+      "level": 2,
+      "state": "modified",
+      "path": "src/router/reg-exp-router/router.ts",
+      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.add",
+      "stats": {
+        "added": 2,
+        "removed": 2
+      },
+      "kind": "symbol",
+      "label": "RegExpRouter",
+      "symbolKind": "class",
+      "range": {
+        "start": 41,
+        "end": 147
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.#buildMatcher",
+      "level": 2,
+      "state": "modified",
+      "path": "src/router/reg-exp-router/router.ts",
+      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.-buildMatcher",
+      "stats": {
+        "added": 30,
+        "removed": 17
+      },
+      "notes": [
+        "calls 6 unresolved targets: handlers.map(), indexReplacementMap.map(), indexes.sort((a, b) => a - b).map(), …"
+      ],
+      "kind": "symbol",
+      "label": "RegExpRouter.#buildMatcher",
+      "symbolKind": "method",
+      "range": {
+        "start": 105,
+        "end": 146
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.add",
+      "level": 2,
+      "state": "modified",
+      "path": "src/router/reg-exp-router/router.ts",
+      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.add",
+      "stats": {
+        "added": 11,
+        "removed": 42
+      },
+      "notes": [
+        "calls 1 unresolved target: handlers[m].push()"
+      ],
+      "kind": "symbol",
+      "label": "RegExpRouter.add",
+      "symbolKind": "method",
+      "range": {
+        "start": 60,
+        "end": 88
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.buildAllMatchers",
+      "level": 2,
+      "state": "modified",
+      "path": "src/router/reg-exp-router/router.ts",
+      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.add",
+      "stats": {
+        "added": 2,
+        "removed": 3
+      },
+      "kind": "symbol",
+      "label": "RegExpRouter.buildAllMatchers",
+      "symbolKind": "method",
+      "range": {
+        "start": 92,
+        "end": 103
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.constructor",
+      "level": 2,
+      "state": "modified",
+      "path": "src/router/reg-exp-router/router.ts",
+      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.add",
+      "stats": {
+        "added": 1,
+        "removed": 2
+      },
+      "kind": "symbol",
+      "label": "RegExpRouter.constructor",
+      "symbolKind": "method",
+      "range": {
+        "start": 47,
+        "end": 50
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/router.ts#buildWildcardRegExp",
+      "level": 2,
+      "state": "removed",
+      "path": "src/router/reg-exp-router/router.ts",
+      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.add",
+      "stats": {
+        "added": 0,
+        "removed": 14
+      },
+      "kind": "symbol",
+      "label": "buildWildcardRegExp",
+      "symbolKind": "function",
+      "range": {
+        "start": 22,
+        "end": 36
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/router.ts#covers",
+      "level": 2,
+      "state": "added",
+      "path": "src/router/reg-exp-router/router.ts",
+      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.-buildMatcher",
+      "stats": {
+        "added": 9,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "covers",
+      "symbolKind": "function",
+      "range": {
+        "start": 28,
+        "end": 39
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/router.ts#endsWithWildcard",
+      "level": 2,
+      "state": "added",
+      "path": "src/router/reg-exp-router/router.ts",
+      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.-buildMatcher",
+      "stats": {
+        "added": 3,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "endsWithWildcard",
+      "symbolKind": "function",
+      "range": {
+        "start": 21,
+        "end": 24
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/router.ts#findMiddleware",
+      "level": 2,
+      "state": "removed",
+      "path": "src/router/reg-exp-router/router.ts",
+      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.add",
+      "stats": {
+        "added": 0,
+        "removed": 6
+      },
+      "notes": [
+        "calls 1 unresolved target: buildWildcardRegExp(k).test()"
+      ],
+      "kind": "symbol",
+      "label": "findMiddleware",
+      "symbolKind": "function",
+      "range": {
+        "start": 38,
+        "end": 46
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/router.ts#wildcardRegExpCache",
+      "level": 2,
+      "state": "removed",
+      "path": "src/router/reg-exp-router/router.ts",
+      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.add",
+      "stats": {
+        "added": 0,
+        "removed": 1
+      },
+      "kind": "symbol",
+      "label": "wildcardRegExpCache",
+      "symbolKind": "variable",
+      "range": {
+        "start": 21,
+        "end": 21
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/trie.ts#Trie",
+      "level": 2,
+      "state": "modified",
+      "path": "src/router/reg-exp-router/trie.ts",
+      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.add",
+      "stats": {
+        "added": 2,
+        "removed": 2
+      },
+      "kind": "symbol",
+      "label": "Trie",
+      "symbolKind": "class",
+      "range": {
+        "start": 7,
+        "end": 86
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/router/reg-exp-router/trie.ts#Trie.insert",
+      "level": 2,
+      "state": "modified",
+      "path": "src/router/reg-exp-router/trie.ts",
+      "parent": "cluster:src/router:src-router-reg-exp-router-router.ts-RegExpRouter.-buildMatcher",
+      "stats": {
+        "added": 5,
+        "removed": 3
+      },
+      "notes": [
+        "calls 2 unresolved targets: tokens[j].indexOf(), tokens[j].replace()"
+      ],
+      "kind": "symbol",
+      "label": "Trie.insert",
+      "symbolKind": "method",
+      "range": {
+        "start": 14,
+        "end": 59
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/router/trie-router/node.ts#HandlerParamsSet",
+      "kind": "symbol",
+      "level": 2,
+      "label": "HandlerParamsSet",
+      "parent": "module:src/router",
+      "state": "unchanged",
+      "symbolKind": "type",
+      "path": "src/router/trie-router/node.ts",
+      "range": {
+        "start": 13,
+        "end": 15
+      },
+      "exported": false
+    },
+    {
+      "id": "symbol:src/router/trie-router/node.ts#Node.search",
+      "level": 2,
+      "state": "modified",
+      "path": "src/router/trie-router/node.ts",
+      "parent": "cluster:src/router:src-router-trie-router-node.ts-Node.search",
+      "stats": {
+        "added": 11,
+        "removed": 14
+      },
+      "notes": [
+        "calls 4 unresolved targets: m[0].match(), matcher.exec(), matcher.test(), …"
+      ],
+      "kind": "symbol",
+      "label": "Node.search",
+      "symbolKind": "method",
+      "range": {
+        "start": 84,
+        "end": 222
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/router/utils.ts#createNullObject",
+      "kind": "symbol",
+      "level": 2,
+      "label": "createNullObject",
+      "parent": "module:src/router",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "src/router/utils.ts",
+      "range": {
+        "start": 1,
+        "end": 1
+      },
+      "exported": true
+    }
+  ],
+  "edges": [
+    {
+      "id": "calls:file:src/router/linear-router/router.test.ts->symbol:src/router/common.case.test.ts#runTest",
+      "kind": "calls",
+      "from": "file:src/router/linear-router/router.test.ts",
+      "to": "symbol:src/router/common.case.test.ts#runTest",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:file:src/router/linear-router/router.test.ts->symbol:src/router/linear-router/router.ts#LinearRouter.match",
+      "kind": "calls",
+      "from": "file:src/router/linear-router/router.test.ts",
+      "to": "symbol:src/router/linear-router/router.ts#LinearRouter.match",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:file:src/router/pattern-router/router.test.ts->symbol:src/router/common.case.test.ts#runTest",
+      "kind": "calls",
+      "from": "file:src/router/pattern-router/router.test.ts",
+      "to": "symbol:src/router/common.case.test.ts#runTest",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:file:src/router/reg-exp-router/prepared-router.test.ts->symbol:src/router/common.case.test.ts#runTest",
+      "kind": "calls",
+      "from": "file:src/router/reg-exp-router/prepared-router.test.ts",
+      "to": "symbol:src/router/common.case.test.ts#runTest",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:file:src/router/reg-exp-router/prepared-router.test.ts->symbol:src/router/reg-exp-router/prepared-router.ts#PreparedRegExpRouter.add",
+      "kind": "calls",
+      "from": "file:src/router/reg-exp-router/prepared-router.test.ts",
+      "to": "symbol:src/router/reg-exp-router/prepared-router.ts#PreparedRegExpRouter.add",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:file:src/router/reg-exp-router/prepared-router.test.ts->symbol:src/router/reg-exp-router/prepared-router.ts#buildInitParams",
+      "kind": "calls",
+      "from": "file:src/router/reg-exp-router/prepared-router.test.ts",
+      "to": "symbol:src/router/reg-exp-router/prepared-router.ts#buildInitParams",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:file:src/router/reg-exp-router/prepared-router.test.ts->symbol:src/router/reg-exp-router/prepared-router.ts#serializeInitParams",
+      "kind": "calls",
+      "from": "file:src/router/reg-exp-router/prepared-router.test.ts",
+      "to": "symbol:src/router/reg-exp-router/prepared-router.ts#serializeInitParams",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:file:src/router/reg-exp-router/router.test.ts->symbol:src/router/common.case.test.ts#runTest",
+      "kind": "calls",
+      "from": "file:src/router/reg-exp-router/router.test.ts",
+      "to": "symbol:src/router/common.case.test.ts#runTest",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:file:src/router/reg-exp-router/router.test.ts->symbol:src/router/reg-exp-router/router.ts#RegExpRouter.add",
+      "kind": "calls",
+      "from": "file:src/router/reg-exp-router/router.test.ts",
+      "to": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.add",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:file:src/router/smart-router/router.test.ts->symbol:src/router/common.case.test.ts#runTest",
+      "kind": "calls",
+      "from": "file:src/router/smart-router/router.test.ts",
+      "to": "symbol:src/router/common.case.test.ts#runTest",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:file:src/router/trie-router/node.test.ts->symbol:src/router/trie-router/node.ts#Node.search",
+      "kind": "calls",
+      "from": "file:src/router/trie-router/node.test.ts",
+      "to": "symbol:src/router/trie-router/node.ts#Node.search",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:file:src/router/trie-router/router.test.ts->symbol:src/router/common.case.test.ts#runTest",
+      "kind": "calls",
+      "from": "file:src/router/trie-router/router.test.ts",
+      "to": "symbol:src/router/common.case.test.ts#runTest",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/router/reg-exp-router/prepared-router.ts#buildInitParams->symbol:src/router/reg-exp-router/router.ts#RegExpRouter.add",
+      "kind": "calls",
+      "from": "symbol:src/router/reg-exp-router/prepared-router.ts#buildInitParams",
+      "to": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.add",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/router/reg-exp-router/prepared-router.ts#buildInitParams->symbol:src/router/reg-exp-router/router.ts#RegExpRouter.buildAllMatchers",
+      "kind": "calls",
+      "from": "symbol:src/router/reg-exp-router/prepared-router.ts#buildInitParams",
+      "to": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.buildAllMatchers",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/router/reg-exp-router/router.ts#RegExpRouter.#buildMatcher->symbol:src/router/reg-exp-router/router.ts#covers",
+      "kind": "calls",
+      "from": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.#buildMatcher",
+      "to": "symbol:src/router/reg-exp-router/router.ts#covers",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/router/reg-exp-router/router.ts#RegExpRouter.#buildMatcher->symbol:src/router/reg-exp-router/router.ts#endsWithWildcard",
+      "kind": "calls",
+      "from": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.#buildMatcher",
+      "to": "symbol:src/router/reg-exp-router/router.ts#endsWithWildcard",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/router/reg-exp-router/router.ts#RegExpRouter.#buildMatcher->symbol:src/router/utils.ts#createNullObject",
+      "kind": "calls",
+      "from": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.#buildMatcher",
+      "to": "symbol:src/router/utils.ts#createNullObject",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/router/reg-exp-router/router.ts#RegExpRouter.add->symbol:src/router/reg-exp-router/router.ts#buildWildcardRegExp",
+      "kind": "calls",
+      "from": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.add",
+      "to": "symbol:src/router/reg-exp-router/router.ts#buildWildcardRegExp",
+      "state": "removed",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/router/reg-exp-router/router.ts#RegExpRouter.add->symbol:src/router/reg-exp-router/router.ts#findMiddleware",
+      "kind": "calls",
+      "from": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.add",
+      "to": "symbol:src/router/reg-exp-router/router.ts#findMiddleware",
+      "state": "removed",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/router/reg-exp-router/router.ts#RegExpRouter.add->symbol:src/router/utils.ts#createNullObject",
+      "kind": "calls",
+      "from": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.add",
+      "to": "symbol:src/router/utils.ts#createNullObject",
+      "state": "removed",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/router/reg-exp-router/router.ts#RegExpRouter.buildAllMatchers->symbol:src/router/utils.ts#createNullObject",
+      "kind": "calls",
+      "from": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.buildAllMatchers",
+      "to": "symbol:src/router/utils.ts#createNullObject",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/router/reg-exp-router/router.ts#RegExpRouter.constructor->symbol:src/router/utils.ts#createNullObject",
+      "kind": "calls",
+      "from": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.constructor",
+      "to": "symbol:src/router/utils.ts#createNullObject",
+      "state": "removed",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/router/reg-exp-router/router.ts#findMiddleware->symbol:src/router/reg-exp-router/router.ts#buildWildcardRegExp",
+      "kind": "calls",
+      "from": "symbol:src/router/reg-exp-router/router.ts#findMiddleware",
+      "to": "symbol:src/router/reg-exp-router/router.ts#buildWildcardRegExp",
+      "state": "removed",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/router/reg-exp-router/router.ts#wildcardRegExpCache->symbol:src/router/utils.ts#createNullObject",
+      "kind": "calls",
+      "from": "symbol:src/router/reg-exp-router/router.ts#wildcardRegExpCache",
+      "to": "symbol:src/router/utils.ts#createNullObject",
+      "state": "removed",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/router/reg-exp-router/trie.ts#Trie->symbol:src/router/utils.ts#createNullObject",
+      "kind": "calls",
+      "from": "symbol:src/router/reg-exp-router/trie.ts#Trie",
+      "to": "symbol:src/router/utils.ts#createNullObject",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/router/reg-exp-router/trie.ts#Trie.insert->symbol:src/router/reg-exp-router/node.ts#Node.insert",
+      "kind": "calls",
+      "from": "symbol:src/router/reg-exp-router/trie.ts#Trie.insert",
+      "to": "symbol:src/router/reg-exp-router/node.ts#Node.insert",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "imports:file:src/router/reg-exp-router/prepared-router.test.ts->file:src/router/reg-exp-router/prepared-router.ts",
+      "kind": "imports",
+      "from": "file:src/router/reg-exp-router/prepared-router.test.ts",
+      "to": "file:src/router/reg-exp-router/prepared-router.ts",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "imports:file:src/router/reg-exp-router/prepared-router.ts->file:src/router/reg-exp-router/router.ts",
+      "kind": "imports",
+      "from": "file:src/router/reg-exp-router/prepared-router.ts",
+      "to": "file:src/router/reg-exp-router/router.ts",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "imports:file:src/router/reg-exp-router/router.test.ts->file:src/router/reg-exp-router/router.ts",
+      "kind": "imports",
+      "from": "file:src/router/reg-exp-router/router.test.ts",
+      "to": "file:src/router/reg-exp-router/router.ts",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:file:src/router/reg-exp-router/prepared-router.test.ts->symbol:src/router.ts#METHOD_NAME_ALL",
+      "kind": "references",
+      "from": "file:src/router/reg-exp-router/prepared-router.test.ts",
+      "to": "symbol:src/router.ts#METHOD_NAME_ALL",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:file:src/router/reg-exp-router/prepared-router.test.ts->symbol:src/router/reg-exp-router/prepared-router.ts#PreparedRegExpRouter",
+      "kind": "references",
+      "from": "file:src/router/reg-exp-router/prepared-router.test.ts",
+      "to": "symbol:src/router/reg-exp-router/prepared-router.ts#PreparedRegExpRouter",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:file:src/router/reg-exp-router/router.test.ts->symbol:src/router.ts#ParamIndexMap",
+      "kind": "references",
+      "from": "file:src/router/reg-exp-router/router.test.ts",
+      "to": "symbol:src/router.ts#ParamIndexMap",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:file:src/router/reg-exp-router/router.test.ts->symbol:src/router/reg-exp-router/node.ts#ONLY_WILDCARD_REG_EXP_STR",
+      "kind": "references",
+      "from": "file:src/router/reg-exp-router/router.test.ts",
+      "to": "symbol:src/router/reg-exp-router/node.ts#ONLY_WILDCARD_REG_EXP_STR",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:file:src/router/reg-exp-router/router.test.ts->symbol:src/router/reg-exp-router/node.ts#TAIL_WILDCARD_REG_EXP_STR",
+      "kind": "references",
+      "from": "file:src/router/reg-exp-router/router.test.ts",
+      "to": "symbol:src/router/reg-exp-router/node.ts#TAIL_WILDCARD_REG_EXP_STR",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:file:src/router/reg-exp-router/router.test.ts->symbol:src/router/reg-exp-router/router.ts#RegExpRouter",
+      "kind": "references",
+      "from": "file:src/router/reg-exp-router/router.test.ts",
+      "to": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:file:src/router/smart-router/router.test.ts->symbol:src/router/reg-exp-router/router.ts#RegExpRouter",
+      "kind": "references",
+      "from": "file:src/router/smart-router/router.test.ts",
+      "to": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/common.case.test.ts#runTest->symbol:src/router.ts#ParamIndexMap",
+      "kind": "references",
+      "from": "symbol:src/router/common.case.test.ts#runTest",
+      "to": "symbol:src/router.ts#ParamIndexMap",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/common.case.test.ts#runTest->symbol:src/router.ts#Params",
+      "kind": "references",
+      "from": "symbol:src/router/common.case.test.ts#runTest",
+      "to": "symbol:src/router.ts#Params",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/common.case.test.ts#runTest->symbol:src/router.ts#Router",
+      "kind": "references",
+      "from": "symbol:src/router/common.case.test.ts#runTest",
+      "to": "symbol:src/router.ts#Router",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/linear-router/router.ts#LinearRouter.match->symbol:src/router.ts#METHOD_NAME_ALL",
+      "kind": "references",
+      "from": "symbol:src/router/linear-router/router.ts#LinearRouter.match",
+      "to": "symbol:src/router.ts#METHOD_NAME_ALL",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/linear-router/router.ts#LinearRouter.match->symbol:src/router.ts#Params",
+      "kind": "references",
+      "from": "symbol:src/router/linear-router/router.ts#LinearRouter.match",
+      "to": "symbol:src/router.ts#Params",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/linear-router/router.ts#LinearRouter.match->symbol:src/router.ts#Result",
+      "kind": "references",
+      "from": "symbol:src/router/linear-router/router.ts#LinearRouter.match",
+      "to": "symbol:src/router.ts#Result",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/linear-router/router.ts#LinearRouter.match->symbol:src/router/linear-router/router.ts#splitByStarRe",
+      "kind": "references",
+      "from": "symbol:src/router/linear-router/router.ts#LinearRouter.match",
+      "to": "symbol:src/router/linear-router/router.ts#splitByStarRe",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/node.ts#Node.buildRegExpStr->symbol:src/router/reg-exp-router/node.ts#compareKey",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/node.ts#Node.buildRegExpStr",
+      "to": "symbol:src/router/reg-exp-router/node.ts#compareKey",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/node.ts#Node.insert->symbol:src/router/reg-exp-router/node.ts#Context",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/node.ts#Node.insert",
+      "to": "symbol:src/router/reg-exp-router/node.ts#Context",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/node.ts#Node.insert->symbol:src/router/reg-exp-router/node.ts#LABEL_REG_EXP_STR",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/node.ts#Node.insert",
+      "to": "symbol:src/router/reg-exp-router/node.ts#LABEL_REG_EXP_STR",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/node.ts#Node.insert->symbol:src/router/reg-exp-router/node.ts#ONLY_WILDCARD_REG_EXP_STR",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/node.ts#Node.insert",
+      "to": "symbol:src/router/reg-exp-router/node.ts#ONLY_WILDCARD_REG_EXP_STR",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/node.ts#Node.insert->symbol:src/router/reg-exp-router/node.ts#PREFIXED_WILDCARD_REG_EXP_STR",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/node.ts#Node.insert",
+      "to": "symbol:src/router/reg-exp-router/node.ts#PREFIXED_WILDCARD_REG_EXP_STR",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/node.ts#Node.insert->symbol:src/router/reg-exp-router/node.ts#ParamAssocArray",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/node.ts#Node.insert",
+      "to": "symbol:src/router/reg-exp-router/node.ts#ParamAssocArray",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/node.ts#Node.insert->symbol:src/router/reg-exp-router/node.ts#TAIL_WILDCARD_REG_EXP_STR",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/node.ts#Node.insert",
+      "to": "symbol:src/router/reg-exp-router/node.ts#TAIL_WILDCARD_REG_EXP_STR",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/node.ts#compareKey->symbol:src/router/reg-exp-router/node.ts#LABEL_REG_EXP_STR",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/node.ts#compareKey",
+      "to": "symbol:src/router/reg-exp-router/node.ts#LABEL_REG_EXP_STR",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/node.ts#compareKey->symbol:src/router/reg-exp-router/node.ts#ONLY_WILDCARD_REG_EXP_STR",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/node.ts#compareKey",
+      "to": "symbol:src/router/reg-exp-router/node.ts#ONLY_WILDCARD_REG_EXP_STR",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/node.ts#compareKey->symbol:src/router/reg-exp-router/node.ts#TAIL_WILDCARD_REG_EXP_STR",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/node.ts#compareKey",
+      "to": "symbol:src/router/reg-exp-router/node.ts#TAIL_WILDCARD_REG_EXP_STR",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/prepared-router.ts#PreparedRegExpRouter.add->symbol:src/router.ts#METHOD_NAME_ALL",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/prepared-router.ts#PreparedRegExpRouter.add",
+      "to": "symbol:src/router.ts#METHOD_NAME_ALL",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/prepared-router.ts#PreparedRegExpRouter.add->symbol:src/router.ts#ParamIndexMap",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/prepared-router.ts#PreparedRegExpRouter.add",
+      "to": "symbol:src/router.ts#ParamIndexMap",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/prepared-router.ts#PreparedRegExpRouter.add->symbol:src/router.ts#Result",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/prepared-router.ts#PreparedRegExpRouter.add",
+      "to": "symbol:src/router.ts#Result",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/prepared-router.ts#PreparedRegExpRouter.add->symbol:src/router/reg-exp-router/matcher.ts#HandlerData",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/prepared-router.ts#PreparedRegExpRouter.add",
+      "to": "symbol:src/router/reg-exp-router/matcher.ts#HandlerData",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/prepared-router.ts#PreparedRegExpRouter.add->symbol:src/router/reg-exp-router/matcher.ts#Matcher",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/prepared-router.ts#PreparedRegExpRouter.add",
+      "to": "symbol:src/router/reg-exp-router/matcher.ts#Matcher",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/prepared-router.ts#PreparedRegExpRouter.add->symbol:src/router/reg-exp-router/matcher.ts#StaticMap",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/prepared-router.ts#PreparedRegExpRouter.add",
+      "to": "symbol:src/router/reg-exp-router/matcher.ts#StaticMap",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/prepared-router.ts#buildInitParams->symbol:src/router.ts#METHOD_NAME_ALL",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/prepared-router.ts#buildInitParams",
+      "to": "symbol:src/router.ts#METHOD_NAME_ALL",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/prepared-router.ts#buildInitParams->symbol:src/router/reg-exp-router/matcher.ts#HandlerData",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/prepared-router.ts#buildInitParams",
+      "to": "symbol:src/router/reg-exp-router/matcher.ts#HandlerData",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/prepared-router.ts#buildInitParams->symbol:src/router/reg-exp-router/matcher.ts#Matcher",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/prepared-router.ts#buildInitParams",
+      "to": "symbol:src/router/reg-exp-router/matcher.ts#Matcher",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/prepared-router.ts#buildInitParams->symbol:src/router/reg-exp-router/prepared-router.ts#PreparedRegExpRouter",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/prepared-router.ts#buildInitParams",
+      "to": "symbol:src/router/reg-exp-router/prepared-router.ts#PreparedRegExpRouter",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/prepared-router.ts#buildInitParams->symbol:src/router/reg-exp-router/router.ts#RegExpRouter",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/prepared-router.ts#buildInitParams",
+      "to": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/prepared-router.ts#serializeInitParams->symbol:src/router/reg-exp-router/prepared-router.ts#PreparedRegExpRouter",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/prepared-router.ts#serializeInitParams",
+      "to": "symbol:src/router/reg-exp-router/prepared-router.ts#PreparedRegExpRouter",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/router.ts#RegExpRouter->symbol:src/router.ts#Router",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter",
+      "to": "symbol:src/router.ts#Router",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/router.ts#RegExpRouter->symbol:src/router/reg-exp-router/matcher.ts#match",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter",
+      "to": "symbol:src/router/reg-exp-router/matcher.ts#match",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/router.ts#RegExpRouter->symbol:src/router/reg-exp-router/trie.ts#Trie",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter",
+      "to": "symbol:src/router/reg-exp-router/trie.ts#Trie",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/router.ts#RegExpRouter.#buildMatcher->symbol:src/router/reg-exp-router/matcher.ts#HandlerData",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.#buildMatcher",
+      "to": "symbol:src/router/reg-exp-router/matcher.ts#HandlerData",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/router.ts#RegExpRouter.#buildMatcher->symbol:src/router/reg-exp-router/matcher.ts#Matcher",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.#buildMatcher",
+      "to": "symbol:src/router/reg-exp-router/matcher.ts#Matcher",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/router.ts#RegExpRouter.#buildMatcher->symbol:src/router/reg-exp-router/matcher.ts#StaticMap",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.#buildMatcher",
+      "to": "symbol:src/router/reg-exp-router/matcher.ts#StaticMap",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/router.ts#RegExpRouter.add->symbol:src/router.ts#MESSAGE_MATCHER_IS_ALREADY_BUILT",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.add",
+      "to": "symbol:src/router.ts#MESSAGE_MATCHER_IS_ALREADY_BUILT",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/router.ts#RegExpRouter.add->symbol:src/router.ts#METHOD_NAME_ALL",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.add",
+      "to": "symbol:src/router.ts#METHOD_NAME_ALL",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/router.ts#RegExpRouter.add->symbol:src/router/reg-exp-router/trie.ts#Trie",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.add",
+      "to": "symbol:src/router/reg-exp-router/trie.ts#Trie",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/router.ts#RegExpRouter.buildAllMatchers->symbol:src/router/reg-exp-router/matcher.ts#MatcherMap",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.buildAllMatchers",
+      "to": "symbol:src/router/reg-exp-router/matcher.ts#MatcherMap",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/router.ts#RegExpRouter.buildAllMatchers->symbol:src/router/reg-exp-router/router.ts#wildcardRegExpCache",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.buildAllMatchers",
+      "to": "symbol:src/router/reg-exp-router/router.ts#wildcardRegExpCache",
+      "state": "removed",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/router.ts#RegExpRouter.constructor->symbol:src/router.ts#METHOD_NAME_ALL",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.constructor",
+      "to": "symbol:src/router.ts#METHOD_NAME_ALL",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/router.ts#RegExpRouter.constructor->symbol:src/router/reg-exp-router/trie.ts#Trie",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.constructor",
+      "to": "symbol:src/router/reg-exp-router/trie.ts#Trie",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/router.ts#buildWildcardRegExp->symbol:src/router/reg-exp-router/node.ts#LABEL_REG_EXP_STR",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/router.ts#buildWildcardRegExp",
+      "to": "symbol:src/router/reg-exp-router/node.ts#LABEL_REG_EXP_STR",
+      "state": "removed",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/router.ts#buildWildcardRegExp->symbol:src/router/reg-exp-router/node.ts#ONLY_WILDCARD_REG_EXP_STR",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/router.ts#buildWildcardRegExp",
+      "to": "symbol:src/router/reg-exp-router/node.ts#ONLY_WILDCARD_REG_EXP_STR",
+      "state": "removed",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/router.ts#buildWildcardRegExp->symbol:src/router/reg-exp-router/node.ts#TAIL_WILDCARD_REG_EXP_STR",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/router.ts#buildWildcardRegExp",
+      "to": "symbol:src/router/reg-exp-router/node.ts#TAIL_WILDCARD_REG_EXP_STR",
+      "state": "removed",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/router.ts#buildWildcardRegExp->symbol:src/router/reg-exp-router/router.ts#wildcardRegExpCache",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/router.ts#buildWildcardRegExp",
+      "to": "symbol:src/router/reg-exp-router/router.ts#wildcardRegExpCache",
+      "state": "removed",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/router.ts#covers->symbol:src/router/reg-exp-router/node.ts#ONLY_WILDCARD_REG_EXP_STR",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/router.ts#covers",
+      "to": "symbol:src/router/reg-exp-router/node.ts#ONLY_WILDCARD_REG_EXP_STR",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/router.ts#covers->symbol:src/router/reg-exp-router/node.ts#PREFIXED_WILDCARD_REG_EXP_STR",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/router.ts#covers",
+      "to": "symbol:src/router/reg-exp-router/node.ts#PREFIXED_WILDCARD_REG_EXP_STR",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/router.ts#endsWithWildcard->symbol:src/router/reg-exp-router/node.ts#ONLY_WILDCARD_REG_EXP_STR",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/router.ts#endsWithWildcard",
+      "to": "symbol:src/router/reg-exp-router/node.ts#ONLY_WILDCARD_REG_EXP_STR",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/router.ts#endsWithWildcard->symbol:src/router/reg-exp-router/node.ts#TAIL_WILDCARD_REG_EXP_STR",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/router.ts#endsWithWildcard",
+      "to": "symbol:src/router/reg-exp-router/node.ts#TAIL_WILDCARD_REG_EXP_STR",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/trie.ts#Trie->symbol:src/router/reg-exp-router/node.ts#Context",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/trie.ts#Trie",
+      "to": "symbol:src/router/reg-exp-router/node.ts#Context",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/trie.ts#Trie->symbol:src/router/reg-exp-router/node.ts#Node",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/trie.ts#Trie",
+      "to": "symbol:src/router/reg-exp-router/node.ts#Node",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/trie.ts#Trie->symbol:src/router/reg-exp-router/node.ts#ParamAssocArray",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/trie.ts#Trie",
+      "to": "symbol:src/router/reg-exp-router/node.ts#ParamAssocArray",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/reg-exp-router/trie.ts#Trie.insert->symbol:src/router/reg-exp-router/node.ts#ParamAssocArray",
+      "kind": "references",
+      "from": "symbol:src/router/reg-exp-router/trie.ts#Trie.insert",
+      "to": "symbol:src/router/reg-exp-router/node.ts#ParamAssocArray",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/trie-router/node.ts#Node.search->symbol:src/router.ts#Params",
+      "kind": "references",
+      "from": "symbol:src/router/trie-router/node.ts#Node.search",
+      "to": "symbol:src/router.ts#Params",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/router/trie-router/node.ts#Node.search->symbol:src/router/trie-router/node.ts#HandlerParamsSet",
+      "kind": "references",
+      "from": "symbol:src/router/trie-router/node.ts#Node.search",
+      "to": "symbol:src/router/trie-router/node.ts#HandlerParamsSet",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    }
+  ],
+  "hunks": [
+    {
+      "id": "hunk:src/router/common.case.test.ts:0",
+      "path": "src/router/common.case.test.ts",
+      "oldStart": 31,
+      "oldLines": 7,
+      "newStart": 31,
+      "newLines": 7,
+      "patch": "@@ -31,7 +31,7 @@ export const runTest = ({\n     beforeEach(({ task, skip: skipTask }) => {\n       const suites = getSuiteHierarchy(task.suite)\n       const name = [...suites.slice(2).map((s) => s.name), task.name].join(' > ')\n-      const isSkip = skip.find((s) => s.tests.includes(name))\n+      const isSkip = skip.find((s) => s.tests.some((t) => name === t || name.startsWith(`${t} > `)))\n       if (isSkip) {\n         console.log(`Skip: ${isSkip.reason}`)\n         skipTask()",
+      "added": 1,
+      "removed": 1,
+      "owner": "symbol:src/router/common.case.test.ts#runTest"
+    },
+    {
+      "id": "hunk:src/router/common.case.test.ts:1",
+      "path": "src/router/common.case.test.ts",
+      "oldStart": 131,
+      "oldLines": 6,
+      "newStart": 131,
+      "newLines": 18,
+      "patch": "@@ -131,6 +131,18 @@ export const runTest = ({\n         ['/assets*', '/assets', true],\n         ['/assets*', '/assets123', true],\n         ['/assets*', '/assets/foo', true],\n+        ['/x*/*', '/x', true],\n+        ['/x*/*', '/xz', true],\n+        ['/x*/*', '/xz/y', true],\n+        ['/x*/*', '/x/y/z', true],\n+        ['/foo/*/*', '/foo', false],\n+        ['/foo/*/*', '/foo/', false],\n+        ['/foo/*/*', '/foo//', false],\n+        ['/foo/*/*', '/foo//bar', false],\n+        ['/foo/*/*', '/foo//bar/baz', false],\n+        ['/foo/*/*', '/foo/x', true],\n+        ['/foo/*/*', '/foo/x/', true],\n+        ['/foo/*/*', '/foo/x/y/z', true],\n       ]\n \n       for (const [route, path, shouldMatch] of cases) {",
+      "added": 12,
+      "removed": 0,
+      "owner": "symbol:src/router/common.case.test.ts#runTest"
+    },
+    {
+      "id": "hunk:src/router/common.case.test.ts:2",
+      "path": "src/router/common.case.test.ts",
+      "oldStart": 178,
+      "oldLines": 6,
+      "newStart": 190,
+      "newLines": 23,
+      "patch": "@@ -178,6 +190,23 @@ export const runTest = ({\n         expect(res[0].handler).toEqual('prefixed')\n       })\n \n+      it.each(['/x*/y', '/x*/y/z', '/x*/y*'])(\n+        'Prefixed wildcard in a parent segment: %s',\n+        (path) => {\n+          router.add('GET', '/x*/y*/*', 'handler')\n+          expect(match('GET', path)).toEqual([{ handler: 'handler', params: {} }])\n+        }\n+      )\n+\n+      it('Should preserve repeated handlers on overlapping wildcard routes', () => {\n+        router.add('GET', '/x*/*', 'handler')\n+        router.add('GET', '/x*/y*/*', 'handler')\n+        expect(match('GET', '/x*/y')).toEqual([\n+          { handler: 'handler', params: {} },\n+          { handler: 'handler', params: {} },\n+        ])\n+      })\n+\n       it('Named parameter with a trailing wildcard', async () => {\n         router.add('GET', '/a/:id/*', 'param wildcard')\n         const res = match('GET', '/a/:id')",
+      "added": 17,
+      "removed": 0,
+      "owner": "symbol:src/router/common.case.test.ts#runTest"
+    },
+    {
+      "id": "hunk:src/router/common.case.test.ts:3",
+      "path": "src/router/common.case.test.ts",
+      "oldStart": 1108,
+      "oldLines": 6,
+      "newStart": 1137,
+      "newLines": 236,
+      "patch": "@@ -1108,6 +1137,236 @@ export const runTest = ({\n       })\n     })\n \n+    describe.each<[string, string, string, Params, Params]>([\n+      ['/v1/*/*', '/v1/:a/:b', '/v1/x/y', {}, { a: 'x', b: 'y' }],\n+      ['/v1/*/fixed/*', '/v1/:a/fixed/:b', '/v1/x/fixed/y', {}, { a: 'x', b: 'y' }],\n+      [\n+        '/v1/*/:id/*',\n+        '/v1/:a/:b/:c/:d',\n+        '/v1/first/second/third/fourth',\n+        { id: 'second' },\n+        { a: 'first', b: 'second', c: 'third', d: 'fourth' },\n+      ],\n+      [\n+        '/v1/:first/*/:last/*',\n+        '/v1/:a/:b/:c/:d',\n+        '/v1/first/second/third/fourth',\n+        { first: 'first', last: 'third' },\n+        { a: 'first', b: 'second', c: 'third', d: 'fourth' },\n+      ],\n+    ])(\n+      'Wildcard route %s with a parameter route',\n+      (wildcardPath, routePath, requestPath, middlewareParams, handlerParams) => {\n+        it.each([\n+          { method: 'GET', reverse: false },\n+          { method: 'GET', reverse: true },\n+          { method: 'ALL', reverse: false },\n+          { method: 'ALL', reverse: true },\n+        ])('$method with reverse registration: $reverse', ({ method, reverse }) => {\n+          const routes: [string, string, string][] = [\n+            [method, wildcardPath, 'middleware'],\n+            ['GET', routePath, 'handler'],\n+          ]\n+          const middleware = { handler: 'middleware', params: middlewareParams }\n+          const expected = [middleware, { handler: 'handler', params: handlerParams }]\n+          if (reverse) {\n+            routes.reverse()\n+            expected.reverse()\n+          }\n+          for (const route of routes) {\n+            router.add(...route)\n+          }\n+\n+          expect(match('GET', requestPath)).toEqual(expected)\n+          expect(match('GET', `${requestPath}/z`)).toEqual([middleware])\n+          expect(match('POST', requestPath)).toEqual(method === 'ALL' ? [middleware] : [])\n+        })\n+      }\n+    )\n+\n+    describe('Overlapping wildcard routes', () => {\n+      it.each([\n+        { method: 'GET', reverse: false },\n+        { method: 'GET', reverse: true },\n+        { method: 'ALL', reverse: false },\n+        { method: 'ALL', reverse: true },\n+      ])('$method with reverse registration: $reverse', ({ method, reverse }) => {\n+        const routes: [string, string, string][] = [\n+          ['GET', '/v1/:a/*', 'parent'],\n+          [method, '/v1/*/*/*', 'child'],\n+        ]\n+        const parent = { handler: 'parent', params: { a: 'x' } }\n+        const child = { handler: 'child', params: {} }\n+        const expected = [parent, child]\n+        if (reverse) {\n+          routes.reverse()\n+          expected.reverse()\n+        }\n+        for (const route of routes) {\n+          router.add(...route)\n+        }\n+\n+        expect(match('GET', '/v1/x')).toEqual([parent])\n+        expect(match('GET', '/v1/x/')).toEqual([parent])\n+        expect(match('GET', '/v1/x/y/z')).toEqual(expected)\n+        expect(match('POST', '/v1/x')).toEqual([])\n+        expect(match('POST', '/v1/x/y/z')).toEqual(method === 'ALL' ? [child] : [])\n+      })\n+    })\n+\n+    describe('Parameter middleware with a wildcard route', () => {\n+      it.each([\n+        { routePath: '/v1/*/b', reverse: false },\n+        { routePath: '/v1/*/b', reverse: true },\n+        { routePath: '/v1/*/b/*', reverse: false },\n+        { routePath: '/v1/*/b/*', reverse: true },\n+      ])('$routePath with reverse registration: $reverse', ({ routePath, reverse }) => {\n+        const routes: [string, string, string][] = [\n+          ['GET', '/v1/:a/*', 'middleware'],\n+          ['GET', routePath, 'handler'],\n+        ]\n+        const middleware = { handler: 'middleware', params: { a: 'x' } }\n+        const expected = [middleware, { handler: 'handler', params: {} }]\n+        if (reverse) {\n+          routes.reverse()\n+          expected.reverse()\n+        }\n+        for (const route of routes) {\n+          router.add(...route)\n+        }\n+\n+        expect(match('GET', '/v1/x/b')).toEqual(expected)\n+        expect(match('GET', '/v1/x')).toEqual([middleware])\n+      })\n+    })\n+\n+    describe.each<[string, string, Params]>([\n+      ['/prefix/:x{a}/*', '/prefix/a/static', { x: 'a' }],\n+      ['/prefix/:x{a}/*', '/prefix/a', { x: 'a' }],\n+      ['/prefix/:x{a}/:y{b}/*', '/prefix/a/b/static', { x: 'a', y: 'b' }],\n+    ])('Parameter middleware %s with static route %s', (wildcardPath, routePath, params) => {\n+      it.each([\n+        { method: 'GET', reverse: false },\n+        { method: 'GET', reverse: true },\n+        { method: 'ALL', reverse: false },\n+        { method: 'ALL', reverse: true },\n+      ])('$method with reverse registration: $reverse', ({ method, reverse }) => {\n+        const routes: [string, string, string][] = [\n+          [method, wildcardPath, 'middleware'],\n+          ['GET', routePath, 'handler'],\n+        ]\n+        const middleware = { handler: 'middleware', params }\n+        const expected = [middleware, { handler: 'handler', params: {} }]\n+        if (reverse) {\n+          routes.reverse()\n+          expected.reverse()\n+        }\n+        for (const route of routes) {\n+          router.add(...route)\n+        }\n+\n+        expect(match('GET', routePath)).toEqual(expected)\n+        expect(match('GET', `${routePath}/more`)).toEqual([middleware])\n+        expect(match('POST', routePath)).toEqual(method === 'ALL' ? [middleware] : [])\n+      })\n+    })\n+\n+    describe('Prefixed wildcard route with its prefix as a static route', () => {\n+      it.each([\n+        { method: 'GET', reverse: false },\n+        { method: 'GET', reverse: true },\n+        { method: 'ALL', reverse: false },\n+        { method: 'ALL', reverse: true },\n+      ])('$method with reverse registration: $reverse', ({ method, reverse }) => {\n+        const routes: [string, string, string][] = [\n+          [method, '/p/x*/*', 'middleware'],\n+          ['GET', '/p/x', 'handler'],\n+        ]\n+        const middleware = { handler: 'middleware', params: {} }\n+        const expected = [middleware, { handler: 'handler', params: {} }]\n+        if (reverse) {\n+          routes.reverse()\n+          expected.reverse()\n+        }\n+        for (const route of routes) {\n+          router.add(...route)\n+        }\n+\n+        expect(match('GET', '/p/x')).toEqual(expected)\n+        expect(match('GET', '/p/xz')).toEqual([middleware])\n+        expect(match('GET', '/p/x/y')).toEqual([middleware])\n+        expect(match('POST', '/p/x')).toEqual(method === 'ALL' ? [middleware] : [])\n+      })\n+    })\n+\n+    describe('Wildcard routes that end at the same segment', () => {\n+      it.each([\n+        { method: 'GET', reverse: false },\n+        { method: 'GET', reverse: true },\n+        { method: 'ALL', reverse: false },\n+        { method: 'ALL', reverse: true },\n+      ])('$method with reverse registration: $reverse', ({ method, reverse }) => {\n+        const routes: [string, string, string][] = [\n+          [method, '/x/a*', 'prefix'],\n+          ['GET', '/x/a/*', 'tail'],\n+        ]\n+        const prefix = { handler: 'prefix', params: {} }\n+        const expected = [prefix, { handler: 'tail', params: {} }]\n+        if (reverse) {\n+          routes.reverse()\n+          expected.reverse()\n+        }\n+        for (const route of routes) {\n+          router.add(...route)\n+        }\n+\n+        expect(match('GET', '/x/a')).toEqual(expected)\n+        expect(match('GET', '/x/a/q')).toEqual(expected)\n+        expect(match('GET', '/x/ab')).toEqual([prefix])\n+        expect(match('POST', '/x/a/q')).toEqual(method === 'ALL' ? [prefix] : [])\n+      })\n+\n+      it('Should apply both wildcards to a nested route', () => {\n+        router.add('GET', '/x/a*', 'prefix')\n+        router.add('GET', '/x/a/*', 'tail')\n+        router.add('GET', '/x/a/:id', 'route')\n+        const prefix = { handler: 'prefix', params: {} }\n+        const tail = { handler: 'tail', params: {} }\n+        expect(match('GET', '/x/a/q')).toEqual([\n+          prefix,\n+          tail,\n+          { handler: 'route', params: { id: 'q' } },\n+        ])\n+        expect(match('GET', '/x/a/q/r')).toEqual([prefix, tail])\n+        expect(match('GET', '/x/a')).toEqual([prefix, tail])\n+        expect(match('GET', '/x/ab')).toEqual([prefix])\n+      })\n+    })\n+\n+    describe('Middleware paths that do not nest', () => {\n+      it('Should both apply to a route they both match', () => {\n+        router.add('GET', '/:a/b/*', 'short')\n+        router.add('GET', '/:aaaaaaa/*', 'long')\n+        router.add('GET', '/:x/b/c', 'handler')\n+        expect(match('GET', '/q/b/c')).toEqual([\n+          { handler: 'short', params: { a: 'q' } },\n+          { handler: 'long', params: { aaaaaaa: 'q' } },\n+          { handler: 'handler', params: { x: 'q' } },\n+        ])\n+      })\n+    })\n+\n+    describe('Parameter pattern identical to the label pattern', () => {\n+      it('Should receive wildcard middleware', () => {\n+        router.add('GET', '/v1/*/fixed/*', 'middleware')\n+        router.add('GET', '/v1/:a{[^/]+}/fixed/:b', 'handler')\n+        expect(match('GET', '/v1/x/fixed/y')).toEqual([\n+          { handler: 'middleware', params: {} },\n+          { handler: 'handler', params: { a: 'x', b: 'y' } },\n+        ])\n+      })\n+    })\n+\n     describe('ALL and Star', () => {\n       beforeEach(() => {\n         router.add('ALL', '/x', '/x')",
+      "added": 230,
+      "removed": 0,
+      "owner": "symbol:src/router/common.case.test.ts#runTest"
+    },
+    {
+      "id": "hunk:src/router/linear-router/router.test.ts:0",
+      "path": "src/router/linear-router/router.test.ts",
+      "oldStart": 12,
+      "oldLines": 12,
+      "newStart": 12,
+      "newLines": 25,
+      "patch": "@@ -12,12 +12,25 @@ describe('LinearRouter', () => {\n           'Trailing wildcard after a middle wildcard > GET /acme/x/y with a named parameter',\n           'Complex > Parameter with {.*} regexp',\n           'Path segment equal to a pattern token > Named parameter with a trailing wildcard',\n+          'Wildcard route /v1/*/:id/* with a parameter route',\n+          'Wildcard route /v1/:first/*/:last/* with a parameter route',\n         ],\n       },\n     ],\n     newRouter: () => new LinearRouter(),\n   })\n \n+  describe('Literal asterisks', () => {\n+    it.each([\n+      ['/x*y', '/x*y'],\n+      ['/x*y/*', '/x*y'],\n+    ])('Should match %s against %s', (route, path) => {\n+      const router = new LinearRouter<string>()\n+      router.add('GET', route, 'handler')\n+      expect(router.match('GET', path)[0]).toEqual([['handler', {}]])\n+    })\n+  })\n+\n   describe('Trailing wildcard after parameters', () => {\n     it.each([\n       ['/:tenant/*', '/acme', { tenant: 'acme' }],",
+      "added": 13,
+      "removed": 0,
+      "owner": "file:src/router/linear-router/router.test.ts"
+    },
+    {
+      "id": "hunk:src/router/linear-router/router.ts:0",
+      "path": "src/router/linear-router/router.ts",
+      "oldStart": 7,
+      "oldLines": 7,
+      "newStart": 7,
+      "newLines": 7,
+      "patch": "@@ -7,7 +7,7 @@ type RegExpMatchArrayWithIndices = RegExpMatchArray & { indices: [number, number\n const emptyParams = Object.create(null)\n \n const splitPathRe = /\\/(:\\w+(?:{(?:(?:{[\\d,]+})|[^}])+})?)|\\/[^\\/\\?]+|\\/$|(\\?)/g\n-const splitByStarRe = /\\*/\n+const splitByStarRe = /\\*(?=\\/|$)/\n export class LinearRouter<T> implements Router<T> {\n   name: string = 'LinearRouter'\n   #routes: [string, string, T][] = []",
+      "added": 1,
+      "removed": 1,
+      "owner": "symbol:src/router/linear-router/router.ts#splitByStarRe"
+    },
+    {
+      "id": "hunk:src/router/linear-router/router.ts:1",
+      "path": "src/router/linear-router/router.ts",
+      "oldStart": 49,
+      "oldLines": 9,
+      "newStart": 49,
+      "newLines": 14,
+      "patch": "@@ -49,9 +49,14 @@ export class LinearRouter<T> implements Router<T> {\n         } else if (hasStar && !hasLabel) {\n           const endsWithStar = routePath.charCodeAt(routePath.length - 1) === 42\n           const endsWithSlashStar = routePath.endsWith('/*')\n-          const parts = (\n-            endsWithStar ? routePath.slice(0, endsWithSlashStar ? -2 : -1) : routePath\n-          ).split(splitByStarRe)\n+          // Split before removing the tail wildcard so a preceding literal `*` stays literal.\n+          const parts = routePath.split(splitByStarRe)\n+          if (endsWithStar) {\n+            parts.pop()\n+            if (endsWithSlashStar) {\n+              parts[parts.length - 1] = parts[parts.length - 1].slice(0, -1)\n+            }\n+          }\n \n           const lastIndex = parts.length - 1\n           for (let j = 0, pos = 0, len = parts.length; j < len; j++) {",
+      "added": 8,
+      "removed": 3,
+      "owner": "symbol:src/router/linear-router/router.ts#LinearRouter.match"
+    },
+    {
+      "id": "hunk:src/router/linear-router/router.ts:2",
+      "path": "src/router/linear-router/router.ts",
+      "oldStart": 73,
+      "oldLines": 11,
+      "newStart": 78,
+      "newLines": 11,
+      "patch": "@@ -73,11 +78,11 @@ export class LinearRouter<T> implements Router<T> {\n               // A standalone `*` segment consumes at least one character; one with a\n               // prefix may consume none.\n               const standalone = part.charCodeAt(part.length - 1) === 47\n-              const index = path.indexOf('/', standalone ? pos + 1 : pos)\n-              if (index === -1) {\n+              if (standalone && (pos === path.length || path.charCodeAt(pos) === 47)) {\n                 continue ROUTES_LOOP\n               }\n-              pos = index\n+              const index = path.indexOf('/', pos)\n+              pos = index === -1 ? path.length : index\n             }\n           }\n           handlers.push([handler, emptyParams])",
+      "added": 3,
+      "removed": 3,
+      "owner": "symbol:src/router/linear-router/router.ts#LinearRouter.match"
+    },
+    {
+      "id": "hunk:src/router/reg-exp-router/node.ts:0",
+      "path": "src/router/reg-exp-router/node.ts",
+      "oldStart": 3,
+      "oldLines": 7,
+      "newStart": 3,
+      "newLines": 7,
+      "patch": "@@ -3,7 +3,7 @@ import { createNullObject } from '../utils'\n export const LABEL_REG_EXP_STR = '[^/]+'\n // Match line terminators without changing the flags of user-defined parameter patterns.\n export const ONLY_WILDCARD_REG_EXP_STR = '[^]*'\n-const PREFIXED_WILDCARD_REG_EXP_STR = '[^/]*'\n+export const PREFIXED_WILDCARD_REG_EXP_STR = '[^/]*'\n export const TAIL_WILDCARD_REG_EXP_STR = '(?:|/[^]*)'\n export const PATH_ERROR = Symbol()\n ",
+      "added": 1,
+      "removed": 1,
+      "owner": "symbol:src/router/reg-exp-router/node.ts#PREFIXED_WILDCARD_REG_EXP_STR"
+    },
+    {
+      "id": "hunk:src/router/reg-exp-router/node.ts:1",
+      "path": "src/router/reg-exp-router/node.ts",
+      "oldStart": 29,
+      "oldLines": 9,
+      "newStart": 29,
+      "newLines": 9,
+      "patch": "@@ -29,9 +29,9 @@ function compareKey(a: string, b: string): number {\n     return 1\n   }\n \n-  // wildcard: the only wildcard precedes the tail wildcard\n+  // wildcard: the tail wildcard precedes the only wildcard, which matches a superset of it\n   if (a === ONLY_WILDCARD_REG_EXP_STR || a === TAIL_WILDCARD_REG_EXP_STR) {\n-    return b === TAIL_WILDCARD_REG_EXP_STR ? -1 : 1\n+    return b === ONLY_WILDCARD_REG_EXP_STR ? -1 : 1\n   } else if (b === ONLY_WILDCARD_REG_EXP_STR || b === TAIL_WILDCARD_REG_EXP_STR) {\n     return -1\n   }",
+      "added": 2,
+      "removed": 2,
+      "owner": "symbol:src/router/reg-exp-router/node.ts#compareKey"
+    },
+    {
+      "id": "hunk:src/router/reg-exp-router/node.ts:2",
+      "path": "src/router/reg-exp-router/node.ts",
+      "oldStart": 57,
+      "oldLines": 7,
+      "newStart": 57,
+      "newLines": 7,
+      "patch": "@@ -57,7 +57,7 @@ export class Node {\n     index: number,\n     paramMap: ParamAssocArray,\n     context: Context,\n-    isStatic: boolean\n+    keys: string[]\n   ): void {\n     // eslint-disable-next-line @typescript-eslint/no-this-alias\n     let node: Node = this",
+      "added": 1,
+      "removed": 1,
+      "owner": "symbol:src/router/reg-exp-router/node.ts#Node.insert"
+    },
+    {
+      "id": "hunk:src/router/reg-exp-router/node.ts:3",
+      "path": "src/router/reg-exp-router/node.ts",
+      "oldStart": 98,
+      "oldLines": 6,
+      "newStart": 98,
+      "newLines": 7,
+      "patch": "@@ -98,6 +98,7 @@ export class Node {\n           }\n         }\n \n+        keys.push(regexpStr)\n         nextNode = node.#children[regexpStr]\n         if (!nextNode) {\n           if (",
+      "added": 1,
+      "removed": 0,
+      "owner": "symbol:src/router/reg-exp-router/node.ts#Node.insert"
+    },
+    {
+      "id": "hunk:src/router/reg-exp-router/node.ts:4",
+      "path": "src/router/reg-exp-router/node.ts",
+      "oldStart": 125,
+      "oldLines": 6,
+      "newStart": 126,
+      "newLines": 7,
+      "patch": "@@ -125,6 +126,7 @@ export class Node {\n           paramMap.push([name, nextNode.#varIndex])\n         }\n       } else {\n+        keys.push(token)\n         nextNode = node.#children[token]\n         if (!nextNode) {\n           for (const k in node.#children) {",
+      "added": 1,
+      "removed": 0,
+      "owner": "symbol:src/router/reg-exp-router/node.ts#Node.insert"
+    },
+    {
+      "id": "hunk:src/router/reg-exp-router/node.ts:5",
+      "path": "src/router/reg-exp-router/node.ts",
+      "oldStart": 146,
+      "oldLines": 7,
+      "newStart": 148,
+      "newLines": 7,
+      "patch": "@@ -146,7 +148,7 @@ export class Node {\n     if (node.#index !== undefined) {\n       throw PATH_ERROR\n     }\n-    node.#index = isStatic ? -1 : index\n+    node.#index = index\n   }\n \n   buildRegExpStr(): string {",
+      "added": 1,
+      "removed": 1,
+      "owner": "symbol:src/router/reg-exp-router/node.ts#Node.insert"
+    },
+    {
+      "id": "hunk:src/router/reg-exp-router/prepared-router.test.ts:0",
+      "path": "src/router/reg-exp-router/prepared-router.test.ts",
+      "oldStart": 60,
+      "oldLines": 6,
+      "newStart": 60,
+      "newLines": 23,
+      "patch": "@@ -60,6 +60,23 @@ describe('PreparedRegExpRouter', async () => {\n       expect(router.match('GET', '/hello')).toEqual([[['get hello', {}]], []])\n     })\n \n+    it('should capture parameters of middleware on a static path', () => {\n+      const params = buildInitParams({\n+        paths: ['/prefix/:x{a}/*', '/prefix/a/static'],\n+      })\n+      const router = new PreparedRegExpRouter(...params)\n+      router.add('GET', '/prefix/:x{a}/*', 'middleware')\n+      router.add('GET', '/prefix/a/static', 'handler')\n+      expect(router.match('GET', '/prefix/a/static')).toEqual([\n+        [\n+          ['middleware', { x: 1 }],\n+          ['handler', {}],\n+        ],\n+        ['/prefix/a/static', 'a'],\n+      ])\n+      expect(router.match('POST', '/prefix/a/static')).toEqual([[], ['/prefix/a/static', 'a']])\n+    })\n+\n     it('should throw an error if the path is not pre-registered', () => {\n       const params = buildInitParams({\n         paths: ['/hello'],",
+      "added": 17,
+      "removed": 0,
+      "owner": "file:src/router/reg-exp-router/prepared-router.test.ts"
+    },
+    {
+      "id": "hunk:src/router/reg-exp-router/prepared-router.test.ts:1",
+      "path": "src/router/reg-exp-router/prepared-router.test.ts",
+      "oldStart": 129,
+      "oldLines": 6,
+      "newStart": 146,
+      "newLines": 34,
+      "patch": "@@ -129,6 +146,34 @@ describe('buildInitParams() and serializeInitParams()', () => {\n     expect((0, eval)(serializeInitParams(params))).toEqual(params)\n   })\n \n+  it('should build init params with a static path under parameter middleware', () => {\n+    const params = buildInitParams({\n+      paths: ['/prefix/:x{a}/*', '/prefix/a/static'],\n+    })\n+    expect(params).toEqual([\n+      {\n+        [METHOD_NAME_ALL]: [\n+          /^\\/prefix\\/(a)(?:|\\/[^]*)$()/,\n+          [0, 0, []],\n+          { '/prefix/a/static': [[], ['/prefix/a/static', 'a']] },\n+        ],\n+      },\n+      {\n+        '/prefix/:x{a}/*': [[[2, '/prefix/a/static'], { x: 1 }]],\n+        '/prefix/a/static': [[['']]],\n+      },\n+    ])\n+    expect((0, eval)(serializeInitParams(params))).toEqual(params)\n+  })\n+\n+  it('should preserve undefined captures in a static path stash', () => {\n+    const params = buildInitParams({\n+      paths: ['/:z{Z}/*', '/:x{a}/*', '/a/q'],\n+    })\n+    expect(params[0][METHOD_NAME_ALL]![2]['/a/q'][1]).toEqual(['/a/q', undefined, undefined, 'a'])\n+    expect((0, eval)(serializeInitParams(params))).toEqual(params)\n+  })\n+\n   it('should build init params with complex path', () => {\n     const params = buildInitParams({\n       paths: ['/hello', '/hello/:name', '/hello/:name/posts/:postId', '*'],",
+      "added": 28,
+      "removed": 0,
+      "owner": "file:src/router/reg-exp-router/prepared-router.test.ts"
+    },
+    {
+      "id": "hunk:src/router/reg-exp-router/prepared-router.ts:0",
+      "path": "src/router/reg-exp-router/prepared-router.ts",
+      "oldStart": 1,
+      "oldLines": 7,
+      "newStart": 1,
+      "newLines": 7,
+      "patch": "@@ -1,7 +1,7 @@\n import type { ParamIndexMap, Result, Router } from '../../router'\n import { METHOD_NAME_ALL } from '../../router'\n import type { HandlerData, Matcher, MatcherMap, StaticMap } from './matcher'\n-import { match, emptyParam } from './matcher'\n+import { match } from './matcher'\n import { RegExpRouter } from './router'\n \n type RelocateMap = Record<string, ([(number | string)[], ParamIndexMap] | [(number | string)[]])[]>",
+      "added": 1,
+      "removed": 1,
+      "owner": "file:src/router/reg-exp-router/prepared-router.ts"
+    },
+    {
+      "id": "hunk:src/router/reg-exp-router/prepared-router.ts:1",
+      "path": "src/router/reg-exp-router/prepared-router.ts",
+      "oldStart": 49,
+      "oldLines": 7,
+      "newStart": 49,
+      "newLines": 7,
+      "patch": "@@ -49,7 +49,7 @@ export class PreparedRegExpRouter<T> implements Router<T> {\n       const all = this.#matchers[METHOD_NAME_ALL] as Matcher<T>\n       const staticMap = {} as StaticMap<T>\n       for (const key in all[2]) {\n-        staticMap[key] = [all[2][key][0].slice(), emptyParam] as Result<T>\n+        staticMap[key] = [all[2][key][0].slice(), all[2][key][1]] as Result<T>\n       }\n       this.#matchers[method] = [\n         all[0],",
+      "added": 1,
+      "removed": 1,
+      "owner": "symbol:src/router/reg-exp-router/prepared-router.ts#PreparedRegExpRouter.add"
+    },
+    {
+      "id": "hunk:src/router/reg-exp-router/prepared-router.ts:2",
+      "path": "src/router/reg-exp-router/prepared-router.ts",
+      "oldStart": 117,
+      "oldLines": 14,
+      "newStart": 117,
+      "newLines": 15,
+      "patch": "@@ -117,14 +117,15 @@ export const buildInitParams: (params: {\n       list.forEach(([p, map]) => {\n         if (p === path) {\n           if (relocateMap[path]) {\n+            // an optional parameter registers one path per expansion, with different maps\n             relocateMap[path][0][1] = {\n               ...relocateMap[path][0][1],\n               ...map,\n             }\n           } else {\n             relocateMap[path] = [[[], map]]\n           }\n-          if (relocateMap[path][0][0].findIndex((j) => j === i) === -1) {\n+          if (!relocateMap[path][0][0].includes(i)) {\n             relocateMap[path][0][0].push(i)\n           }\n         }",
+      "added": 2,
+      "removed": 1,
+      "owner": "symbol:src/router/reg-exp-router/prepared-router.ts#buildInitParams"
+    },
+    {
+      "id": "hunk:src/router/reg-exp-router/prepared-router.ts:3",
+      "path": "src/router/reg-exp-router/prepared-router.ts",
+      "oldStart": 135,
+      "oldLines": 7,
+      "newStart": 136,
+      "newLines": 7,
+      "patch": "@@ -135,7 +136,7 @@ export const buildInitParams: (params: {\n         if (p === path) {\n           relocateMap[path] ||= [[[]]]\n           const value = path2 === path ? '' : path2\n-          if (relocateMap[path][0][0].findIndex((v) => v === value) === -1) {\n+          if (!relocateMap[path][0][0].includes(value)) {\n             relocateMap[path][0][0].push(value)\n           }\n         }",
+      "added": 1,
+      "removed": 1,
+      "owner": "symbol:src/router/reg-exp-router/prepared-router.ts#buildInitParams"
+    },
+    {
+      "id": "hunk:src/router/reg-exp-router/prepared-router.ts:4",
+      "path": "src/router/reg-exp-router/prepared-router.ts",
+      "oldStart": 156,
+      "oldLines": 9,
+      "newStart": 157,
+      "newLines": 9,
+      "patch": "@@ -156,9 +157,9 @@ export const buildInitParams: (params: {\n export const serializeInitParams: (\n   params: ConstructorParameters<typeof PreparedRegExpRouter>\n ) => string = ([matchers, relocateMap]) => {\n-  // Embed the regular expression as a result of `toString()` so that it can be evaluated as JavaScript.\n+  // Embed regular expressions and undefined captures as JavaScript, which JSON cannot express.\n   const matchersStr = JSON.stringify(matchers, (_, value) =>\n-    value instanceof RegExp ? `##${value.toString()}##` : value\n+    value instanceof RegExp || value === undefined ? `##${value}##` : value\n   ).replace(/\"##(.+?)##\"/g, (_, str) => str.replace(/\\\\\\\\/g, '\\\\'))\n   const relocateMapStr = JSON.stringify(relocateMap)\n   return `[${matchersStr},${relocateMapStr}]`",
+      "added": 2,
+      "removed": 2,
+      "owner": "symbol:src/router/reg-exp-router/prepared-router.ts#serializeInitParams"
+    },
+    {
+      "id": "hunk:src/router/reg-exp-router/router.test.ts:0",
+      "path": "src/router/reg-exp-router/router.test.ts",
+      "oldStart": 231,
+      "oldLines": 20,
+      "newStart": 231,
+      "newLines": 6,
+      "patch": "@@ -231,20 +231,6 @@ describe('RegExpRouter', () => {\n       expect(res[0][0]).toBe('label')\n       expect(res[1][0]).toBe('wildcard')\n     })\n-\n-    it('Should prioritize the only wildcard over the tail wildcard regardless of the order', () => {\n-      for (const paths of [\n-        ['/a*', '/a/*'],\n-        ['/a/*', '/a*'],\n-      ]) {\n-        const router = new RegExpRouter<string>()\n-        for (const path of paths) {\n-          router.add('GET', path, path)\n-        }\n-        const [res] = router.match('GET', '/a')\n-        expect(res[0][0]).toBe('/a*')\n-      }\n-    })\n   })\n \n   describe('Single character regexp pattern', () => {",
+      "added": 0,
+      "removed": 14,
+      "owner": "file:src/router/reg-exp-router/router.test.ts"
+    },
+    {
+      "id": "hunk:src/router/reg-exp-router/router.ts:0",
+      "path": "src/router/reg-exp-router/router.ts",
+      "oldStart": 9,
+      "oldLines": 51,
+      "newStart": 9,
+      "newLines": 43,
+      "patch": "@@ -9,51 +9,43 @@ import { createNullObject } from '../utils'\n import type { HandlerData, StaticMap, Matcher, MatcherMap } from './matcher'\n import { match, emptyParam } from './matcher'\n import {\n-  LABEL_REG_EXP_STR,\n   ONLY_WILDCARD_REG_EXP_STR,\n   PATH_ERROR,\n+  PREFIXED_WILDCARD_REG_EXP_STR,\n   TAIL_WILDCARD_REG_EXP_STR,\n } from './node'\n import { Trie } from './trie'\n \n type HandlerWithMetadata<T> = [T, string] // [handler, path]\n \n-let wildcardRegExpCache: Record<string, RegExp> = createNullObject()\n-function buildWildcardRegExp(path: string): RegExp {\n-  return (wildcardRegExpCache[path] ??= new RegExp(\n-    `^${path.replace(\n-      /\\/:[^/{}]+(?:\\{\\[\\^\\/]\\+})?(?=[/{]|$)|\\/?\\*$|([.\\\\+*[^\\]$()?{}|])/g,\n-      (match, metaChar) =>\n-        metaChar\n-          ? `\\\\${metaChar}`\n-          : match === '/*'\n-            ? TAIL_WILDCARD_REG_EXP_STR\n-            : match === '*'\n-              ? ONLY_WILDCARD_REG_EXP_STR\n-              : `/:${LABEL_REG_EXP_STR}`\n-    )}$`\n-  ))\n+function endsWithWildcard(keys: string[]): boolean {\n+  const tail = keys[keys.length - 1]\n+  return tail === ONLY_WILDCARD_REG_EXP_STR || tail === TAIL_WILDCARD_REG_EXP_STR\n }\n \n-function findMiddleware<T>(middleware: Record<string, T[]>, path: string): T[] | undefined {\n-  for (const k of Object.keys(middleware).sort((a, b) => b.length - a.length)) {\n-    if (buildWildcardRegExp(k).test(path)) {\n-      return [...middleware[k]]\n+// Whether `wildcard`, a branch ending with a wildcard, matches every request `target` matches:\n+// `wildcard` minus its wildcard is a prefix of `target`, and a `/*` also needs a boundary there.\n+function covers(wildcard: string[], target: string[]): boolean {\n+  const last = wildcard.length - 1\n+  for (let i = 0; i < last; i++) {\n+    if (wildcard[i] !== target[i]) {\n+      // `x*` right before the trailing `/*` may take nothing, so `/x*/*` also matches `/x`\n+      return i === last - 1 && wildcard[i] === PREFIXED_WILDCARD_REG_EXP_STR && target.length === i\n     }\n   }\n-\n-  return undefined\n+  return (\n+    wildcard[last] === ONLY_WILDCARD_REG_EXP_STR || target.length === last || target[last] === '/'\n+  )\n }\n \n export class RegExpRouter<T> implements Router<T> {\n   name: string = 'RegExpRouter'\n-  #middleware?: Record<string, Record<string, HandlerWithMetadata<T>[]>>\n-  #routes?: Record<string, Record<string, HandlerWithMetadata<T>[]>>\n+  // method -> handlers in registration order; a method starts with a copy of ALL's\n+  #handlers?: Record<string, HandlerWithMetadata<T>[]>\n   #tries?: Record<string, Trie>\n \n   constructor() {\n-    this.#middleware = { [METHOD_NAME_ALL]: createNullObject() }\n-    this.#routes = { [METHOD_NAME_ALL]: createNullObject() }\n+    this.#handlers = { [METHOD_NAME_ALL]: [] }\n     this.#tries = { [METHOD_NAME_ALL]: new Trie() }\n   }\n ",
+      "added": 18,
+      "removed": 26,
+      "owner": "symbol:src/router/reg-exp-router/router.ts#buildWildcardRegExp"
+    },
+    {
+      "id": "hunk:src/router/reg-exp-router/router.ts:1",
+      "path": "src/router/reg-exp-router/router.ts",
+      "oldStart": 66,
+      "oldLines": 62,
+      "newStart": 58,
+      "newLines": 31,
+      "patch": "@@ -66,62 +58,31 @@ export class RegExpRouter<T> implements Router<T> {\n   }\n \n   add(method: string, path: string, handler: T) {\n-    const middleware = this.#middleware\n-    const routes = this.#routes!\n-\n-    if (!middleware) {\n+    const handlers = this.#handlers\n+    if (!handlers) {\n       throw new Error(MESSAGE_MATCHER_IS_ALREADY_BUILT)\n     }\n \n-    if (!middleware[method]) {\n-      this.#tries![method] = new Trie()\n-      for (const handlerMap of [middleware, routes]) {\n-        handlerMap[method] = createNullObject()\n-        for (const p in handlerMap[METHOD_NAME_ALL]) {\n-          handlerMap[method][p] = [...handlerMap[METHOD_NAME_ALL][p]]\n-          this.#insertPath(method, p)\n-        }\n+    const tries = this.#tries!\n+    if (!handlers[method]) {\n+      tries[method] = new Trie()\n+      handlers[method] = [...handlers[METHOD_NAME_ALL]]\n+      for (const p in tries[METHOD_NAME_ALL].paths) {\n+        this.#insertPath(method, p)\n       }\n     }\n \n     if (path === '/*') {\n       path = '*'\n     }\n-    const methods = method === METHOD_NAME_ALL ? Object.keys(middleware) : [method]\n-\n-    if (/\\*$/.test(path)) {\n-      const re = buildWildcardRegExp(path)\n-      for (const m of methods) {\n-        if (!middleware[m][path]) {\n-          this.#insertPath(m, path)\n-          middleware[m][path] =\n-            findMiddleware(middleware[m], path) ||\n-            findMiddleware(middleware[METHOD_NAME_ALL], path) ||\n-            []\n-        }\n-      }\n-      for (const handlerMap of [middleware, routes]) {\n-        for (const m of methods) {\n-          for (const p in handlerMap[m]) {\n-            re.test(p) && handlerMap[m][p].push([handler, path])\n-          }\n-        }\n-      }\n-\n-      return\n-    }\n-\n+    const methods = method === METHOD_NAME_ALL ? Object.keys(handlers) : [method]\n     const paths = checkOptionalParameter(path) || [path]\n     for (const path of paths) {\n       for (const m of methods) {\n-        if (!routes[m][path]) {\n+        if (!tries[m].paths[path]) {\n           this.#insertPath(m, path)\n-          routes[m][path] =\n-            findMiddleware(middleware[m], path) ||\n-            findMiddleware(middleware[METHOD_NAME_ALL], path) ||\n-            []\n         }\n-        routes[m][path].push([handler, path])\n+        handlers[m].push([handler, path])\n       }\n     }\n   }",
+      "added": 11,
+      "removed": 42,
+      "owner": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.add"
+    },
+    {
+      "id": "hunk:src/router/reg-exp-router/router.ts:2",
+      "path": "src/router/reg-exp-router/router.ts",
+      "oldStart": 131,
+      "oldLines": 41,
+      "newStart": 92,
+      "newLines": 53,
+      "patch": "@@ -131,41 +92,53 @@ export class RegExpRouter<T> implements Router<T> {\n   protected buildAllMatchers(): MatcherMap<T> {\n     const matchers: MatcherMap<T> = createNullObject()\n \n-    for (const method of Object.keys(this.#routes!)) {\n+    for (const method of Object.keys(this.#handlers!)) {\n       matchers[method] = this.#buildMatcher(method)\n     }\n \n     // Release cache\n-    this.#middleware = this.#routes = this.#tries = undefined\n-    wildcardRegExpCache = createNullObject()\n+    this.#handlers = this.#tries = undefined\n \n     return matchers\n   }\n \n   #buildMatcher(method: string): Matcher<T> {\n-    const middleware = this.#middleware![method]\n-    const routes = this.#routes![method]\n-\n+    const handlers = this.#handlers![method]\n     const trie = this.#tries![method]\n     const staticMap: StaticMap<T> = createNullObject()\n     const handlerData: HandlerData<T>[] = []\n     const [regexp, indexReplacementMap, paramReplacementMap] = trie.buildRegExp()\n \n-    for (const r of [middleware, routes]) {\n-      for (const path in r) {\n-        const handlers = r[path]\n-        const pathData = trie.paths[path]\n-        if (!pathData) {\n-          staticMap[path] = [handlers.map(([h]) => [h, createNullObject()]), emptyParam]\n-          continue\n+    // path -> indexes into `handlers`\n+    const own: Record<string, number[]> = createNullObject()\n+    const entries: HandlerData<T> = handlers.map(([h, p], i) => {\n+      ;(own[p] ??= []).push(i)\n+      return [\n+        h,\n+        trie.paths[p][1].reduceRight((map, [key, varIndex]) => {\n+          map[key] = paramReplacementMap[varIndex]\n+          return map\n+        }, createNullObject()),\n+      ]\n+    })\n+    const wildcards = Object.keys(own).filter((p) => endsWithWildcard(trie.paths[p][2]))\n+\n+    for (const path in trie.paths) {\n+      const [index, , keys] = trie.paths[path]\n+      const indexes = [...own[path]]\n+      for (const p of wildcards) {\n+        if (p !== path && covers(trie.paths[p][2], keys)) {\n+          indexes.push(...own[p])\n         }\n-        handlerData[pathData[0]] = handlers.map(([h, handlerPath]) => [\n-          h,\n-          trie.paths[handlerPath][1].reduceRight((map, [key], i) => {\n-            map[key] = paramReplacementMap[pathData[1][i][1]]\n-            return map\n-          }, createNullObject()),\n-        ])\n+      }\n+      const data: HandlerData<T> = indexes.sort((a, b) => a - b).map((i) => entries[i])\n+      if (index === -1) {\n+        // A static path can share literal nodes with parameter middleware such as /:id{a}/*.\n+        // Keep only the captures its handlers reference, as a plain array.\n+        const last = Math.max(-1, ...data.flatMap(([, map]) => Object.values(map)))\n+        staticMap[path] = [data, last === -1 ? emptyParam : path.match(regexp)!.slice(0, last + 1)]\n+      } else {\n+        handlerData[index] = data\n       }\n     }\n ",
+      "added": 32,
+      "removed": 20,
+      "owner": "symbol:src/router/reg-exp-router/router.ts#RegExpRouter.#buildMatcher"
+    },
+    {
+      "id": "hunk:src/router/reg-exp-router/trie.ts:0",
+      "path": "src/router/reg-exp-router/trie.ts",
+      "oldStart": 8,
+      "oldLines": 13,
+      "newStart": 8,
+      "newLines": 15,
+      "patch": "@@ -8,13 +8,15 @@ export class Trie {\n   #context: Context = { varIndex: 0 }\n   #root: Node = new Node()\n   #index: number = 0\n-  // dynamic path -> [handler index, param assoc]; static paths are not registered\n-  paths: Record<string, [number, ParamAssocArray]> = createNullObject()\n+  // path -> [handler index (-1 for a static path), param assoc, node keys along the branch]\n+  paths: Record<string, [number, ParamAssocArray, string[]]> = createNullObject()\n \n   insert(path: string, isStatic: boolean): void {\n+    const keys: string[] = []\n     if (isStatic) {\n       // a static path has no pattern; every character is a literal token\n-      this.#root.insert(path.split(''), 0, [], this.#context, true)\n+      this.#root.insert(path.split(''), -1, [], this.#context, keys)\n+      this.paths[path] = [-1, [], keys]\n       return\n     }\n ",
+      "added": 5,
+      "removed": 3,
+      "owner": "symbol:src/router/reg-exp-router/trie.ts#Trie"
+    },
+    {
+      "id": "hunk:src/router/reg-exp-router/trie.ts:1",
+      "path": "src/router/reg-exp-router/trie.ts",
+      "oldStart": 52,
+      "oldLines": 8,
+      "newStart": 54,
+      "newLines": 8,
+      "patch": "@@ -52,8 +54,8 @@ export class Trie {\n       }\n     }\n \n-    this.#root.insert(tokens, this.#index, paramAssoc, this.#context, false)\n-    this.paths[path] = [this.#index++, paramAssoc]\n+    this.#root.insert(tokens, this.#index, paramAssoc, this.#context, keys)\n+    this.paths[path] = [this.#index++, paramAssoc, keys]\n   }\n \n   buildRegExp(): [RegExp, ReplacementMap, ReplacementMap] {",
+      "added": 2,
+      "removed": 2,
+      "owner": "symbol:src/router/reg-exp-router/trie.ts#Trie.insert"
+    },
+    {
+      "id": "hunk:src/router/trie-router/node.ts:0",
+      "path": "src/router/trie-router/node.ts",
+      "oldStart": 103,
+      "oldLines": 24,
+      "newStart": 103,
+      "newLines": 17,
+      "patch": "@@ -103,24 +103,17 @@ export class Node<T> {\n         const node = curNodes[j]\n         const nextNode = node.#children[part]\n \n-        // A pattern node is also stored in `#children` under its key, so a part that is\n-        // literally that key arrives here as well as in the pattern loop below. Each job below\n-        // leaves pattern nodes to that loop, and the set it leaves differs per job.\n-        if (nextNode) {\n+        // Pattern nodes are also stored in `#children`; leave them to the pattern loop\n+        // below even when the request segment is literally their key.\n+        if (nextNode && nextNode.#pattern === undefined) {\n           nextNode.#params = node.#params\n           if (isLast) {\n-            // '/hello/*' => match '/hello'. The loop makes this push itself when an array\n-            // pattern matches, and never for a string one.\n-            if (nextNode.#children['*'] && !Array.isArray(nextNode.#pattern)) {\n+            // '/hello/*' => match '/hello'.\n+            if (nextNode.#children['*']) {\n               this.#pushHandlerSets(handlerSets, nextNode.#children['*'], method, node.#params)\n             }\n-            // The loop matches any pattern node whose pattern accepts the part.\n-            if (nextNode.#pattern === undefined) {\n-              this.#pushHandlerSets(handlerSets, nextNode, method, node.#params)\n-            }\n-          } else if (nextNode.#pattern !== '*' && !Array.isArray(nextNode.#pattern)) {\n-            // The loop descends through `*` and parameters itself, but not through a\n-            // prefixed wildcard.\n+            this.#pushHandlerSets(handlerSets, nextNode, method, node.#params)\n+          } else {\n             tempNodes.push(nextNode)\n           }\n         }",
+      "added": 7,
+      "removed": 14,
+      "owner": "symbol:src/router/trie-router/node.ts#Node.search"
+    },
+    {
+      "id": "hunk:src/router/trie-router/node.ts:1",
+      "path": "src/router/trie-router/node.ts",
+      "oldStart": 137,
+      "oldLines": 6,
+      "newStart": 130,
+      "newLines": 10,
+      "patch": "@@ -137,6 +130,10 @@ export class Node<T> {\n               // A standalone `*` consumes at least one character before another segment\n               // can follow it; one with a prefix may consume none.\n               if (pattern !== '*' || part !== '') {\n+                // '/x*/*' => match '/x', '/a/*/*' => match '/a/b'\n+                if (isLast && child.#children['*']) {\n+                  this.#pushHandlerSets(handlerSets, child.#children['*'], method, node.#params)\n+                }\n                 child.#params = params\n                 tempNodes.push(child)\n               }",
+      "added": 4,
+      "removed": 0,
+      "owner": "symbol:src/router/trie-router/node.ts#Node.search"
+    }
+  ],
+  "skippedFiles": [],
+  "limits": [
+    "Callers outside this repository snapshot are not shown.",
+    "External packages are not resolved (no node_modules); edges to them are omitted."
+  ],
+  "collapsed": [],
+  "stats": {
+    "files": 10,
+    "added": 423,
+    "removed": 140,
+    "durationMs": 10129
+  },
+  "policy": {
+    "source": "default",
+    "changedInPr": false,
+    "errors": []
+  }
+}

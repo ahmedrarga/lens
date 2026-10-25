@@ -1,0 +1,19 @@
+{
+  "name": "@lens/risk",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit -p ."
+  },
+  "dependencies": {
+    "@lens/core": "*",
+    "yaml": "^2.6.1",
+    "picomatch": "^4.0.2"
+  },
+  "devDependencies": {
+    "@types/picomatch": "^3.0.1"
+  }
+}

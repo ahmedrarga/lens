@@ -1,0 +1,2455 @@
+{
+  "schema": 1,
+  "pr": {
+    "provider": "github",
+    "host": "github.com",
+    "owner": "spring-petclinic",
+    "repo": "spring-petclinic-rest",
+    "number": 328,
+    "url": "https://github.com/spring-petclinic/spring-petclinic-rest/pull/328",
+    "title": "Add pagination support for listing owners via REST API",
+    "body": "This PR is the first in a series of PRs in order to implement and close #11.\r\n\r\n## Summary\r\nAdds a paginated v2 owners endpoint while keeping the existing `/api/owners` response unchanged for backward\r\ncompatibility. New endpoint:\r\n\r\n```http\r\nGET /api/v2/owners?page=0&size=20 \r\n```\r\nAlso supports filtering by last name:\r\n\r\n```http\r\nGET /api/v2/owners?lastName=Davis&page=0&size=1\r\n```\r\n## Changes\r\n\r\n  - Adds OwnerPage to the OpenAPI contract\r\n  - Adds GET /v2/owners with page, size, and optional lastName\r\n  - Implements pagination through the service and repository layers\r\n  - Supports Spring Data JPA, JPA, and JDBC repository implementations\r\n  - Adds controller and service tests for paginated owners\r\n",
+    "author": "San-43",
+    "baseSha": "32d530bf420ffdfb6c2b091dced7d91c2a2b663e",
+    "headSha": "f2670f9603d7885d2545c7079bf92c34e8d0236f",
+    "baseRef": "master",
+    "headRef": "feature/owners-v2-pagination"
+  },
+  "generatedAt": "2026-10-22T18:17:14.269Z",
+  "pipelineVersion": "m1-0.1.0",
+  "nodes": [
+    {
+      "id": "cluster:java:org.springframework.samples.petclinic.mapper:src-main-java-org-springframework-samples-petclinic-mapper-OwnerMapper.java-OwnerMapper",
+      "kind": "cluster",
+      "level": 1,
+      "label": "OwnerMapper (+3)",
+      "parent": "module:java:org.springframework.samples.petclinic.mapper",
+      "state": "modified",
+      "stats": {
+        "added": 16,
+        "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:java:org.springframework.samples.petclinic.repository:src-main-java-org-springframework-samples-petclinic-repository-OwnerRepository.java",
+      "kind": "cluster",
+      "level": 1,
+      "label": "OwnerRepository.java (+3)",
+      "parent": "module:java:org.springframework.samples.petclinic.repository",
+      "state": "modified",
+      "stats": {
+        "added": 12,
+        "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:java:org.springframework.samples.petclinic.repository:src-main-java-org-springframework-samples-petclinic-repository-OwnerRepository.java-OwnerRepository",
+      "kind": "cluster",
+      "level": 1,
+      "label": "OwnerRepository (+3)",
+      "parent": "module:java:org.springframework.samples.petclinic.repository",
+      "state": "modified",
+      "stats": {
+        "added": 7,
+        "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:java:org.springframework.samples.petclinic.repository:src-main-java-org-springframework-samples-petclinic-repository-OwnerRepository.java-OwnerRepository.findAll",
+      "kind": "cluster",
+      "level": 1,
+      "label": "OwnerRepository.findAll (+1)",
+      "parent": "module:java:org.springframework.samples.petclinic.repository",
+      "state": "modified",
+      "stats": {
+        "added": 3,
+        "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:java:org.springframework.samples.petclinic.repository:src-main-java-org-springframework-samples-petclinic-repository-jdbc-JdbcOwnerRepositoryImpl.java-JdbcOwnerRepositoryImpl.findByLastName",
+      "kind": "cluster",
+      "level": 1,
+      "label": "JdbcOwnerRepositoryImpl.findByLastName (+1)",
+      "parent": "module:java:org.springframework.samples.petclinic.repository",
+      "state": "modified",
+      "stats": {
+        "added": 36,
+        "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:java:org.springframework.samples.petclinic.repository:src-main-java-org-springframework-samples-petclinic-repository-jpa-JpaOwnerRepositoryImpl.java-JpaOwnerRepositoryImpl.findByLastName",
+      "kind": "cluster",
+      "level": 1,
+      "label": "JpaOwnerRepositoryImpl.findByLastName (+1)",
+      "parent": "module:java:org.springframework.samples.petclinic.repository",
+      "state": "modified",
+      "stats": {
+        "added": 24,
+        "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:java:org.springframework.samples.petclinic.repository:src-main-java-org-springframework-samples-petclinic-repository-springdatajpa-SpringDataOwnerRepository.java-SpringDataOwnerRepository.findAll",
+      "kind": "cluster",
+      "level": 1,
+      "label": "SpringDataOwnerRepository.findAll (+1)",
+      "parent": "module:java:org.springframework.samples.petclinic.repository",
+      "state": "modified",
+      "stats": {
+        "added": 10,
+        "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:java:org.springframework.samples.petclinic.rest:src-main-java-org-springframework-samples-petclinic-rest-controller-OwnerRestController.java-OwnerRestController.listOwnersPage",
+      "kind": "cluster",
+      "level": 1,
+      "label": "OwnerRestController.listOwnersPage (+4)",
+      "parent": "module:java:org.springframework.samples.petclinic.rest",
+      "state": "modified",
+      "stats": {
+        "added": 25,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController",
+          "symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController.listOwnersPage"
+        ]
+      }
+    },
+    {
+      "id": "cluster:java:org.springframework.samples.petclinic.service:src-main-java-org-springframework-samples-petclinic-service-ClinicServiceImpl.java-ClinicServiceImpl.findOwners",
+      "kind": "cluster",
+      "level": 1,
+      "label": "ClinicServiceImpl.findOwners (+8)",
+      "parent": "module:java:org.springframework.samples.petclinic.service",
+      "state": "modified",
+      "stats": {
+        "added": 55,
+        "removed": 0
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl",
+          "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl.findOwners"
+        ]
+      }
+    },
+    {
+      "id": "cluster:java:org.springframework.samples.petclinic.service:tests-src-test-java-org-springframework-samples-petclinic-service-clinicService",
+      "kind": "cluster",
+      "level": 1,
+      "label": "Tests: src/test/java/org/springframework/samples/petclinic/service/clinicService",
+      "parent": "module:java:org.springframework.samples.petclinic.service",
+      "state": "modified",
+      "stats": {
+        "added": 2,
+        "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:resources:config:src-main-resources-openapi.yml",
+      "kind": "cluster",
+      "level": 1,
+      "label": "openapi.yml",
+      "parent": "module:resources:config",
+      "state": "modified",
+      "stats": {
+        "added": 112,
+        "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java",
+      "level": 2,
+      "state": "modified",
+      "path": "src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.mapper:src-main-java-org-springframework-samples-petclinic-mapper-OwnerMapper.java-OwnerMapper",
+      "stats": {
+        "added": 3,
+        "removed": 0
+      },
+      "kind": "file",
+      "label": "src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java",
+      "level": 2,
+      "state": "modified",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.repository:src-main-java-org-springframework-samples-petclinic-repository-OwnerRepository.java",
+      "stats": {
+        "added": 2,
+        "removed": 0
+      },
+      "kind": "file",
+      "label": "src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java",
+      "level": 2,
+      "state": "modified",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.repository:src-main-java-org-springframework-samples-petclinic-repository-OwnerRepository.java",
+      "stats": {
+        "added": 3,
+        "removed": 0
+      },
+      "kind": "file",
+      "label": "src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java",
+      "level": 2,
+      "state": "modified",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.repository:src-main-java-org-springframework-samples-petclinic-repository-OwnerRepository.java",
+      "stats": {
+        "added": 5,
+        "removed": 0
+      },
+      "kind": "file",
+      "label": "src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:src/main/java/org/springframework/samples/petclinic/repository/springdatajpa/SpringDataOwnerRepository.java",
+      "level": 2,
+      "state": "modified",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/springdatajpa/SpringDataOwnerRepository.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.repository:src-main-java-org-springframework-samples-petclinic-repository-OwnerRepository.java",
+      "stats": {
+        "added": 2,
+        "removed": 0
+      },
+      "kind": "file",
+      "label": "src/main/java/org/springframework/samples/petclinic/repository/springdatajpa/SpringDataOwnerRepository.java",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java",
+      "level": 2,
+      "state": "modified",
+      "path": "src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.rest:src-main-java-org-springframework-samples-petclinic-rest-controller-OwnerRestController.java-OwnerRestController.listOwnersPage",
+      "stats": {
+        "added": 7,
+        "removed": 0
+      },
+      "kind": "file",
+      "label": "src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java",
+      "level": 2,
+      "state": "modified",
+      "path": "src/main/java/org/springframework/samples/petclinic/service/ClinicService.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.service:src-main-java-org-springframework-samples-petclinic-service-ClinicServiceImpl.java-ClinicServiceImpl.findOwners",
+      "stats": {
+        "added": 2,
+        "removed": 0
+      },
+      "kind": "file",
+      "label": "src/main/java/org/springframework/samples/petclinic/service/ClinicService.java",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java",
+      "level": 2,
+      "state": "modified",
+      "path": "src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.service:src-main-java-org-springframework-samples-petclinic-service-ClinicServiceImpl.java-ClinicServiceImpl.findOwners",
+      "stats": {
+        "added": 2,
+        "removed": 0
+      },
+      "kind": "file",
+      "label": "src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:src/main/resources/openapi.yml",
+      "level": 2,
+      "state": "modified",
+      "path": "src/main/resources/openapi.yml",
+      "parent": "cluster:resources:config:src-main-resources-openapi.yml",
+      "stats": {
+        "added": 112,
+        "removed": 0
+      },
+      "kind": "file",
+      "label": "src/main/resources/openapi.yml",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java",
+      "level": 2,
+      "state": "modified",
+      "path": "src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.mapper:src-main-java-org-springframework-samples-petclinic-mapper-OwnerMapper.java-OwnerMapper",
+      "stats": {
+        "added": 3,
+        "removed": 0
+      },
+      "kind": "file",
+      "label": "src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java",
+      "level": 2,
+      "state": "modified",
+      "path": "src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.service:src-main-java-org-springframework-samples-petclinic-service-ClinicServiceImpl.java-ClinicServiceImpl.findOwners",
+      "stats": {
+        "added": 3,
+        "removed": 0
+      },
+      "kind": "file",
+      "label": "src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "module:java:org.springframework.samples.petclinic.mapper",
+      "kind": "module",
+      "level": 0,
+      "label": "mapper",
+      "path": "src/main/java/org/springframework/samples/petclinic/mapper",
+      "state": "modified",
+      "stats": {
+        "added": 16,
+        "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "module:java:org.springframework.samples.petclinic.model",
+      "kind": "module",
+      "level": 0,
+      "label": "model",
+      "path": "src/main/java/org/springframework/samples/petclinic/model",
+      "state": "unchanged",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "module:java:org.springframework.samples.petclinic.repository",
+      "kind": "module",
+      "level": 0,
+      "label": "repository",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository",
+      "state": "modified",
+      "stats": {
+        "added": 92,
+        "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "module:java:org.springframework.samples.petclinic.rest",
+      "kind": "module",
+      "level": 0,
+      "label": "rest",
+      "path": "src/main/java/org/springframework/samples/petclinic/rest",
+      "state": "modified",
+      "stats": {
+        "added": 25,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController",
+          "symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController.listOwnersPage"
+        ]
+      }
+    },
+    {
+      "id": "module:java:org.springframework.samples.petclinic.service",
+      "kind": "module",
+      "level": 0,
+      "label": "service",
+      "path": "src/main/java/org/springframework/samples/petclinic/service",
+      "state": "modified",
+      "stats": {
+        "added": 57,
+        "removed": 0
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl",
+          "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl.findOwners"
+        ]
+      }
+    },
+    {
+      "id": "module:resources:config",
+      "kind": "module",
+      "level": 0,
+      "label": "config & resources",
+      "path": "src/main/resources",
+      "state": "modified",
+      "stats": {
+        "added": 112,
+        "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java#OwnerMapper",
+      "level": 2,
+      "state": "modified",
+      "path": "src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.mapper:src-main-java-org-springframework-samples-petclinic-mapper-OwnerMapper.java-OwnerMapper",
+      "stats": {
+        "added": 1,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "OwnerMapper",
+      "symbolKind": "interface",
+      "range": {
+        "start": 15,
+        "end": 42
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java#OwnerMapper.toOwnerDtoCollection",
+      "kind": "symbol",
+      "level": 2,
+      "label": "OwnerMapper.toOwnerDtoCollection",
+      "parent": "module:java:org.springframework.samples.petclinic.mapper",
+      "state": "unchanged",
+      "symbolKind": "method",
+      "path": "src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java",
+      "range": {
+        "start": 29,
+        "end": 29
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java#OwnerMapper.toOwnerPageDto",
+      "level": 2,
+      "state": "added",
+      "path": "src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.mapper:src-main-java-org-springframework-samples-petclinic-mapper-OwnerMapper.java-OwnerMapper",
+      "stats": {
+        "added": 9,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "OwnerMapper.toOwnerPageDto",
+      "symbolKind": "method",
+      "range": {
+        "start": 33,
+        "end": 41
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java#OwnerMapper.toOwners",
+      "kind": "symbol",
+      "level": 2,
+      "label": "OwnerMapper.toOwners",
+      "parent": "module:java:org.springframework.samples.petclinic.mapper",
+      "state": "unchanged",
+      "symbolKind": "method",
+      "path": "src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java",
+      "range": {
+        "start": 31,
+        "end": 31
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/mapper/PetMapper.java#PetMapper",
+      "kind": "symbol",
+      "level": 2,
+      "label": "PetMapper",
+      "parent": "module:java:org.springframework.samples.petclinic.mapper",
+      "state": "unchanged",
+      "symbolKind": "interface",
+      "path": "src/main/java/org/springframework/samples/petclinic/mapper/PetMapper.java",
+      "range": {
+        "start": 13,
+        "end": 39
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/mapper/VisitMapper.java#VisitMapper",
+      "kind": "symbol",
+      "level": 2,
+      "label": "VisitMapper",
+      "parent": "module:java:org.springframework.samples.petclinic.mapper",
+      "state": "unchanged",
+      "symbolKind": "interface",
+      "path": "src/main/java/org/springframework/samples/petclinic/mapper/VisitMapper.java",
+      "range": {
+        "start": 11,
+        "end": 28
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "kind": "symbol",
+      "level": 2,
+      "label": "Owner",
+      "parent": "module:java:org.springframework.samples.petclinic.model",
+      "state": "unchanged",
+      "symbolKind": "class",
+      "path": "src/main/java/org/springframework/samples/petclinic/model/Owner.java",
+      "range": {
+        "start": 27,
+        "end": 152
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository",
+      "level": 2,
+      "state": "modified",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.repository:src-main-java-org-springframework-samples-petclinic-repository-OwnerRepository.java-OwnerRepository",
+      "stats": {
+        "added": 1,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "OwnerRepository",
+      "symbolKind": "interface",
+      "range": {
+        "start": 26,
+        "end": 87
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository.findAll",
+      "level": 2,
+      "state": "modified",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.repository:src-main-java-org-springframework-samples-petclinic-repository-OwnerRepository.java-OwnerRepository.findAll",
+      "stats": {
+        "added": 2,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "OwnerRepository.findAll",
+      "symbolKind": "method",
+      "range": {
+        "start": 68,
+        "end": 76
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository.findByLastName",
+      "level": 2,
+      "state": "modified",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.repository:src-main-java-org-springframework-samples-petclinic-repository-OwnerRepository.java-OwnerRepository.findAll",
+      "stats": {
+        "added": 1,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "OwnerRepository.findByLastName",
+      "symbolKind": "method",
+      "range": {
+        "start": 38,
+        "end": 48
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/repository/PetRepository.java#PetRepository",
+      "kind": "symbol",
+      "level": 2,
+      "label": "PetRepository",
+      "parent": "module:java:org.springframework.samples.petclinic.repository",
+      "state": "unchanged",
+      "symbolKind": "interface",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/PetRepository.java",
+      "range": {
+        "start": 26,
+        "end": 78
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/repository/PetTypeRepository.java#PetTypeRepository",
+      "kind": "symbol",
+      "level": 2,
+      "label": "PetTypeRepository",
+      "parent": "module:java:org.springframework.samples.petclinic.repository",
+      "state": "unchanged",
+      "symbolKind": "interface",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/PetTypeRepository.java",
+      "range": {
+        "start": 24,
+        "end": 41
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/repository/SpecialtyRepository.java#SpecialtyRepository",
+      "kind": "symbol",
+      "level": 2,
+      "label": "SpecialtyRepository",
+      "parent": "module:java:org.springframework.samples.petclinic.repository",
+      "state": "unchanged",
+      "symbolKind": "interface",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/SpecialtyRepository.java",
+      "range": {
+        "start": 26,
+        "end": 43
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java#JdbcOwnerRepositoryImpl",
+      "level": 2,
+      "state": "modified",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.repository:src-main-java-org-springframework-samples-petclinic-repository-OwnerRepository.java-OwnerRepository",
+      "stats": {
+        "added": 2,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "JdbcOwnerRepositoryImpl",
+      "symbolKind": "class",
+      "range": {
+        "start": 44,
+        "end": 236
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java#JdbcOwnerRepositoryImpl.findAll",
+      "level": 2,
+      "state": "modified",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.repository:src-main-java-org-springframework-samples-petclinic-repository-jdbc-JdbcOwnerRepositoryImpl.java-JdbcOwnerRepositoryImpl.findByLastName",
+      "stats": {
+        "added": 17,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "JdbcOwnerRepositoryImpl.findAll",
+      "symbolKind": "method",
+      "range": {
+        "start": 183,
+        "end": 211
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java#JdbcOwnerRepositoryImpl.findByLastName",
+      "level": 2,
+      "state": "modified",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.repository:src-main-java-org-springframework-samples-petclinic-repository-jdbc-JdbcOwnerRepositoryImpl.java-JdbcOwnerRepositoryImpl.findByLastName",
+      "stats": {
+        "added": 19,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "JdbcOwnerRepositoryImpl.findByLastName",
+      "symbolKind": "method",
+      "range": {
+        "start": 76,
+        "end": 112
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java#JdbcOwnerRepositoryImpl.loadOwnersPetsAndVisits",
+      "kind": "symbol",
+      "level": 2,
+      "label": "JdbcOwnerRepositoryImpl.loadOwnersPetsAndVisits",
+      "parent": "module:java:org.springframework.samples.petclinic.repository",
+      "state": "unchanged",
+      "symbolKind": "method",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java",
+      "range": {
+        "start": 171,
+        "end": 181
+      },
+      "exported": false
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java#JdbcOwnerRepositoryImpl.loadPetsAndVisits",
+      "kind": "symbol",
+      "level": 2,
+      "label": "JdbcOwnerRepositoryImpl.loadPetsAndVisits",
+      "parent": "module:java:org.springframework.samples.petclinic.repository",
+      "state": "unchanged",
+      "symbolKind": "method",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java",
+      "range": {
+        "start": 136,
+        "end": 149
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcPetRepositoryImpl.java#JdbcPetRepositoryImpl",
+      "kind": "symbol",
+      "level": 2,
+      "label": "JdbcPetRepositoryImpl",
+      "parent": "module:java:org.springframework.samples.petclinic.repository",
+      "state": "unchanged",
+      "symbolKind": "class",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcPetRepositoryImpl.java",
+      "range": {
+        "start": 44,
+        "end": 163
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcPetRepositoryImpl.java#JdbcPetRepositoryImpl.constructor",
+      "kind": "symbol",
+      "level": 2,
+      "label": "JdbcPetRepositoryImpl.constructor",
+      "parent": "module:java:org.springframework.samples.petclinic.repository",
+      "state": "unchanged",
+      "symbolKind": "method",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcPetRepositoryImpl.java",
+      "range": {
+        "start": 64,
+        "end": 73
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcPetRepositoryImpl.java#JdbcPetRepositoryImpl.ownerRepository",
+      "kind": "symbol",
+      "level": 2,
+      "label": "JdbcPetRepositoryImpl.ownerRepository",
+      "parent": "module:java:org.springframework.samples.petclinic.repository",
+      "state": "unchanged",
+      "symbolKind": "variable",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcPetRepositoryImpl.java",
+      "range": {
+        "start": 62,
+        "end": 62
+      },
+      "exported": false
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java#JpaOwnerRepositoryImpl",
+      "level": 2,
+      "state": "modified",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.repository:src-main-java-org-springframework-samples-petclinic-repository-OwnerRepository.java-OwnerRepository",
+      "stats": {
+        "added": 2,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "JpaOwnerRepositoryImpl",
+      "symbolKind": "class",
+      "range": {
+        "start": 35,
+        "end": 126
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java#JpaOwnerRepositoryImpl.findAll",
+      "level": 2,
+      "state": "modified",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.repository:src-main-java-org-springframework-samples-petclinic-repository-jpa-JpaOwnerRepositoryImpl.java-JpaOwnerRepositoryImpl.findByLastName",
+      "stats": {
+        "added": 11,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "JpaOwnerRepositoryImpl.findAll",
+      "symbolKind": "method",
+      "range": {
+        "start": 102,
+        "end": 119
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java#JpaOwnerRepositoryImpl.findByLastName",
+      "level": 2,
+      "state": "modified",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.repository:src-main-java-org-springframework-samples-petclinic-repository-jpa-JpaOwnerRepositoryImpl.java-JpaOwnerRepositoryImpl.findByLastName",
+      "stats": {
+        "added": 13,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "JpaOwnerRepositoryImpl.findByLastName",
+      "symbolKind": "method",
+      "range": {
+        "start": 52,
+        "end": 80
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/repository/springdatajpa/SpringDataOwnerRepository.java#SpringDataOwnerRepository",
+      "level": 2,
+      "state": "modified",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/springdatajpa/SpringDataOwnerRepository.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.repository:src-main-java-org-springframework-samples-petclinic-repository-OwnerRepository.java-OwnerRepository",
+      "stats": {
+        "added": 2,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "SpringDataOwnerRepository",
+      "symbolKind": "interface",
+      "range": {
+        "start": 29,
+        "end": 58
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/repository/springdatajpa/SpringDataOwnerRepository.java#SpringDataOwnerRepository.findAll",
+      "level": 2,
+      "state": "added",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/springdatajpa/SpringDataOwnerRepository.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.repository:src-main-java-org-springframework-samples-petclinic-repository-springdatajpa-SpringDataOwnerRepository.java-SpringDataOwnerRepository.findAll",
+      "stats": {
+        "added": 5,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "SpringDataOwnerRepository.findAll",
+      "symbolKind": "method",
+      "range": {
+        "start": 49,
+        "end": 53
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/repository/springdatajpa/SpringDataOwnerRepository.java#SpringDataOwnerRepository.findByLastName",
+      "level": 2,
+      "state": "modified",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/springdatajpa/SpringDataOwnerRepository.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.repository:src-main-java-org-springframework-samples-petclinic-repository-springdatajpa-SpringDataOwnerRepository.java-SpringDataOwnerRepository.findAll",
+      "stats": {
+        "added": 5,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "SpringDataOwnerRepository.findByLastName",
+      "symbolKind": "method",
+      "range": {
+        "start": 39,
+        "end": 47
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController",
+      "level": 2,
+      "state": "modified",
+      "path": "src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.rest:src-main-java-org-springframework-samples-petclinic-rest-controller-OwnerRestController.java-OwnerRestController.listOwnersPage",
+      "stats": {
+        "added": 3,
+        "removed": 1
+      },
+      "kind": "symbol",
+      "label": "OwnerRestController",
+      "symbolKind": "class",
+      "range": {
+        "start": 54,
+        "end": 226
+      },
+      "exported": true,
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "spring-security-annotation",
+            "message": "Adds method-level access control (@PreAuthorize/@Secured/@RolesAllowed): check the expression grants exactly the intended roles (@PreAuthorize)",
+            "level": "med",
+            "hunkIds": [
+              "hunk:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java:5"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController.constructor",
+      "kind": "symbol",
+      "level": 2,
+      "label": "OwnerRestController.constructor",
+      "parent": "module:java:org.springframework.samples.petclinic.rest",
+      "state": "unchanged",
+      "symbolKind": "method",
+      "path": "src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java",
+      "range": {
+        "start": 71,
+        "end": 79
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController.getRequest",
+      "level": 2,
+      "state": "added",
+      "path": "src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.rest:src-main-java-org-springframework-samples-petclinic-rest-controller-OwnerRestController.java-OwnerRestController.listOwnersPage",
+      "stats": {
+        "added": 4,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "OwnerRestController.getRequest",
+      "symbolKind": "method",
+      "range": {
+        "start": 81,
+        "end": 84
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController.listOwnersPage",
+      "level": 2,
+      "state": "added",
+      "path": "src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.rest:src-main-java-org-springframework-samples-petclinic-rest-controller-OwnerRestController.java-OwnerRestController.listOwnersPage",
+      "stats": {
+        "added": 10,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "OwnerRestController.listOwnersPage",
+      "symbolKind": "method",
+      "range": {
+        "start": 101,
+        "end": 110
+      },
+      "exported": true,
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "spring-security-annotation",
+            "message": "Adds method-level access control (@PreAuthorize/@Secured/@RolesAllowed): check the expression grants exactly the intended roles (@PreAuthorize)",
+            "level": "med",
+            "hunkIds": [
+              "hunk:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java:5"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController.ownerMapper",
+      "kind": "symbol",
+      "level": 2,
+      "label": "OwnerRestController.ownerMapper",
+      "parent": "module:java:org.springframework.samples.petclinic.rest",
+      "state": "unchanged",
+      "symbolKind": "variable",
+      "path": "src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java",
+      "range": {
+        "start": 65,
+        "end": 65
+      },
+      "exported": false
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java#ClinicService",
+      "kind": "symbol",
+      "level": 2,
+      "label": "ClinicService",
+      "parent": "module:java:org.springframework.samples.petclinic.service",
+      "state": "unchanged",
+      "symbolKind": "interface",
+      "path": "src/main/java/org/springframework/samples/petclinic/service/ClinicService.java",
+      "range": {
+        "start": 32,
+        "end": 73
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java#ClinicService.findOwners",
+      "level": 2,
+      "state": "added",
+      "path": "src/main/java/org/springframework/samples/petclinic/service/ClinicService.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.service:src-main-java-org-springframework-samples-petclinic-service-ClinicServiceImpl.java-ClinicServiceImpl.findOwners",
+      "stats": {
+        "added": 1,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "ClinicService.findOwners",
+      "symbolKind": "method",
+      "range": {
+        "start": 57,
+        "end": 57
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl",
+      "level": 2,
+      "state": "modified",
+      "path": "src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.service:src-main-java-org-springframework-samples-petclinic-service-ClinicServiceImpl.java-ClinicServiceImpl.findOwners",
+      "stats": {
+        "added": 1,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "ClinicServiceImpl",
+      "symbolKind": "class",
+      "range": {
+        "start": 33,
+        "end": 260
+      },
+      "exported": true,
+      "risk": {
+        "level": "med",
+        "mustReview": true,
+        "reasons": [
+          {
+            "ruleId": "transactional",
+            "message": "Changes transaction boundaries (@Transactional added/removed, propagation/isolation/readOnly changed): affects atomicity and rollback (@Transactional)",
+            "level": "med",
+            "hunkIds": [
+              "hunk:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java:1"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl.findAllOwners",
+      "kind": "symbol",
+      "level": 2,
+      "label": "ClinicServiceImpl.findAllOwners",
+      "parent": "module:java:org.springframework.samples.petclinic.service",
+      "state": "unchanged",
+      "symbolKind": "method",
+      "path": "src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java",
+      "range": {
+        "start": 119,
+        "end": 123
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl.findOwnerByLastName",
+      "kind": "symbol",
+      "level": 2,
+      "label": "ClinicServiceImpl.findOwnerByLastName",
+      "parent": "module:java:org.springframework.samples.petclinic.service",
+      "state": "unchanged",
+      "symbolKind": "method",
+      "path": "src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java",
+      "range": {
+        "start": 233,
+        "end": 237
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl.findOwners",
+      "level": 2,
+      "state": "added",
+      "path": "src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.service:src-main-java-org-springframework-samples-petclinic-service-ClinicServiceImpl.java-ClinicServiceImpl.findOwners",
+      "stats": {
+        "added": 8,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "ClinicServiceImpl.findOwners",
+      "symbolKind": "method",
+      "range": {
+        "start": 125,
+        "end": 132
+      },
+      "exported": true,
+      "risk": {
+        "level": "med",
+        "mustReview": true,
+        "reasons": [
+          {
+            "ruleId": "transactional",
+            "message": "Changes transaction boundaries (@Transactional added/removed, propagation/isolation/readOnly changed): affects atomicity and rollback (@Transactional)",
+            "level": "med",
+            "hunkIds": [
+              "hunk:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java:1"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "symbol:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java#OwnerRestControllerTests",
+      "level": 2,
+      "state": "modified",
+      "path": "src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.rest:src-main-java-org-springframework-samples-petclinic-rest-controller-OwnerRestController.java-OwnerRestController.listOwnersPage",
+      "stats": {
+        "added": 1,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "OwnerRestControllerTests",
+      "symbolKind": "class",
+      "range": {
+        "start": 61,
+        "end": 649
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java#OwnerRestControllerTests.testGetOwnersPageSuccess",
+      "level": 2,
+      "state": "added",
+      "path": "src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.service:src-main-java-org-springframework-samples-petclinic-service-ClinicServiceImpl.java-ClinicServiceImpl.findOwners",
+      "stats": {
+        "added": 20,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "OwnerRestControllerTests.testGetOwnersPageSuccess",
+      "symbolKind": "method",
+      "range": {
+        "start": 218,
+        "end": 237
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java#AbstractClinicServiceTests",
+      "level": 2,
+      "state": "modified",
+      "path": "src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.service:tests-src-test-java-org-springframework-samples-petclinic-service-clinicService",
+      "stats": {
+        "added": 2,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "AbstractClinicServiceTests",
+      "symbolKind": "class",
+      "range": {
+        "start": 37,
+        "end": 528
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java#AbstractClinicServiceTests.shouldFindOwnersPage",
+      "level": 2,
+      "state": "added",
+      "path": "src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.service:src-main-java-org-springframework-samples-petclinic-service-ClinicServiceImpl.java-ClinicServiceImpl.findOwners",
+      "stats": {
+        "added": 9,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "AbstractClinicServiceTests.shouldFindOwnersPage",
+      "symbolKind": "method",
+      "range": {
+        "start": 348,
+        "end": 356
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java#AbstractClinicServiceTests.shouldFindOwnersPageByLastName",
+      "level": 2,
+      "state": "added",
+      "path": "src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java",
+      "parent": "cluster:java:org.springframework.samples.petclinic.service:src-main-java-org-springframework-samples-petclinic-service-ClinicServiceImpl.java-ClinicServiceImpl.findOwners",
+      "stats": {
+        "added": 9,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "AbstractClinicServiceTests.shouldFindOwnersPageByLastName",
+      "symbolKind": "method",
+      "range": {
+        "start": 358,
+        "end": 366
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/ApplicationTestConfig.java#ApplicationTestConfig",
+      "kind": "symbol",
+      "level": 2,
+      "label": "ApplicationTestConfig",
+      "parent": "module:java:org.springframework.samples.petclinic.service",
+      "state": "unchanged",
+      "symbolKind": "class",
+      "path": "src/test/java/org/springframework/samples/petclinic/service/clinicService/ApplicationTestConfig.java",
+      "range": {
+        "start": 6,
+        "end": 13
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/ClinicServiceH2JdbcTests.java#ClinicServiceH2JdbcTests",
+      "kind": "symbol",
+      "level": 2,
+      "label": "ClinicServiceH2JdbcTests",
+      "parent": "module:java:org.springframework.samples.petclinic.service",
+      "state": "unchanged",
+      "symbolKind": "class",
+      "path": "src/test/java/org/springframework/samples/petclinic/service/clinicService/ClinicServiceH2JdbcTests.java",
+      "range": {
+        "start": 22,
+        "end": 37
+      },
+      "exported": false
+    },
+    {
+      "id": "symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/ClinicServiceHsqlJdbcTests.java#ClinicServiceHsqlJdbcTests",
+      "kind": "symbol",
+      "level": 2,
+      "label": "ClinicServiceHsqlJdbcTests",
+      "parent": "module:java:org.springframework.samples.petclinic.service",
+      "state": "unchanged",
+      "symbolKind": "class",
+      "path": "src/test/java/org/springframework/samples/petclinic/service/clinicService/ClinicServiceHsqlJdbcTests.java",
+      "range": {
+        "start": 22,
+        "end": 34
+      },
+      "exported": false
+    }
+  ],
+  "edges": [
+    {
+      "id": "calls:symbol:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java#OwnerMapper.toOwnerPageDto->symbol:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java#OwnerMapper.toOwnerDtoCollection",
+      "kind": "calls",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java#OwnerMapper.toOwnerPageDto",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java#OwnerMapper.toOwnerDtoCollection",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java#JdbcOwnerRepositoryImpl.findAll->symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java#JdbcOwnerRepositoryImpl.loadOwnersPetsAndVisits",
+      "kind": "calls",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java#JdbcOwnerRepositoryImpl.findAll",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java#JdbcOwnerRepositoryImpl.loadOwnersPetsAndVisits",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java#JdbcOwnerRepositoryImpl.findAll->symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java#JdbcOwnerRepositoryImpl.loadPetsAndVisits",
+      "kind": "calls",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java#JdbcOwnerRepositoryImpl.findAll",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java#JdbcOwnerRepositoryImpl.loadPetsAndVisits",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java#JdbcOwnerRepositoryImpl.findByLastName->symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java#JdbcOwnerRepositoryImpl.loadOwnersPetsAndVisits",
+      "kind": "calls",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java#JdbcOwnerRepositoryImpl.findByLastName",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java#JdbcOwnerRepositoryImpl.loadOwnersPetsAndVisits",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController.listOwnersPage->symbol:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java#OwnerMapper.toOwnerPageDto",
+      "kind": "calls",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController.listOwnersPage",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java#OwnerMapper.toOwnerPageDto",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController.listOwnersPage->symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java#ClinicService.findOwners",
+      "kind": "calls",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController.listOwnersPage",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java#ClinicService.findOwners",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController.listOwnersPage->symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl.findOwners",
+      "kind": "calls",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController.listOwnersPage",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl.findOwners",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl.findAllOwners->symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository.findAll",
+      "kind": "calls",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl.findAllOwners",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository.findAll",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl.findOwnerByLastName->symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository.findByLastName",
+      "kind": "calls",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl.findOwnerByLastName",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository.findByLastName",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl.findOwners->symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository.findAll",
+      "kind": "calls",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl.findOwners",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository.findAll",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl.findOwners->symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository.findByLastName",
+      "kind": "calls",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl.findOwners",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository.findByLastName",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java#OwnerRestControllerTests.testGetOwnersPageSuccess->symbol:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java#OwnerMapper.toOwners",
+      "kind": "calls",
+      "from": "symbol:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java#OwnerRestControllerTests.testGetOwnersPageSuccess",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java#OwnerMapper.toOwners",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java#OwnerRestControllerTests.testGetOwnersPageSuccess->symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java#ClinicService.findOwners",
+      "kind": "calls",
+      "from": "symbol:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java#OwnerRestControllerTests.testGetOwnersPageSuccess",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java#ClinicService.findOwners",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java#OwnerRestControllerTests.testGetOwnersPageSuccess->symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl.findOwners",
+      "kind": "calls",
+      "from": "symbol:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java#OwnerRestControllerTests.testGetOwnersPageSuccess",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl.findOwners",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java#AbstractClinicServiceTests.shouldFindOwnersPage->symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java#ClinicService.findOwners",
+      "kind": "calls",
+      "from": "symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java#AbstractClinicServiceTests.shouldFindOwnersPage",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java#ClinicService.findOwners",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java#AbstractClinicServiceTests.shouldFindOwnersPage->symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl.findOwners",
+      "kind": "calls",
+      "from": "symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java#AbstractClinicServiceTests.shouldFindOwnersPage",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl.findOwners",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java#AbstractClinicServiceTests.shouldFindOwnersPageByLastName->symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java#ClinicService.findOwners",
+      "kind": "calls",
+      "from": "symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java#AbstractClinicServiceTests.shouldFindOwnersPageByLastName",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java#ClinicService.findOwners",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java#AbstractClinicServiceTests.shouldFindOwnersPageByLastName->symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl.findOwners",
+      "kind": "calls",
+      "from": "symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java#AbstractClinicServiceTests.shouldFindOwnersPageByLastName",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl.findOwners",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "imports:file:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java->file:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java",
+      "kind": "imports",
+      "from": "file:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java",
+      "to": "file:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "imports:file:src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java->file:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java",
+      "kind": "imports",
+      "from": "file:src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java",
+      "to": "file:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "imports:file:src/main/java/org/springframework/samples/petclinic/repository/springdatajpa/SpringDataOwnerRepository.java->file:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java",
+      "kind": "imports",
+      "from": "file:src/main/java/org/springframework/samples/petclinic/repository/springdatajpa/SpringDataOwnerRepository.java",
+      "to": "file:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "imports:file:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java->file:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java",
+      "kind": "imports",
+      "from": "file:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java",
+      "to": "file:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "imports:file:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java->file:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java",
+      "kind": "imports",
+      "from": "file:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java",
+      "to": "file:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "imports:file:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java->file:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java",
+      "kind": "imports",
+      "from": "file:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java",
+      "to": "file:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "imports:file:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java->file:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java",
+      "kind": "imports",
+      "from": "file:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java",
+      "to": "file:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "imports:file:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java->file:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java",
+      "kind": "imports",
+      "from": "file:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java",
+      "to": "file:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "imports:file:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java->file:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java",
+      "kind": "imports",
+      "from": "file:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java",
+      "to": "file:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java#OwnerMapper->symbol:src/main/java/org/springframework/samples/petclinic/mapper/PetMapper.java#PetMapper",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java#OwnerMapper",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/mapper/PetMapper.java#PetMapper",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java#OwnerMapper.toOwnerPageDto->symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java#OwnerMapper.toOwnerPageDto",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository.findAll->symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository.findAll",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository.findByLastName->symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository.findByLastName",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java#JdbcOwnerRepositoryImpl->symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java#JdbcOwnerRepositoryImpl",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java#JdbcOwnerRepositoryImpl.findAll->symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java#JdbcOwnerRepositoryImpl.findAll",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java#JdbcOwnerRepositoryImpl.findByLastName->symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java#JdbcOwnerRepositoryImpl.findByLastName",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcPetRepositoryImpl.java#JdbcPetRepositoryImpl->symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcPetRepositoryImpl.java#JdbcPetRepositoryImpl",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcPetRepositoryImpl.java#JdbcPetRepositoryImpl.constructor->symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcPetRepositoryImpl.java#JdbcPetRepositoryImpl.constructor",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcPetRepositoryImpl.java#JdbcPetRepositoryImpl.ownerRepository->symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcPetRepositoryImpl.java#JdbcPetRepositoryImpl.ownerRepository",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java#JpaOwnerRepositoryImpl->symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java#JpaOwnerRepositoryImpl",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java#JpaOwnerRepositoryImpl.findAll->symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java#JpaOwnerRepositoryImpl.findAll",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java#JpaOwnerRepositoryImpl.findByLastName->symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java#JpaOwnerRepositoryImpl.findByLastName",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/repository/springdatajpa/SpringDataOwnerRepository.java#SpringDataOwnerRepository->symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/repository/springdatajpa/SpringDataOwnerRepository.java#SpringDataOwnerRepository",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/repository/springdatajpa/SpringDataOwnerRepository.java#SpringDataOwnerRepository->symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/repository/springdatajpa/SpringDataOwnerRepository.java#SpringDataOwnerRepository",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/repository/springdatajpa/SpringDataOwnerRepository.java#SpringDataOwnerRepository.findAll->symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/repository/springdatajpa/SpringDataOwnerRepository.java#SpringDataOwnerRepository.findAll",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/repository/springdatajpa/SpringDataOwnerRepository.java#SpringDataOwnerRepository.findByLastName->symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/repository/springdatajpa/SpringDataOwnerRepository.java#SpringDataOwnerRepository.findByLastName",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController->symbol:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java#OwnerMapper",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java#OwnerMapper",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController->symbol:src/main/java/org/springframework/samples/petclinic/mapper/PetMapper.java#PetMapper",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/mapper/PetMapper.java#PetMapper",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController->symbol:src/main/java/org/springframework/samples/petclinic/mapper/VisitMapper.java#VisitMapper",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/mapper/VisitMapper.java#VisitMapper",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController->symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java#ClinicService",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java#ClinicService",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController.constructor->symbol:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java#OwnerMapper",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController.constructor",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java#OwnerMapper",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController.listOwnersPage->symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController.listOwnersPage",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController.ownerMapper->symbol:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java#OwnerMapper",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController.ownerMapper",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java#OwnerMapper",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java#ClinicService.findOwners->symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java#ClinicService.findOwners",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl->symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl->symbol:src/main/java/org/springframework/samples/petclinic/repository/PetRepository.java#PetRepository",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/repository/PetRepository.java#PetRepository",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl->symbol:src/main/java/org/springframework/samples/petclinic/repository/PetTypeRepository.java#PetTypeRepository",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/repository/PetTypeRepository.java#PetTypeRepository",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl->symbol:src/main/java/org/springframework/samples/petclinic/repository/SpecialtyRepository.java#SpecialtyRepository",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/repository/SpecialtyRepository.java#SpecialtyRepository",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl->symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java#ClinicService",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java#ClinicService",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl.findOwners->symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "kind": "references",
+      "from": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl.findOwners",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java#OwnerRestControllerTests->symbol:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java#OwnerMapper",
+      "kind": "references",
+      "from": "symbol:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java#OwnerRestControllerTests",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java#OwnerMapper",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java#OwnerRestControllerTests->symbol:src/main/java/org/springframework/samples/petclinic/mapper/PetMapper.java#PetMapper",
+      "kind": "references",
+      "from": "symbol:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java#OwnerRestControllerTests",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/mapper/PetMapper.java#PetMapper",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java#OwnerRestControllerTests->symbol:src/main/java/org/springframework/samples/petclinic/mapper/VisitMapper.java#VisitMapper",
+      "kind": "references",
+      "from": "symbol:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java#OwnerRestControllerTests",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/mapper/VisitMapper.java#VisitMapper",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java#OwnerRestControllerTests->symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController",
+      "kind": "references",
+      "from": "symbol:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java#OwnerRestControllerTests",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java#OwnerRestControllerTests->symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/ApplicationTestConfig.java#ApplicationTestConfig",
+      "kind": "references",
+      "from": "symbol:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java#OwnerRestControllerTests",
+      "to": "symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/ApplicationTestConfig.java#ApplicationTestConfig",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java#AbstractClinicServiceTests->symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java#ClinicService",
+      "kind": "references",
+      "from": "symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java#AbstractClinicServiceTests",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java#ClinicService",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java#AbstractClinicServiceTests.shouldFindOwnersPage->symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "kind": "references",
+      "from": "symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java#AbstractClinicServiceTests.shouldFindOwnersPage",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java#AbstractClinicServiceTests.shouldFindOwnersPageByLastName->symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "kind": "references",
+      "from": "symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java#AbstractClinicServiceTests.shouldFindOwnersPageByLastName",
+      "to": "symbol:src/main/java/org/springframework/samples/petclinic/model/Owner.java#Owner",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/ClinicServiceH2JdbcTests.java#ClinicServiceH2JdbcTests->symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java#AbstractClinicServiceTests",
+      "kind": "references",
+      "from": "symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/ClinicServiceH2JdbcTests.java#ClinicServiceH2JdbcTests",
+      "to": "symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java#AbstractClinicServiceTests",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/ClinicServiceHsqlJdbcTests.java#ClinicServiceHsqlJdbcTests->symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java#AbstractClinicServiceTests",
+      "kind": "references",
+      "from": "symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/ClinicServiceHsqlJdbcTests.java#ClinicServiceHsqlJdbcTests",
+      "to": "symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java#AbstractClinicServiceTests",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    }
+  ],
+  "hunks": [
+    {
+      "id": "hunk:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java:0",
+      "path": "src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java",
+      "oldStart": 1,
+      "oldLines": 10,
+      "newStart": 1,
+      "newLines": 13,
+      "patch": "@@ -1,10 +1,13 @@\n package org.springframework.samples.petclinic.mapper;\n \n+import org.jspecify.annotations.NonNull;\n import org.mapstruct.Mapper;\n import org.mapstruct.Mapping;\n+import org.springframework.data.domain.Page;\n import org.springframework.samples.petclinic.model.Owner;\n import org.springframework.samples.petclinic.rest.dto.OwnerDto;\n import org.springframework.samples.petclinic.rest.dto.OwnerFieldsDto;\n+import org.springframework.samples.petclinic.rest.dto.OwnerPageDto;\n \n import java.util.Collection;\n import java.util.List;",
+      "added": 3,
+      "removed": 0,
+      "owner": "file:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java"
+    },
+    {
+      "id": "hunk:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java:1",
+      "path": "src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java",
+      "oldStart": 26,
+      "oldLines": 4,
+      "newStart": 29,
+      "newLines": 14,
+      "patch": "@@ -26,4 +29,14 @@ public interface OwnerMapper {\n     List<OwnerDto> toOwnerDtoCollection(Collection<Owner> ownerCollection);\n \n     Collection<Owner> toOwners(Collection<OwnerDto> ownerDtos);\n+\n+    default OwnerPageDto toOwnerPageDto(@NonNull Page<Owner> ownerPage) {\n+        OwnerPageDto ownerPageDto = new OwnerPageDto();\n+        ownerPageDto.setContent(toOwnerDtoCollection(ownerPage.getContent()));\n+        ownerPageDto.setPage(ownerPage.getNumber());\n+        ownerPageDto.setSize(ownerPage.getSize());\n+        ownerPageDto.setTotalElements(ownerPage.getTotalElements());\n+        ownerPageDto.setTotalPages(ownerPage.getTotalPages());\n+        return ownerPageDto;\n+    }\n }",
+      "added": 10,
+      "removed": 0,
+      "owner": "symbol:src/main/java/org/springframework/samples/petclinic/mapper/OwnerMapper.java#OwnerMapper.toOwnerPageDto"
+    },
+    {
+      "id": "hunk:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java:0",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java",
+      "oldStart": 18,
+      "oldLines": 6,
+      "newStart": 18,
+      "newLines": 8,
+      "patch": "@@ -18,6 +18,8 @@\n import java.util.Collection;\n \n import org.springframework.dao.DataAccessException;\n+import org.springframework.data.domain.Page;\n+import org.springframework.data.domain.Pageable;\n import org.springframework.samples.petclinic.model.BaseEntity;\n import org.springframework.samples.petclinic.model.Owner;\n ",
+      "added": 2,
+      "removed": 0,
+      "owner": "file:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java"
+    },
+    {
+      "id": "hunk:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java:1",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java",
+      "oldStart": 43,
+      "oldLines": 6,
+      "newStart": 45,
+      "newLines": 8,
+      "patch": "@@ -43,6 +45,8 @@ public interface OwnerRepository {\n      */\n     Collection<Owner> findByLastName(String lastName) throws DataAccessException;\n \n+    Page<Owner> findByLastName(String lastName, Pageable pageable) throws DataAccessException;\n+\n     /**\n      * Retrieve an <code>Owner</code> from the data store by id.\n      *",
+      "added": 2,
+      "removed": 0,
+      "owner": "symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository"
+    },
+    {
+      "id": "hunk:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java:2",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java",
+      "oldStart": 68,
+      "oldLines": 6,
+      "newStart": 72,
+      "newLines": 8,
+      "patch": "@@ -68,6 +72,8 @@ public interface OwnerRepository {\n      * found)\n      */\n \tCollection<Owner> findAll() throws DataAccessException;\n+\n+    Page<Owner> findAll(Pageable pageable) throws DataAccessException;\n \t\n     /**\n      * Delete an <code>Owner</code> to the data store by <code>Owner</code>.",
+      "added": 2,
+      "removed": 0,
+      "owner": "symbol:src/main/java/org/springframework/samples/petclinic/repository/OwnerRepository.java#OwnerRepository.findAll"
+    },
+    {
+      "id": "hunk:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java:0",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java",
+      "oldStart": 18,
+      "oldLines": 6,
+      "newStart": 18,
+      "newLines": 9,
+      "patch": "@@ -18,6 +18,9 @@\n import org.springframework.context.annotation.Profile;\n import org.springframework.dao.DataAccessException;\n import org.springframework.dao.EmptyResultDataAccessException;\n+import org.springframework.data.domain.Page;\n+import org.springframework.data.domain.PageImpl;\n+import org.springframework.data.domain.Pageable;\n import org.springframework.jdbc.core.BeanPropertyRowMapper;\n import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;\n import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;",
+      "added": 3,
+      "removed": 0,
+      "owner": "file:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java"
+    },
+    {
+      "id": "hunk:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java:1",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java",
+      "oldStart": 88,
+      "oldLines": 6,
+      "newStart": 91,
+      "newLines": 26,
+      "patch": "@@ -88,6 +91,26 @@ public Collection<Owner> findByLastName(String lastName) throws DataAccessExcept\n         return owners;\n     }\n \n+    @Override\n+    public Page<Owner> findByLastName(String lastName, Pageable pageable) throws DataAccessException {\n+        Map<String, Object> params = new HashMap<>();\n+        params.put(\"lastName\", lastName + \"%\");\n+        params.put(\"size\", pageable.getPageSize());\n+        params.put(\"offset\", pageable.getOffset());\n+        List<Owner> owners = this.namedParameterJdbcTemplate.query(\n+            \"SELECT id, first_name, last_name, address, city, telephone FROM owners WHERE last_name like :lastName ORDER BY id LIMIT :size OFFSET :offset\",\n+            params,\n+            BeanPropertyRowMapper.newInstance(Owner.class)\n+        );\n+        loadOwnersPetsAndVisits(owners);\n+        Long total = this.namedParameterJdbcTemplate.queryForObject(\n+            \"SELECT COUNT(*) FROM owners WHERE last_name like :lastName\",\n+            params,\n+            Long.class\n+        );\n+        return new PageImpl<>(owners, pageable, total == null ? 0 : total);\n+    }\n+\n     /**\n      * Loads the {@link Owner} with the supplied <code>id</code>; also loads the {@link Pet Pets} and {@link Visit Visits}\n      * for the corresponding owner, if not already loaded.",
+      "added": 20,
+      "removed": 0,
+      "owner": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java#JdbcOwnerRepositoryImpl.findByLastName"
+    },
+    {
+      "id": "hunk:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java:2",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java",
+      "oldStart": 169,
+      "oldLines": 6,
+      "newStart": 192,
+      "newLines": 24,
+      "patch": "@@ -169,6 +192,24 @@ public Collection<Owner> findAll() throws DataAccessException {\n \t    return owners;\n \t}\n \n+    @Override\n+    public Page<Owner> findAll(Pageable pageable) throws DataAccessException {\n+        Map<String, Object> params = new HashMap<>();\n+        params.put(\"size\", pageable.getPageSize());\n+        params.put(\"offset\", pageable.getOffset());\n+        List<Owner> owners = this.namedParameterJdbcTemplate.query(\n+            \"SELECT id, first_name, last_name, address, city, telephone FROM owners ORDER BY id LIMIT :size OFFSET :offset\",\n+            params,\n+            BeanPropertyRowMapper.newInstance(Owner.class));\n+        loadOwnersPetsAndVisits(owners);\n+        Long total = this.namedParameterJdbcTemplate.queryForObject(\n+            \"SELECT COUNT(*) FROM owners\",\n+            params,\n+            Long.class\n+        );\n+        return new PageImpl<>(owners, pageable, total == null ? 0 : total);\n+    }\n+\n \t@Override\n \t@Transactional\n \tpublic void delete(Owner owner) throws DataAccessException {",
+      "added": 18,
+      "removed": 0,
+      "owner": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jdbc/JdbcOwnerRepositoryImpl.java#JdbcOwnerRepositoryImpl.findAll"
+    },
+    {
+      "id": "hunk:src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java:0",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java",
+      "oldStart": 16,
+      "oldLines": 13,
+      "newStart": 16,
+      "newLines": 18,
+      "patch": "@@ -16,13 +16,18 @@\n package org.springframework.samples.petclinic.repository.jpa;\n \n import java.util.Collection;\n+import java.util.List;\n \n import jakarta.persistence.EntityManager;\n import jakarta.persistence.PersistenceContext;\n import jakarta.persistence.Query;\n \n+import org.jspecify.annotations.NonNull;\n import org.springframework.context.annotation.Profile;\n import org.springframework.dao.DataAccessException;\n+import org.springframework.data.domain.Page;\n+import org.springframework.data.domain.PageImpl;\n+import org.springframework.data.domain.Pageable;\n import org.springframework.samples.petclinic.model.Owner;\n import org.springframework.samples.petclinic.repository.OwnerRepository;\n import org.springframework.stereotype.Repository;",
+      "added": 5,
+      "removed": 0,
+      "owner": "file:src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java"
+    },
+    {
+      "id": "hunk:src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java:1",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java",
+      "oldStart": 60,
+      "oldLines": 6,
+      "newStart": 65,
+      "newLines": 20,
+      "patch": "@@ -60,6 +65,20 @@ public Collection<Owner> findByLastName(String lastName) {\n         return query.getResultList();\n     }\n \n+    @Override\n+    @SuppressWarnings(\"unchecked\")\n+    public Page<Owner> findByLastName(String lastName, Pageable pageable) throws DataAccessException {\n+        Query query = this.em.createQuery(\"SELECT owner FROM Owner owner WHERE owner.lastName LIKE :lastName ORDER BY owner.id\");\n+        query.setParameter(\"lastName\", lastName + \"%\");\n+        query.setFirstResult((int) pageable.getOffset());\n+        query.setMaxResults(pageable.getPageSize());\n+        List<Owner> owners = query.getResultList();\n+        Query countQuery = this.em.createQuery(\"SELECT COUNT(owner) FROM Owner owner WHERE owner.lastName LIKE :lastName\");\n+        countQuery.setParameter(\"lastName\", lastName + \"%\");\n+        long total = (long) countQuery.getSingleResult();\n+        return new PageImpl<>(owners, pageable, total);\n+    }\n+\n     @Override\n     public Owner findById(int id) {\n         // using 'join fetch' because a single query should load both owners and pets",
+      "added": 14,
+      "removed": 0,
+      "owner": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java#JpaOwnerRepositoryImpl.findByLastName"
+    },
+    {
+      "id": "hunk:src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java:2",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java",
+      "oldStart": 87,
+      "oldLines": 6,
+      "newStart": 106,
+      "newLines": 18,
+      "patch": "@@ -87,6 +106,18 @@ public Collection<Owner> findAll() throws DataAccessException {\n         return query.getResultList();\n \t}\n \n+    @SuppressWarnings(\"unchecked\")\n+    @Override\n+    public Page<Owner> findAll(@NonNull Pageable pageable) throws DataAccessException {\n+        Query query = this.em.createQuery(\"SELECT owner FROM Owner owner ORDER BY owner.id\");\n+        query.setFirstResult((int) pageable.getOffset());\n+        query.setMaxResults(pageable.getPageSize());\n+        List<Owner> owners = query.getResultList();\n+        Query countQuery = this.em.createQuery(\"SELECT COUNT(owner) FROM Owner owner\");\n+        long total = (long) countQuery.getSingleResult();\n+        return new PageImpl<>(owners, pageable, total);\n+    }\n+\n \t@Override\n \tpublic void delete(Owner owner) throws DataAccessException {\n \t\tthis.em.remove(this.em.contains(owner) ? owner : this.em.merge(owner));",
+      "added": 12,
+      "removed": 0,
+      "owner": "symbol:src/main/java/org/springframework/samples/petclinic/repository/jpa/JpaOwnerRepositoryImpl.java#JpaOwnerRepositoryImpl.findAll"
+    },
+    {
+      "id": "hunk:src/main/java/org/springframework/samples/petclinic/repository/springdatajpa/SpringDataOwnerRepository.java:0",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/springdatajpa/SpringDataOwnerRepository.java",
+      "oldStart": 18,
+      "oldLines": 6,
+      "newStart": 18,
+      "newLines": 8,
+      "patch": "@@ -18,6 +18,8 @@\n import java.util.Collection;\n \n import org.springframework.context.annotation.Profile;\n+import org.springframework.data.domain.Page;\n+import org.springframework.data.domain.Pageable;\n import org.springframework.data.jpa.repository.Query;\n import org.springframework.data.repository.Repository;\n import org.springframework.data.repository.query.Param;",
+      "added": 2,
+      "removed": 0,
+      "owner": "file:src/main/java/org/springframework/samples/petclinic/repository/springdatajpa/SpringDataOwnerRepository.java"
+    },
+    {
+      "id": "hunk:src/main/java/org/springframework/samples/petclinic/repository/springdatajpa/SpringDataOwnerRepository.java:1",
+      "path": "src/main/java/org/springframework/samples/petclinic/repository/springdatajpa/SpringDataOwnerRepository.java",
+      "oldStart": 38,
+      "oldLines": 6,
+      "newStart": 40,
+      "newLines": 18,
+      "patch": "@@ -38,6 +40,18 @@ public interface SpringDataOwnerRepository extends OwnerRepository, Repository<O\n     @Query(\"SELECT DISTINCT owner FROM Owner owner left join fetch owner.pets WHERE owner.lastName LIKE :lastName%\")\n     Collection<Owner> findByLastName(@Param(\"lastName\") String lastName);\n \n+    @Override\n+    @Query(\n+        value = \"SELECT owner FROM Owner owner WHERE owner.lastName LIKE CONCAT(:lastName, '%')\",\n+        countQuery = \"SELECT COUNT(owner) FROM Owner owner WHERE owner.lastName LIKE CONCAT(:lastName, '%')\")\n+    Page<Owner> findByLastName(@Param(\"lastName\") String lastName, Pageable pageable);\n+\n+    @Override\n+    @Query(\n+        value = \"SELECT owner FROM Owner owner\",\n+        countQuery = \"SELECT COUNT(owner) FROM Owner owner\")\n+    Page<Owner> findAll(Pageable pageable);\n+\n     @Override\n     @Query(\"SELECT owner FROM Owner owner left join fetch owner.pets WHERE owner.id =:id\")\n     Owner findById(@Param(\"id\") int id);",
+      "added": 12,
+      "removed": 0,
+      "owner": "symbol:src/main/java/org/springframework/samples/petclinic/repository/springdatajpa/SpringDataOwnerRepository.java#SpringDataOwnerRepository.findAll"
+    },
+    {
+      "id": "hunk:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java:0",
+      "path": "src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java",
+      "oldStart": 18,
+      "oldLines": 7,
+      "newStart": 18,
+      "newLines": 11,
+      "patch": "@@ -18,7 +18,11 @@\n \n import java.util.Collection;\n import java.util.List;\n+import java.util.Optional;\n \n+import org.springframework.data.domain.Page;\n+import org.springframework.data.domain.PageRequest;\n+import org.springframework.data.domain.Sort;\n import org.springframework.http.HttpHeaders;\n import org.springframework.http.HttpStatus;\n import org.springframework.http.ResponseEntity;",
+      "added": 4,
+      "removed": 0,
+      "owner": "file:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java"
+    },
+    {
+      "id": "hunk:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java:1",
+      "path": "src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java",
+      "oldStart": 29,
+      "oldLines": 8,
+      "newStart": 33,
+      "newLines": 10,
+      "patch": "@@ -29,8 +33,10 @@\n import org.springframework.samples.petclinic.model.Pet;\n import org.springframework.samples.petclinic.model.Visit;\n import org.springframework.samples.petclinic.rest.api.OwnersApi;\n+import org.springframework.samples.petclinic.rest.api.V2Api;\n import org.springframework.samples.petclinic.rest.dto.OwnerDto;\n import org.springframework.samples.petclinic.rest.dto.OwnerFieldsDto;\n+import org.springframework.samples.petclinic.rest.dto.OwnerPageDto;\n import org.springframework.samples.petclinic.rest.dto.PetDto;\n import org.springframework.samples.petclinic.rest.dto.PetFieldsDto;\n import org.springframework.samples.petclinic.rest.dto.VisitDto;",
+      "added": 2,
+      "removed": 0,
+      "owner": "file:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java"
+    },
+    {
+      "id": "hunk:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java:2",
+      "path": "src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java",
+      "oldStart": 40,
+      "oldLines": 6,
+      "newStart": 46,
+      "newLines": 7,
+      "patch": "@@ -40,6 +46,7 @@\n import org.springframework.web.bind.annotation.CrossOrigin;\n import org.springframework.web.bind.annotation.RequestMapping;\n import org.springframework.web.bind.annotation.RestController;\n+import org.springframework.web.context.request.NativeWebRequest;\n import org.springframework.web.util.UriComponentsBuilder;\n \n import jakarta.transaction.Transactional;",
+      "added": 1,
+      "removed": 0,
+      "owner": "file:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java"
+    },
+    {
+      "id": "hunk:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java:3",
+      "path": "src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java",
+      "oldStart": 51,
+      "oldLines": 7,
+      "newStart": 58,
+      "newLines": 7,
+      "patch": "@@ -51,7 +58,7 @@\n @RestController\n @CrossOrigin(exposedHeaders = \"errors, content-type\")\n @RequestMapping(\"/api\")\n-public class OwnerRestController implements OwnersApi {\n+public class OwnerRestController implements OwnersApi, V2Api {\n \n     private final ClinicService clinicService;\n ",
+      "added": 1,
+      "removed": 1,
+      "owner": "symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController"
+    },
+    {
+      "id": "hunk:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java:4",
+      "path": "src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java",
+      "oldStart": 71,
+      "oldLines": 6,
+      "newStart": 78,
+      "newLines": 11,
+      "patch": "@@ -71,6 +78,11 @@ public OwnerRestController(ClinicService clinicService,\n         this.visitMapper = visitMapper;\n     }\n \n+    @Override\n+    public Optional<NativeWebRequest> getRequest() {\n+        return Optional.empty();\n+    }\n+\n     @PreAuthorize(\"hasRole(@roles.OWNER_ADMIN)\")\n     @Override\n     public ResponseEntity<List<OwnerDto>> listOwners(String lastName) {",
+      "added": 5,
+      "removed": 0,
+      "owner": "symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController.getRequest"
+    },
+    {
+      "id": "hunk:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java:5",
+      "path": "src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java",
+      "oldStart": 86,
+      "oldLines": 6,
+      "newStart": 98,
+      "newLines": 17,
+      "patch": "@@ -86,6 +98,17 @@ public ResponseEntity<List<OwnerDto>> listOwners(String lastName) {\n         return new ResponseEntity<>(ownerMapper.toOwnerDtoCollection(owners), HttpStatus.OK);\n     }\n \n+    @PreAuthorize(\"hasRole(@roles.OWNER_ADMIN)\")\n+    @Override\n+    public ResponseEntity<OwnerPageDto> listOwnersPage(String lastName, Integer page, Integer size) {\n+        int pageNumber = page == null ? 0 : page;\n+        int pageSize = size == null ? 20 : size;\n+        Page<Owner> owners = this.clinicService.findOwners(\n+            lastName,\n+            PageRequest.of(pageNumber, pageSize, Sort.by(\"id\")));\n+        return new ResponseEntity<>(ownerMapper.toOwnerPageDto(owners), HttpStatus.OK);\n+    }\n+\n     @PreAuthorize(\"hasRole(@roles.OWNER_ADMIN)\")\n     @Override\n     public ResponseEntity<OwnerDto> getOwner(Integer ownerId) {",
+      "added": 11,
+      "removed": 0,
+      "owner": "symbol:src/main/java/org/springframework/samples/petclinic/rest/controller/OwnerRestController.java#OwnerRestController.listOwnersPage"
+    },
+    {
+      "id": "hunk:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java:0",
+      "path": "src/main/java/org/springframework/samples/petclinic/service/ClinicService.java",
+      "oldStart": 20,
+      "oldLines": 6,
+      "newStart": 20,
+      "newLines": 8,
+      "patch": "@@ -20,6 +20,8 @@\n import java.util.Set;\n \n import org.springframework.dao.DataAccessException;\n+import org.springframework.data.domain.Page;\n+import org.springframework.data.domain.Pageable;\n import org.springframework.samples.petclinic.model.Owner;\n import org.springframework.samples.petclinic.model.Pet;\n import org.springframework.samples.petclinic.model.PetType;",
+      "added": 2,
+      "removed": 0,
+      "owner": "file:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java"
+    },
+    {
+      "id": "hunk:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java:1",
+      "path": "src/main/java/org/springframework/samples/petclinic/service/ClinicService.java",
+      "oldStart": 52,
+      "oldLines": 6,
+      "newStart": 54,
+      "newLines": 7,
+      "patch": "@@ -52,6 +54,7 @@ public interface ClinicService {\n \tvoid deleteVet(Vet vet) throws DataAccessException;\n \tOwner findOwnerById(int id) throws DataAccessException;\n \tCollection<Owner> findAllOwners() throws DataAccessException;\n+\tPage<Owner> findOwners(String lastName, Pageable pageable) throws DataAccessException;\n \tvoid saveOwner(Owner owner) throws DataAccessException;\n \tvoid deleteOwner(Owner owner) throws DataAccessException;\n \tCollection<Owner> findOwnerByLastName(String lastName) throws DataAccessException;",
+      "added": 1,
+      "removed": 0,
+      "owner": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicService.java#ClinicService.findOwners"
+    },
+    {
+      "id": "hunk:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java:0",
+      "path": "src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java",
+      "oldStart": 17,
+      "oldLines": 6,
+      "newStart": 17,
+      "newLines": 8,
+      "patch": "@@ -17,6 +17,8 @@\n \n import org.springframework.dao.DataAccessException;\n import org.springframework.dao.EmptyResultDataAccessException;\n+import org.springframework.data.domain.Page;\n+import org.springframework.data.domain.Pageable;\n import org.springframework.orm.ObjectRetrievalFailureException;\n import org.springframework.samples.petclinic.model.*;\n import org.springframework.samples.petclinic.repository.*;",
+      "added": 2,
+      "removed": 0,
+      "owner": "file:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java"
+    },
+    {
+      "id": "hunk:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java:1",
+      "path": "src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java",
+      "oldStart": 120,
+      "oldLines": 6,
+      "newStart": 122,
+      "newLines": 15,
+      "patch": "@@ -120,6 +122,15 @@ public Collection<Owner> findAllOwners() throws DataAccessException {\n         return ownerRepository.findAll();\n     }\n \n+    @Override\n+    @Transactional(readOnly = true)\n+    public Page<Owner> findOwners(String lastName, Pageable pageable) throws DataAccessException {\n+        if (lastName != null) {\n+            return ownerRepository.findByLastName(lastName, pageable);\n+        }\n+        return ownerRepository.findAll(pageable);\n+    }\n+\n     @Override\n     @Transactional\n     public void deleteOwner(Owner owner) throws DataAccessException {",
+      "added": 9,
+      "removed": 0,
+      "owner": "symbol:src/main/java/org/springframework/samples/petclinic/service/ClinicServiceImpl.java#ClinicServiceImpl.findOwners"
+    },
+    {
+      "id": "hunk:src/main/resources/openapi.yml:0",
+      "path": "src/main/resources/openapi.yml",
+      "oldStart": 132,
+      "oldLines": 6,
+      "newStart": 132,
+      "newLines": 73,
+      "patch": "@@ -132,6 +132,73 @@ paths:\n             application/json:\n               schema:\n                 $ref: '#/components/schemas/ProblemDetail'\n+  /v2/owners:\n+    get:\n+      tags:\n+        - owner\n+      operationId: listOwnersPage\n+      summary: Lists pet owners with pagination\n+      description: Returns a page of pet owners.\n+      parameters:\n+        - name: lastName\n+          in: query\n+          description: Last name.\n+          required: false\n+          schema:\n+            type: string\n+            example: Davis\n+        - name: page\n+          in: query\n+          description: Zero-based page index.\n+          required: false\n+          schema:\n+            type: integer\n+            format: int32\n+            minimum: 0\n+            default: 0\n+            example: 0\n+        - name: size\n+          in: query\n+          description: Number of items per page.\n+          required: false\n+          schema:\n+            type: integer\n+            format: int32\n+            minimum: 1\n+            maximum: 100\n+            default: 20\n+            example: 5\n+      responses:\n+        200:\n+          description: Owner page found and returned.\n+          headers:\n+            ETag:\n+              description: An ID for this version of the response.\n+              schema:\n+                type: string\n+          content:\n+            application/json:\n+              schema:\n+                $ref: '#/components/schemas/OwnerPage'\n+        304:\n+          description: Not modified.\n+          headers:\n+            Etag:\n+              description: An ID for this version of the response.\n+              schema:\n+                type: string\n+        400:\n+          description: Bad request.\n+          content:\n+            application/json:\n+              schema:\n+                $ref: '#/components/schemas/ProblemDetail'\n+        500:\n+          description: Server error.\n+          content:\n+            application/json:\n+              schema:\n+                $ref: '#/components/schemas/ProblemDetail'\n   /owners/{ownerId}:\n     get:\n       tags:",
+      "added": 67,
+      "removed": 0,
+      "owner": "file:src/main/resources/openapi.yml"
+    },
+    {
+      "id": "hunk:src/main/resources/openapi.yml:1",
+      "path": "src/main/resources/openapi.yml",
+      "oldStart": 1936,
+      "oldLines": 6,
+      "newStart": 2003,
+      "newLines": 51,
+      "patch": "@@ -1936,6 +2003,51 @@ components:\n               readOnly: true\n           required:\n             - pets\n+    OwnerPage:\n+      title: Owner page\n+      description: A page of pet owners.\n+      type: object\n+      properties:\n+        content:\n+          title: Content\n+          description: Pet owners in the requested page.\n+          type: array\n+          items:\n+            $ref: '#/components/schemas/Owner'\n+        page:\n+          title: Page\n+          description: Zero-based page index.\n+          type: integer\n+          format: int32\n+          minimum: 0\n+          example: 0\n+        size:\n+          title: Size\n+          description: Requested page size.\n+          type: integer\n+          format: int32\n+          minimum: 1\n+          example: 5\n+        totalElements:\n+          title: Total elements\n+          description: Total number of owners matching the request.\n+          type: integer\n+          format: int64\n+          minimum: 0\n+          example: 10\n+        totalPages:\n+          title: Total pages\n+          description: Total number of pages matching the request.\n+          type: integer\n+          format: int32\n+          minimum: 0\n+          example: 2\n+      required:\n+        - content\n+        - page\n+        - size\n+        - totalElements\n+        - totalPages\n     PetFields:\n       title: Pet fields\n       description: Editable fields of a pet.",
+      "added": 45,
+      "removed": 0,
+      "owner": "file:src/main/resources/openapi.yml"
+    },
+    {
+      "id": "hunk:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java:0",
+      "path": "src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java",
+      "oldStart": 22,
+      "oldLines": 6,
+      "newStart": 22,
+      "newLines": 9,
+      "patch": "@@ -22,6 +22,9 @@\n import org.junit.jupiter.api.Test;\n import org.springframework.beans.factory.annotation.Autowired;\n import org.springframework.boot.test.context.SpringBootTest;\n+import org.springframework.data.domain.PageImpl;\n+import org.springframework.data.domain.PageRequest;\n+import org.springframework.data.domain.Sort;\n import org.springframework.http.MediaType;\n import org.springframework.samples.petclinic.mapper.OwnerMapper;\n import org.springframework.samples.petclinic.mapper.PetMapper;",
+      "added": 3,
+      "removed": 0,
+      "owner": "file:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java"
+    },
+    {
+      "id": "hunk:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java:1",
+      "path": "src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java",
+      "oldStart": 212,
+      "oldLines": 6,
+      "newStart": 215,
+      "newLines": 27,
+      "patch": "@@ -212,6 +215,27 @@ void testGetAllOwnersSuccess() throws Exception {\n             .andExpect(jsonPath(\"$.[1].firstName\").value(\"Harold\"));\n     }\n \n+    @Test\n+    @WithMockUser(roles = \"OWNER_ADMIN\")\n+    void testGetOwnersPageSuccess() throws Exception {\n+        var pageRequest = PageRequest.of(0, 2, Sort.by(\"id\"));\n+        var pageOwners = ownerMapper.toOwners(owners.subList(0, 2)).stream().toList();\n+        given(this.clinicService.findOwners(null, pageRequest))\n+            .willReturn(new PageImpl<>(pageOwners, pageRequest, owners.size()));\n+        this.mockMvc.perform(get(\"/api/v2/owners?page=0&size=2\")\n+                .accept(MediaType.APPLICATION_JSON))\n+            .andExpect(status().isOk())\n+            .andExpect(content().contentType(\"application/json\"))\n+            .andExpect(jsonPath(\"$.content[0].id\").value(1))\n+            .andExpect(jsonPath(\"$.content[0].firstName\").value(\"George\"))\n+            .andExpect(jsonPath(\"$.content[1].id\").value(2))\n+            .andExpect(jsonPath(\"$.content[1].firstName\").value(\"Betty\"))\n+            .andExpect(jsonPath(\"$.page\").value(0))\n+            .andExpect(jsonPath(\"$.size\").value(2))\n+            .andExpect(jsonPath(\"$.totalElements\").value(4))\n+            .andExpect(jsonPath(\"$.totalPages\").value(2));\n+    }\n+\n     @Test\n     @WithMockUser(roles = \"OWNER_ADMIN\")\n     void testGetAllOwnersNotFound() throws Exception {",
+      "added": 21,
+      "removed": 0,
+      "owner": "symbol:src/test/java/org/springframework/samples/petclinic/rest/controller/OwnerRestControllerTests.java#OwnerRestControllerTests.testGetOwnersPageSuccess"
+    },
+    {
+      "id": "hunk:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java:0",
+      "path": "src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java",
+      "oldStart": 17,
+      "oldLines": 6,
+      "newStart": 17,
+      "newLines": 9,
+      "patch": "@@ -17,6 +17,9 @@\n \n import org.junit.jupiter.api.Test;\n import org.springframework.beans.factory.annotation.Autowired;\n+import org.springframework.data.domain.Page;\n+import org.springframework.data.domain.PageRequest;\n+import org.springframework.data.domain.Sort;\n import org.springframework.samples.petclinic.model.*;\n import org.springframework.samples.petclinic.service.ClinicService;\n import org.springframework.samples.petclinic.util.EntityUtils;",
+      "added": 3,
+      "removed": 0,
+      "owner": "file:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java"
+    },
+    {
+      "id": "hunk:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java:1",
+      "path": "src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java",
+      "oldStart": 342,
+      "oldLines": 6,
+      "newStart": 345,
+      "newLines": 26,
+      "patch": "@@ -342,6 +345,26 @@ void shouldFindAllOwners(){\n         assertThat(owner3.getFirstName()).isEqualTo(\"Eduardo\");\n     }\n \n+    @Test\n+    void shouldFindOwnersPage(){\n+        Page<Owner> owners = this.clinicService.findOwners(null, PageRequest.of(0, 3, Sort.by(\"id\")));\n+        assertThat(owners.getTotalElements()).isEqualTo(10);\n+        assertThat(owners.getTotalPages()).isEqualTo(4);\n+        assertThat(owners.getContent())\n+            .extracting(Owner::getFirstName)\n+            .containsExactly(\"George\", \"Betty\", \"Eduardo\");\n+    }\n+\n+    @Test\n+    void shouldFindOwnersPageByLastName(){\n+        Page<Owner> owners = this.clinicService.findOwners(\"Davis\", PageRequest.of(0, 1, Sort.by(\"id\")));\n+        assertThat(owners.getTotalElements()).isEqualTo(2);\n+        assertThat(owners.getTotalPages()).isEqualTo(2);\n+        assertThat(owners.getContent())\n+            .extracting(Owner::getFirstName)\n+            .containsExactly(\"Betty\");\n+    }\n+\n     @Test\n     @Transactional\n     void shouldDeleteOwner(){",
+      "added": 20,
+      "removed": 0,
+      "owner": "symbol:src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java#AbstractClinicServiceTests.shouldFindOwnersPage"
+    }
+  ],
+  "skippedFiles": [],
+  "limits": [
+    "Callers outside this repository snapshot are not shown.",
+    "External packages are not resolved (no node_modules); edges to them are omitted.",
+    "Java: JDK, Spring and other external libraries are not resolved; edges to them are omitted. Resolution is syntactic (no generic inference; overloads merged; Lombok-generated members are not symbols).",
+    "Spring DI resolved to single implementations by type; qualifiers/profiles not evaluated"
+  ],
+  "collapsed": [],
+  "stats": {
+    "files": 11,
+    "added": 302,
+    "removed": 1,
+    "durationMs": 6040
+  },
+  "policy": {
+    "source": "default",
+    "changedInPr": false,
+    "errors": []
+  }
+}

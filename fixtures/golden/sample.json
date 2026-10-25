@@ -1,0 +1,2077 @@
+{
+  "schema": 1,
+  "pr": {
+    "provider": "github",
+    "owner": "acme",
+    "repo": "webapp",
+    "number": 1287,
+    "url": "https://github.com/acme/webapp/pull/1287",
+    "title": "Add team invitations",
+    "body": "Admins can invite people by email to a workspace. Invite link expires after 7 days; invitee joins with the invited role.",
+    "author": "claude-agent",
+    "baseSha": "3f2a9c1d7b8e4a5f60718293a4b5c6d7e8f90123",
+    "headSha": "9b8a7c6d5e4f30211203948576a8b9c0d1e2f345",
+    "baseRef": "main",
+    "headRef": "agent/team-invitations"
+  },
+  "generatedAt": "2026-01-15T10:00:00.000Z",
+  "pipelineVersion": "sample-1",
+  "nodes": [
+    {
+      "id": "module:src/api",
+      "kind": "module",
+      "level": 0,
+      "label": "src/api",
+      "state": "modified",
+      "stats": {
+        "added": 24,
+        "removed": 6
+      },
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "symbol:src/api/routes/index.ts#registerRoutes"
+        ]
+      }
+    },
+    {
+      "id": "module:src/services",
+      "kind": "module",
+      "level": 0,
+      "label": "src/services",
+      "state": "modified",
+      "stats": {
+        "added": 54,
+        "removed": 2
+      },
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "symbol:src/services/workspaces/service.ts#WorkspaceService.addMember",
+          "symbol:src/services/email/invite.ts#sendInviteEmail"
+        ]
+      }
+    },
+    {
+      "id": "module:src/db",
+      "kind": "module",
+      "level": 0,
+      "label": "src/db",
+      "state": "modified",
+      "stats": {
+        "added": 31,
+        "removed": 0
+      },
+      "risk": {
+        "level": "blocker",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:src/db/migrations/0042_create_invitations.sql"
+        ]
+      }
+    },
+    {
+      "id": "module:web",
+      "kind": "module",
+      "level": 0,
+      "label": "web",
+      "state": "modified",
+      "stats": {
+        "added": 39,
+        "removed": 0
+      }
+    },
+    {
+      "id": "module:root",
+      "kind": "module",
+      "level": 0,
+      "label": "repo root",
+      "state": "modified",
+      "stats": {
+        "added": 3,
+        "removed": 0
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:package.json"
+        ]
+      }
+    },
+    {
+      "id": "module:src/auth",
+      "kind": "module",
+      "level": 0,
+      "label": "src/auth",
+      "state": "unchanged"
+    },
+    {
+      "id": "cluster:invitation-endpoints",
+      "kind": "cluster",
+      "level": 1,
+      "label": "Invitation endpoints",
+      "parent": "module:src/api",
+      "state": "modified",
+      "stats": {
+        "added": 24,
+        "removed": 6
+      },
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "symbol:src/api/routes/index.ts#registerRoutes"
+        ]
+      }
+    },
+    {
+      "id": "cluster:invitation-service",
+      "kind": "cluster",
+      "level": 1,
+      "label": "Invitation service",
+      "parent": "module:src/services",
+      "state": "modified",
+      "notes": [
+        "Authorization check lives in the route layer, not in the service"
+      ],
+      "stats": {
+        "added": 38,
+        "removed": 1
+      },
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "symbol:src/services/workspaces/service.ts#WorkspaceService.addMember"
+        ]
+      }
+    },
+    {
+      "id": "cluster:invite-email",
+      "kind": "cluster",
+      "level": 1,
+      "label": "Invite email delivery",
+      "parent": "module:src/services",
+      "state": "modified",
+      "stats": {
+        "added": 16,
+        "removed": 1
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "symbol:src/services/email/invite.ts#sendInviteEmail"
+        ]
+      }
+    },
+    {
+      "id": "cluster:invitations-schema",
+      "kind": "cluster",
+      "level": 1,
+      "label": "Invitations schema",
+      "parent": "module:src/db",
+      "state": "modified",
+      "notes": [
+        "Adds a table and a new schema entry; no backfill needed"
+      ],
+      "stats": {
+        "added": 31,
+        "removed": 0
+      },
+      "risk": {
+        "level": "blocker",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:src/db/migrations/0042_create_invitations.sql"
+        ]
+      }
+    },
+    {
+      "id": "cluster:invite-ui",
+      "kind": "cluster",
+      "level": 1,
+      "label": "Invite members UI",
+      "parent": "module:web",
+      "state": "modified",
+      "stats": {
+        "added": 39,
+        "removed": 0
+      }
+    },
+    {
+      "id": "cluster:deps-config",
+      "kind": "cluster",
+      "level": 1,
+      "label": "Dependencies & config",
+      "parent": "module:root",
+      "state": "modified",
+      "stats": {
+        "added": 3,
+        "removed": 0
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [],
+        "inheritedFrom": [
+          "file:package.json"
+        ]
+      }
+    },
+    {
+      "id": "symbol:src/api/routes/invitations.ts#createInvitationRoute",
+      "kind": "symbol",
+      "level": 2,
+      "label": "createInvitationRoute",
+      "parent": "cluster:invitation-endpoints",
+      "state": "added",
+      "symbolKind": "function",
+      "path": "src/api/routes/invitations.ts",
+      "range": {
+        "start": 12,
+        "end": 34
+      },
+      "exported": true,
+      "stats": {
+        "added": 11,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/api/routes/invitations.ts#acceptInvitationRoute",
+      "kind": "symbol",
+      "level": 2,
+      "label": "acceptInvitationRoute",
+      "parent": "cluster:invitation-endpoints",
+      "state": "added",
+      "symbolKind": "function",
+      "path": "src/api/routes/invitations.ts",
+      "range": {
+        "start": 36,
+        "end": 52
+      },
+      "exported": true,
+      "stats": {
+        "added": 5,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/api/routes/invitations.ts#revokeInvitationRoute",
+      "kind": "symbol",
+      "level": 2,
+      "label": "revokeInvitationRoute",
+      "parent": "cluster:invitation-endpoints",
+      "state": "added",
+      "symbolKind": "function",
+      "path": "src/api/routes/invitations.ts",
+      "range": {
+        "start": 54,
+        "end": 66
+      },
+      "exported": true,
+      "stats": {
+        "added": 5,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/api/routes/index.ts#registerRoutes",
+      "kind": "symbol",
+      "level": 2,
+      "label": "registerRoutes",
+      "parent": "cluster:invitation-endpoints",
+      "state": "modified",
+      "symbolKind": "function",
+      "path": "src/api/routes/index.ts",
+      "range": {
+        "start": 8,
+        "end": 30
+      },
+      "exported": true,
+      "stats": {
+        "added": 3,
+        "removed": 1
+      },
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [
+          {
+            "ruleId": "auth.check-modified",
+            "message": "Route registration changed: the `requireAdmin` guard is no longer applied to the invitation endpoints",
+            "level": "high",
+            "hunkIds": [
+              "hunk:4"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "symbol:src/api/routes/legacyInvite.ts#sendLegacyInvite",
+      "kind": "symbol",
+      "level": 2,
+      "label": "sendLegacyInvite",
+      "parent": "cluster:invitation-endpoints",
+      "state": "removed",
+      "symbolKind": "function",
+      "path": "src/api/routes/legacyInvite.ts",
+      "range": {
+        "start": 1,
+        "end": 15
+      },
+      "stats": {
+        "added": 0,
+        "removed": 5
+      }
+    },
+    {
+      "id": "symbol:src/services/invitations/service.ts#InvitationService",
+      "kind": "symbol",
+      "level": 2,
+      "label": "InvitationService",
+      "parent": "cluster:invitation-service",
+      "state": "added",
+      "symbolKind": "class",
+      "path": "src/services/invitations/service.ts",
+      "range": {
+        "start": 10,
+        "end": 90
+      },
+      "exported": true,
+      "stats": {
+        "added": 7,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/services/invitations/service.ts#InvitationService.createInvitation",
+      "kind": "symbol",
+      "level": 2,
+      "label": "InvitationService.createInvitation",
+      "parent": "cluster:invitation-service",
+      "state": "added",
+      "symbolKind": "method",
+      "path": "src/services/invitations/service.ts",
+      "range": {
+        "start": 22,
+        "end": 48
+      },
+      "notes": [
+        "1 dynamic call could not be resolved (this.hooks[event])"
+      ],
+      "stats": {
+        "added": 14,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/services/invitations/service.ts#InvitationService.acceptInvitation",
+      "kind": "symbol",
+      "level": 2,
+      "label": "InvitationService.acceptInvitation",
+      "parent": "cluster:invitation-service",
+      "state": "added",
+      "symbolKind": "method",
+      "path": "src/services/invitations/service.ts",
+      "range": {
+        "start": 50,
+        "end": 78
+      },
+      "stats": {
+        "added": 7,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/services/invitations/service.ts#InvitationService.revokeInvitation",
+      "kind": "symbol",
+      "level": 2,
+      "label": "InvitationService.revokeInvitation",
+      "parent": "cluster:invitation-service",
+      "state": "added",
+      "symbolKind": "method",
+      "path": "src/services/invitations/service.ts",
+      "range": {
+        "start": 80,
+        "end": 88
+      },
+      "notes": [
+        "Table name is computed at runtime; edge to db is unresolved"
+      ],
+      "stats": {
+        "added": 4,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/services/invitations/token.ts#generateToken",
+      "kind": "symbol",
+      "level": 2,
+      "label": "generateToken",
+      "parent": "cluster:invitation-service",
+      "state": "added",
+      "symbolKind": "function",
+      "path": "src/services/invitations/token.ts",
+      "range": {
+        "start": 3,
+        "end": 12
+      },
+      "exported": true,
+      "stats": {
+        "added": 5,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/services/invitations/token.ts#INVITE_TTL_MS",
+      "kind": "symbol",
+      "level": 2,
+      "label": "INVITE_TTL_MS",
+      "parent": "cluster:invitation-service",
+      "state": "added",
+      "symbolKind": "variable",
+      "path": "src/services/invitations/token.ts",
+      "range": {
+        "start": 1,
+        "end": 1
+      },
+      "exported": true,
+      "stats": {
+        "added": 0,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/services/workspaces/service.ts#WorkspaceService.addMember",
+      "kind": "symbol",
+      "level": 2,
+      "label": "WorkspaceService.addMember",
+      "parent": "cluster:invitation-service",
+      "state": "modified",
+      "symbolKind": "method",
+      "path": "src/services/workspaces/service.ts",
+      "range": {
+        "start": 41,
+        "end": 60
+      },
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [
+          {
+            "ruleId": "authz.role-assignment",
+            "message": "Member role is now passed through to the membership row (privilege assignment)",
+            "level": "high",
+            "hunkIds": [
+              "hunk:11"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "symbol:src/services/email/invite.ts#sendInviteEmail",
+      "kind": "symbol",
+      "level": 2,
+      "label": "sendInviteEmail",
+      "parent": "cluster:invite-email",
+      "state": "added",
+      "symbolKind": "function",
+      "path": "src/services/email/invite.ts",
+      "range": {
+        "start": 5,
+        "end": 28
+      },
+      "exported": true,
+      "stats": {
+        "added": 9,
+        "removed": 0
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": true,
+        "reasons": [
+          {
+            "ruleId": "error.swallowed",
+            "message": "Delivery errors are caught and ignored; failed invitations are silent",
+            "level": "med",
+            "hunkIds": [
+              "hunk:12"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "symbol:src/services/email/invite.ts#renderInviteTemplate",
+      "kind": "symbol",
+      "level": 2,
+      "label": "renderInviteTemplate",
+      "parent": "cluster:invite-email",
+      "state": "added",
+      "symbolKind": "function",
+      "path": "src/services/email/invite.ts",
+      "range": {
+        "start": 30,
+        "end": 52
+      },
+      "stats": {
+        "added": 6,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/services/email/mailer.ts#Mailer.send",
+      "kind": "symbol",
+      "level": 2,
+      "label": "Mailer.send",
+      "parent": "cluster:invite-email",
+      "state": "modified",
+      "symbolKind": "method",
+      "path": "src/services/email/mailer.ts",
+      "range": {
+        "start": 14,
+        "end": 30
+      },
+      "stats": {
+        "added": 1,
+        "removed": 1
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "mail.payload-change",
+            "message": "Mail payload no longer forwards `text`",
+            "level": "low",
+            "hunkIds": [
+              "hunk:14"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "file:src/db/migrations/0042_create_invitations.sql",
+      "kind": "file",
+      "level": 2,
+      "label": "0042_create_invitations.sql",
+      "parent": "cluster:invitations-schema",
+      "state": "added",
+      "path": "src/db/migrations/0042_create_invitations.sql",
+      "range": {
+        "start": 1,
+        "end": 18
+      },
+      "stats": {
+        "added": 12,
+        "removed": 0
+      },
+      "risk": {
+        "level": "blocker",
+        "mustReview": true,
+        "reasons": [
+          {
+            "ruleId": "migration.drop-column",
+            "message": "Migration contains DROP COLUMN workspaces.legacy_invite_code (irreversible data loss)",
+            "level": "blocker",
+            "hunkIds": [
+              "hunk:15"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "symbol:src/db/models/invitation.ts#Invitation",
+      "kind": "symbol",
+      "level": 2,
+      "label": "Invitation",
+      "parent": "cluster:invitations-schema",
+      "state": "added",
+      "symbolKind": "interface",
+      "path": "src/db/models/invitation.ts",
+      "range": {
+        "start": 1,
+        "end": 14
+      },
+      "exported": true,
+      "stats": {
+        "added": 10,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/db/repos/invitationRepo.ts#insertInvitation",
+      "kind": "symbol",
+      "level": 2,
+      "label": "insertInvitation",
+      "parent": "cluster:invitations-schema",
+      "state": "added",
+      "symbolKind": "function",
+      "path": "src/db/repos/invitationRepo.ts",
+      "range": {
+        "start": 6,
+        "end": 20
+      },
+      "exported": true,
+      "stats": {
+        "added": 4,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/db/repos/invitationRepo.ts#findInvitationByToken",
+      "kind": "symbol",
+      "level": 2,
+      "label": "findInvitationByToken",
+      "parent": "cluster:invitations-schema",
+      "state": "added",
+      "symbolKind": "function",
+      "path": "src/db/repos/invitationRepo.ts",
+      "range": {
+        "start": 22,
+        "end": 34
+      },
+      "exported": true,
+      "stats": {
+        "added": 4,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:src/db/schema.ts#schema",
+      "kind": "symbol",
+      "level": 2,
+      "label": "schema",
+      "parent": "cluster:invitations-schema",
+      "state": "modified",
+      "symbolKind": "variable",
+      "path": "src/db/schema.ts",
+      "range": {
+        "start": 40,
+        "end": 58
+      },
+      "exported": true,
+      "stats": {
+        "added": 1,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:web/src/components/InviteDialog.tsx#InviteDialog",
+      "kind": "symbol",
+      "level": 2,
+      "label": "InviteDialog",
+      "parent": "cluster:invite-ui",
+      "state": "added",
+      "symbolKind": "component",
+      "path": "web/src/components/InviteDialog.tsx",
+      "range": {
+        "start": 8,
+        "end": 64
+      },
+      "exported": true,
+      "stats": {
+        "added": 12,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:web/src/hooks/useInvitations.ts#useInvitations",
+      "kind": "symbol",
+      "level": 2,
+      "label": "useInvitations",
+      "parent": "cluster:invite-ui",
+      "state": "added",
+      "symbolKind": "function",
+      "path": "web/src/hooks/useInvitations.ts",
+      "range": {
+        "start": 4,
+        "end": 30
+      },
+      "exported": true,
+      "stats": {
+        "added": 10,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:web/src/pages/MembersPage.tsx#MembersPage",
+      "kind": "symbol",
+      "level": 2,
+      "label": "MembersPage",
+      "parent": "cluster:invite-ui",
+      "state": "modified",
+      "symbolKind": "component",
+      "path": "web/src/pages/MembersPage.tsx",
+      "range": {
+        "start": 20,
+        "end": 70
+      },
+      "exported": true,
+      "stats": {
+        "added": 4,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:web/src/api/invitations.ts#inviteMember",
+      "kind": "symbol",
+      "level": 2,
+      "label": "inviteMember",
+      "parent": "cluster:invite-ui",
+      "state": "added",
+      "symbolKind": "function",
+      "path": "web/src/api/invitations.ts",
+      "range": {
+        "start": 3,
+        "end": 14
+      },
+      "exported": true,
+      "stats": {
+        "added": 3,
+        "removed": 0
+      }
+    },
+    {
+      "id": "symbol:web/src/pages/AcceptInvitePage.tsx#AcceptInvitePage",
+      "kind": "symbol",
+      "level": 2,
+      "label": "AcceptInvitePage",
+      "parent": "cluster:invite-ui",
+      "state": "added",
+      "symbolKind": "component",
+      "path": "web/src/pages/AcceptInvitePage.tsx",
+      "range": {
+        "start": 6,
+        "end": 40
+      },
+      "exported": true,
+      "stats": {
+        "added": 10,
+        "removed": 0
+      }
+    },
+    {
+      "id": "file:.env.example",
+      "kind": "file",
+      "level": 2,
+      "label": ".env.example",
+      "parent": "cluster:deps-config",
+      "state": "modified",
+      "path": ".env.example",
+      "range": {
+        "start": 1,
+        "end": 12
+      },
+      "stats": {
+        "added": 2,
+        "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "config.env-change",
+            "message": "New environment variables documented",
+            "level": "low",
+            "hunkIds": [
+              "hunk:26"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "symbol:src/auth/guards.ts#requireAdmin",
+      "kind": "symbol",
+      "level": 2,
+      "label": "requireAdmin",
+      "parent": "module:src/auth",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "src/auth/guards.ts",
+      "range": {
+        "start": 10,
+        "end": 24
+      }
+    },
+    {
+      "id": "symbol:src/auth/session.ts#getSession",
+      "kind": "symbol",
+      "level": 2,
+      "label": "getSession",
+      "parent": "module:src/auth",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "src/auth/session.ts",
+      "range": {
+        "start": 5,
+        "end": 30
+      }
+    },
+    {
+      "id": "symbol:src/auth/middleware.ts#authMiddleware",
+      "kind": "symbol",
+      "level": 2,
+      "label": "authMiddleware",
+      "parent": "module:src/auth",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "src/auth/middleware.ts",
+      "range": {
+        "start": 3,
+        "end": 22
+      }
+    },
+    {
+      "id": "symbol:src/services/users/service.ts#UserService.findByEmail",
+      "kind": "symbol",
+      "level": 2,
+      "label": "UserService.findByEmail",
+      "parent": "module:src/services",
+      "state": "unchanged",
+      "symbolKind": "method",
+      "path": "src/services/users/service.ts",
+      "range": {
+        "start": 18,
+        "end": 29
+      }
+    },
+    {
+      "id": "symbol:src/db/client.ts#db",
+      "kind": "symbol",
+      "level": 2,
+      "label": "db",
+      "parent": "module:src/db",
+      "state": "unchanged",
+      "symbolKind": "variable",
+      "path": "src/db/client.ts",
+      "range": {
+        "start": 4,
+        "end": 12
+      }
+    },
+    {
+      "id": "symbol:src/db/models/workspace.ts#Workspace",
+      "kind": "symbol",
+      "level": 2,
+      "label": "Workspace",
+      "parent": "module:src/db",
+      "state": "unchanged",
+      "symbolKind": "interface",
+      "path": "src/db/models/workspace.ts",
+      "range": {
+        "start": 1,
+        "end": 10
+      }
+    },
+    {
+      "id": "symbol:src/db/repos/memberRepo.ts#addMemberRow",
+      "kind": "symbol",
+      "level": 2,
+      "label": "addMemberRow",
+      "parent": "module:src/db",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "src/db/repos/memberRepo.ts",
+      "range": {
+        "start": 8,
+        "end": 21
+      }
+    },
+    {
+      "id": "symbol:src/services/email/transport.ts#smtpTransport",
+      "kind": "symbol",
+      "level": 2,
+      "label": "smtpTransport",
+      "parent": "module:src/services",
+      "state": "unchanged",
+      "symbolKind": "variable",
+      "path": "src/services/email/transport.ts",
+      "range": {
+        "start": 3,
+        "end": 15
+      }
+    },
+    {
+      "id": "symbol:web/src/components/Button.tsx#Button",
+      "kind": "symbol",
+      "level": 2,
+      "label": "Button",
+      "parent": "module:web",
+      "state": "unchanged",
+      "symbolKind": "component",
+      "path": "web/src/components/Button.tsx",
+      "range": {
+        "start": 5,
+        "end": 28
+      }
+    },
+    {
+      "id": "symbol:web/src/api/http.ts#http",
+      "kind": "symbol",
+      "level": 2,
+      "label": "http",
+      "parent": "module:web",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "web/src/api/http.ts",
+      "range": {
+        "start": 6,
+        "end": 24
+      }
+    },
+    {
+      "id": "file:package.json",
+      "kind": "file",
+      "level": 2,
+      "label": "package.json",
+      "parent": "cluster:deps-config",
+      "state": "modified",
+      "path": "package.json",
+      "risk": {
+        "level": "med",
+        "mustReview": false,
+        "reasons": [
+          {
+            "ruleId": "deps.new-dependency",
+            "message": "New dependency: nodemailer ^6.9.14",
+            "level": "med",
+            "hunkIds": [
+              "hunk:28"
+            ]
+          }
+        ]
+      },
+      "stats": {
+        "added": 1,
+        "removed": 0
+      }
+    },
+    {
+      "id": "module:~collapsed",
+      "kind": "module",
+      "level": 0,
+      "label": "Collapsed changes",
+      "state": "modified",
+      "stats": {
+        "added": 370,
+        "removed": 42
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "group:mechanical"
+        ]
+      }
+    },
+    {
+      "id": "cluster:~collapsed",
+      "kind": "cluster",
+      "level": 1,
+      "label": "Collapsed changes",
+      "parent": "module:~collapsed",
+      "state": "modified",
+      "stats": {
+        "added": 370,
+        "removed": 42
+      },
+      "risk": {
+        "level": "med",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "group:mechanical"
+        ]
+      }
+    },
+    {
+      "id": "group:formatting",
+      "kind": "group",
+      "level": 2,
+      "label": "Formatting only (prettier-style)",
+      "parent": "cluster:~collapsed",
+      "state": "modified",
+      "collapsedId": "collapsed:formatting",
+      "stats": {
+        "added": 24,
+        "removed": 24
+      }
+    },
+    {
+      "id": "group:lockfile",
+      "kind": "group",
+      "level": 2,
+      "label": "Lockfile: package-lock.json",
+      "parent": "cluster:~collapsed",
+      "state": "modified",
+      "collapsedId": "collapsed:lockfile",
+      "stats": {
+        "added": 340,
+        "removed": 12
+      }
+    },
+    {
+      "id": "group:mechanical",
+      "kind": "group",
+      "level": 2,
+      "label": "Replaced `logger.log(x)` with `logger.info(x)` at 6 sites",
+      "parent": "cluster:~collapsed",
+      "state": "modified",
+      "collapsedId": "collapsed:mechanical:a1b2c3",
+      "risk": {
+        "level": "med",
+        "mustReview": true,
+        "reasons": [
+          {
+            "ruleId": "collapsed.outlier",
+            "message": "1 of 6 call sites deviates from the pattern and passes an extra argument",
+            "level": "med",
+            "hunkIds": [
+              "hunk:39"
+            ]
+          }
+        ]
+      },
+      "stats": {
+        "added": 6,
+        "removed": 6
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge:1",
+      "kind": "calls",
+      "from": "symbol:src/api/routes/index.ts#registerRoutes",
+      "to": "symbol:src/api/routes/invitations.ts#createInvitationRoute",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:2",
+      "kind": "calls",
+      "from": "symbol:src/api/routes/index.ts#registerRoutes",
+      "to": "symbol:src/api/routes/invitations.ts#acceptInvitationRoute",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:3",
+      "kind": "calls",
+      "from": "symbol:src/api/routes/index.ts#registerRoutes",
+      "to": "symbol:src/api/routes/invitations.ts#revokeInvitationRoute",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:4",
+      "kind": "calls",
+      "from": "symbol:src/api/routes/index.ts#registerRoutes",
+      "to": "symbol:src/auth/middleware.ts#authMiddleware",
+      "state": "unchanged",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:5",
+      "kind": "calls",
+      "from": "symbol:src/api/routes/index.ts#registerRoutes",
+      "to": "symbol:src/api/routes/legacyInvite.ts#sendLegacyInvite",
+      "state": "removed",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:6",
+      "kind": "calls",
+      "from": "symbol:src/api/routes/invitations.ts#createInvitationRoute",
+      "to": "symbol:src/auth/guards.ts#requireAdmin",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:7",
+      "kind": "calls",
+      "from": "symbol:src/api/routes/invitations.ts#revokeInvitationRoute",
+      "to": "symbol:src/auth/guards.ts#requireAdmin",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:8",
+      "kind": "calls",
+      "from": "symbol:src/api/routes/invitations.ts#acceptInvitationRoute",
+      "to": "symbol:src/auth/session.ts#getSession",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:9",
+      "kind": "calls",
+      "from": "symbol:src/api/routes/invitations.ts#createInvitationRoute",
+      "to": "symbol:src/services/invitations/service.ts#InvitationService.createInvitation",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:10",
+      "kind": "calls",
+      "from": "symbol:src/api/routes/invitations.ts#acceptInvitationRoute",
+      "to": "symbol:src/services/invitations/service.ts#InvitationService.acceptInvitation",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:11",
+      "kind": "calls",
+      "from": "symbol:src/api/routes/invitations.ts#revokeInvitationRoute",
+      "to": "symbol:src/services/invitations/service.ts#InvitationService.revokeInvitation",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:12",
+      "kind": "imports",
+      "from": "symbol:src/api/routes/invitations.ts#acceptInvitationRoute",
+      "to": "symbol:src/db/models/invitation.ts#Invitation",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:13",
+      "kind": "calls",
+      "from": "symbol:src/api/routes/legacyInvite.ts#sendLegacyInvite",
+      "to": "symbol:src/services/email/mailer.ts#Mailer.send",
+      "state": "removed",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:14",
+      "kind": "calls",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService.createInvitation",
+      "to": "symbol:src/services/invitations/token.ts#generateToken",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:15",
+      "kind": "calls",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService.createInvitation",
+      "to": "symbol:src/db/repos/invitationRepo.ts#insertInvitation",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:16",
+      "kind": "calls",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService.createInvitation",
+      "to": "symbol:src/services/email/invite.ts#sendInviteEmail",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:17",
+      "kind": "calls",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService.createInvitation",
+      "to": "symbol:src/services/users/service.ts#UserService.findByEmail",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:18",
+      "kind": "references",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService.createInvitation",
+      "to": "symbol:src/services/invitations/token.ts#INVITE_TTL_MS",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:19",
+      "kind": "calls",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService.acceptInvitation",
+      "to": "symbol:src/db/repos/invitationRepo.ts#findInvitationByToken",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:20",
+      "kind": "calls",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService.acceptInvitation",
+      "to": "symbol:src/services/workspaces/service.ts#WorkspaceService.addMember",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:21",
+      "kind": "references",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService.acceptInvitation",
+      "to": "symbol:src/services/invitations/token.ts#INVITE_TTL_MS",
+      "state": "added",
+      "provenance": "static",
+      "weight": 2
+    },
+    {
+      "id": "edge:22",
+      "kind": "calls",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService.revokeInvitation",
+      "to": "symbol:src/db/client.ts#db",
+      "state": "added",
+      "provenance": "unresolved"
+    },
+    {
+      "id": "edge:23",
+      "kind": "calls",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService.revokeInvitation",
+      "to": "symbol:src/db/repos/invitationRepo.ts#findInvitationByToken",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:24",
+      "kind": "references",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService",
+      "to": "symbol:src/services/invitations/service.ts#InvitationService.createInvitation",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:25",
+      "kind": "references",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService",
+      "to": "symbol:src/services/invitations/service.ts#InvitationService.acceptInvitation",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:26",
+      "kind": "references",
+      "from": "symbol:src/services/invitations/service.ts#InvitationService",
+      "to": "symbol:src/services/invitations/service.ts#InvitationService.revokeInvitation",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:27",
+      "kind": "references",
+      "from": "symbol:src/services/invitations/token.ts#generateToken",
+      "to": "symbol:src/services/invitations/token.ts#INVITE_TTL_MS",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:28",
+      "kind": "calls",
+      "from": "symbol:src/services/workspaces/service.ts#WorkspaceService.addMember",
+      "to": "symbol:src/db/repos/memberRepo.ts#addMemberRow",
+      "state": "modified",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:29",
+      "kind": "references",
+      "from": "symbol:src/services/workspaces/service.ts#WorkspaceService.addMember",
+      "to": "symbol:src/db/models/invitation.ts#Invitation",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:30",
+      "kind": "calls",
+      "from": "symbol:src/services/email/invite.ts#sendInviteEmail",
+      "to": "symbol:src/services/email/invite.ts#renderInviteTemplate",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:31",
+      "kind": "calls",
+      "from": "symbol:src/services/email/invite.ts#sendInviteEmail",
+      "to": "symbol:src/services/email/mailer.ts#Mailer.send",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:32",
+      "kind": "references",
+      "from": "symbol:src/services/email/invite.ts#sendInviteEmail",
+      "to": "file:.env.example",
+      "state": "added",
+      "provenance": "inferred"
+    },
+    {
+      "id": "edge:33",
+      "kind": "calls",
+      "from": "symbol:src/services/email/mailer.ts#Mailer.send",
+      "to": "symbol:src/services/email/transport.ts#smtpTransport",
+      "state": "modified",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:34",
+      "kind": "calls",
+      "from": "symbol:src/db/repos/invitationRepo.ts#insertInvitation",
+      "to": "symbol:src/db/client.ts#db",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:35",
+      "kind": "calls",
+      "from": "symbol:src/db/repos/invitationRepo.ts#findInvitationByToken",
+      "to": "symbol:src/db/client.ts#db",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:36",
+      "kind": "references",
+      "from": "symbol:src/db/repos/invitationRepo.ts#insertInvitation",
+      "to": "symbol:src/db/models/invitation.ts#Invitation",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:37",
+      "kind": "references",
+      "from": "symbol:src/db/repos/invitationRepo.ts#findInvitationByToken",
+      "to": "symbol:src/db/models/invitation.ts#Invitation",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:38",
+      "kind": "references",
+      "from": "symbol:src/db/schema.ts#schema",
+      "to": "symbol:src/db/models/invitation.ts#Invitation",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:39",
+      "kind": "references",
+      "from": "symbol:src/db/schema.ts#schema",
+      "to": "file:src/db/migrations/0042_create_invitations.sql",
+      "state": "added",
+      "provenance": "inferred"
+    },
+    {
+      "id": "edge:40",
+      "kind": "references",
+      "from": "symbol:src/db/models/invitation.ts#Invitation",
+      "to": "symbol:src/db/models/workspace.ts#Workspace",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:41",
+      "kind": "calls",
+      "from": "symbol:web/src/components/InviteDialog.tsx#InviteDialog",
+      "to": "symbol:web/src/hooks/useInvitations.ts#useInvitations",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:42",
+      "kind": "references",
+      "from": "symbol:web/src/components/InviteDialog.tsx#InviteDialog",
+      "to": "symbol:web/src/components/Button.tsx#Button",
+      "state": "unchanged",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:43",
+      "kind": "calls",
+      "from": "symbol:web/src/hooks/useInvitations.ts#useInvitations",
+      "to": "symbol:web/src/api/invitations.ts#inviteMember",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:44",
+      "kind": "calls",
+      "from": "symbol:web/src/api/invitations.ts#inviteMember",
+      "to": "symbol:web/src/api/http.ts#http",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:45",
+      "kind": "calls",
+      "from": "symbol:web/src/api/invitations.ts#inviteMember",
+      "to": "symbol:src/api/routes/invitations.ts#createInvitationRoute",
+      "state": "added",
+      "provenance": "inferred"
+    },
+    {
+      "id": "edge:46",
+      "kind": "calls",
+      "from": "symbol:web/src/hooks/useInvitations.ts#useInvitations",
+      "to": "symbol:web/src/api/http.ts#http",
+      "state": "added",
+      "provenance": "unresolved"
+    },
+    {
+      "id": "edge:47",
+      "kind": "calls",
+      "from": "symbol:web/src/pages/AcceptInvitePage.tsx#AcceptInvitePage",
+      "to": "symbol:src/api/routes/invitations.ts#acceptInvitationRoute",
+      "state": "added",
+      "provenance": "inferred"
+    },
+    {
+      "id": "edge:48",
+      "kind": "references",
+      "from": "symbol:web/src/pages/MembersPage.tsx#MembersPage",
+      "to": "symbol:web/src/components/InviteDialog.tsx#InviteDialog",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:49",
+      "kind": "imports",
+      "from": "symbol:web/src/pages/MembersPage.tsx#MembersPage",
+      "to": "symbol:web/src/components/InviteDialog.tsx#InviteDialog",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:50",
+      "kind": "calls",
+      "from": "symbol:web/src/pages/AcceptInvitePage.tsx#AcceptInvitePage",
+      "to": "symbol:web/src/api/http.ts#http",
+      "state": "added",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:51",
+      "kind": "references",
+      "from": "symbol:web/src/pages/AcceptInvitePage.tsx#AcceptInvitePage",
+      "to": "symbol:web/src/components/Button.tsx#Button",
+      "state": "unchanged",
+      "provenance": "static"
+    },
+    {
+      "id": "edge:52",
+      "kind": "imports",
+      "from": "symbol:web/src/components/InviteDialog.tsx#InviteDialog",
+      "to": "symbol:web/src/components/Button.tsx#Button",
+      "state": "unchanged",
+      "provenance": "static"
+    }
+  ],
+  "hunks": [
+    {
+      "id": "hunk:1",
+      "path": "src/api/routes/invitations.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 12,
+      "newLines": 11,
+      "patch": "@@ -0,0 +12,11 @@\n+export async function createInvitationRoute(req: Request, res: Response) {\n+  await requireAdmin(req);\n+  const { email, role } = InviteBody.parse(req.body);\n+  const invitation = await invitationService.createInvitation({\n+    workspaceId: req.params.workspaceId,\n+    email,\n+    role,\n+    invitedBy: req.session.userId,\n+  });\n+  res.status(201).json({ id: invitation.id, expiresAt: invitation.expiresAt });\n+}",
+      "added": 11,
+      "removed": 0,
+      "owner": "symbol:src/api/routes/invitations.ts#createInvitationRoute"
+    },
+    {
+      "id": "hunk:2",
+      "path": "src/api/routes/invitations.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 36,
+      "newLines": 5,
+      "patch": "@@ -0,0 +36,5 @@\n+export async function acceptInvitationRoute(req: Request, res: Response) {\n+  const session = await getSession(req);\n+  const member = await invitationService.acceptInvitation(req.params.token, session.userId);\n+  res.json({ workspaceId: member.workspaceId, role: member.role });\n+}",
+      "added": 5,
+      "removed": 0,
+      "owner": "symbol:src/api/routes/invitations.ts#acceptInvitationRoute"
+    },
+    {
+      "id": "hunk:3",
+      "path": "src/api/routes/invitations.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 54,
+      "newLines": 5,
+      "patch": "@@ -0,0 +54,5 @@\n+export async function revokeInvitationRoute(req: Request, res: Response) {\n+  await requireAdmin(req);\n+  await invitationService.revokeInvitation(req.params.id);\n+  res.status(204).end();\n+}",
+      "added": 5,
+      "removed": 0,
+      "owner": "symbol:src/api/routes/invitations.ts#revokeInvitationRoute"
+    },
+    {
+      "id": "hunk:4",
+      "path": "src/api/routes/index.ts",
+      "oldStart": 8,
+      "oldLines": 5,
+      "newStart": 8,
+      "newLines": 7,
+      "patch": "@@ -8,5 +8,7 @@\n export function registerRoutes(app: Router) {\n   app.use(authMiddleware);\n-  app.post(\"/invites\", requireAdmin, sendLegacyInvite);\n+  app.post(\"/workspaces/:workspaceId/invitations\", createInvitationRoute);\n+  app.post(\"/invitations/:token/accept\", acceptInvitationRoute);\n+  app.delete(\"/invitations/:id\", revokeInvitationRoute);\n   app.get(\"/health\", healthCheck);\n }",
+      "added": 3,
+      "removed": 1,
+      "owner": "symbol:src/api/routes/index.ts#registerRoutes"
+    },
+    {
+      "id": "hunk:5",
+      "path": "src/api/routes/legacyInvite.ts",
+      "oldStart": 1,
+      "oldLines": 5,
+      "newStart": 0,
+      "newLines": 0,
+      "patch": "@@ -1,5 +0,0 @@\n-export async function sendLegacyInvite(req: Request, res: Response) {\n-  const { email } = req.body;\n-  await mailer.send({ to: email, subject: \"Join us\", text: \"Sign up at \" + process.env.APP_URL });\n-  res.json({ ok: true });\n-}",
+      "added": 0,
+      "removed": 5,
+      "owner": "symbol:src/api/routes/legacyInvite.ts#sendLegacyInvite"
+    },
+    {
+      "id": "hunk:6",
+      "path": "src/services/invitations/service.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 10,
+      "newLines": 6,
+      "patch": "@@ -0,0 +10,6 @@\n+export class InvitationService {\n+  constructor(\n+    private readonly users: UserService,\n+    private readonly workspaces: WorkspaceService,\n+    private readonly hooks: Record<string, () => void> = {},\n+  ) {}",
+      "added": 6,
+      "removed": 0,
+      "owner": "symbol:src/services/invitations/service.ts#InvitationService"
+    },
+    {
+      "id": "hunk:7",
+      "path": "src/services/invitations/service.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 22,
+      "newLines": 14,
+      "patch": "@@ -0,0 +22,14 @@\n+  async createInvitation(input: CreateInvitationInput): Promise<Invitation> {\n+    const existing = await this.users.findByEmail(input.email);\n+    if (existing && (await this.workspaces.isMember(input.workspaceId, existing.id))) {\n+      throw new ConflictError(\"User is already a member\");\n+    }\n+    const invitation = await insertInvitation({\n+      ...input,\n+      token: generateToken(),\n+      expiresAt: new Date(Date.now() + INVITE_TTL_MS),\n+    });\n+    await sendInviteEmail(invitation);\n+    this.hooks[\"invitation.created\"]?.();\n+    return invitation;\n+  }",
+      "added": 14,
+      "removed": 0,
+      "owner": "symbol:src/services/invitations/service.ts#InvitationService.createInvitation"
+    },
+    {
+      "id": "hunk:8",
+      "path": "src/services/invitations/service.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 50,
+      "newLines": 7,
+      "patch": "@@ -0,0 +50,7 @@\n+  async acceptInvitation(token: string, userId: string) {\n+    const invitation = await findInvitationByToken(token);\n+    if (!invitation || invitation.expiresAt.getTime() < Date.now()) {\n+      throw new NotFoundError(\"Invitation expired or invalid\");\n+    }\n+    return this.workspaces.addMember(invitation.workspaceId, userId, invitation.role);\n+  }",
+      "added": 7,
+      "removed": 0,
+      "owner": "symbol:src/services/invitations/service.ts#InvitationService.acceptInvitation"
+    },
+    {
+      "id": "hunk:9",
+      "path": "src/services/invitations/service.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 80,
+      "newLines": 4,
+      "patch": "@@ -0,0 +80,4 @@\n+  async revokeInvitation(id: string) {\n+    const table = this.tableFor(\"invitations\");\n+    await db(table).where({ id }).update({ revokedAt: new Date() });\n+  }",
+      "added": 4,
+      "removed": 0,
+      "owner": "symbol:src/services/invitations/service.ts#InvitationService.revokeInvitation"
+    },
+    {
+      "id": "hunk:10",
+      "path": "src/services/invitations/token.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 1,
+      "newLines": 5,
+      "patch": "@@ -0,0 +1,5 @@\n+export const INVITE_TTL_MS = 7 * 24 * 60 * 60 * 1000;\n+\n+export function generateToken(): string {\n+  return randomBytes(24).toString(\"base64url\");\n+}",
+      "added": 5,
+      "removed": 0,
+      "owner": "symbol:src/services/invitations/token.ts#generateToken"
+    },
+    {
+      "id": "hunk:11",
+      "path": "src/services/workspaces/service.ts",
+      "oldStart": 41,
+      "oldLines": 4,
+      "newStart": 41,
+      "newLines": 4,
+      "patch": "@@ -41,4 +41,4 @@\n   async addMember(workspaceId: string, userId: string, role: Role = \"member\") {\n-    await addMemberRow(workspaceId, userId);\n+    await addMemberRow(workspaceId, userId, role);\n     await this.audit.log(\"workspace.member_added\", { workspaceId, userId });\n   }",
+      "added": 1,
+      "removed": 1,
+      "owner": "symbol:src/services/workspaces/service.ts#WorkspaceService.addMember"
+    },
+    {
+      "id": "hunk:12",
+      "path": "src/services/email/invite.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 5,
+      "newLines": 9,
+      "patch": "@@ -0,0 +5,9 @@\n+export async function sendInviteEmail(invitation: Invitation) {\n+  const link = `${process.env.APP_URL}/invite/${invitation.token}`;\n+  const { subject, html } = renderInviteTemplate({ link, role: invitation.role });\n+  try {\n+    await mailer.send({ to: invitation.email, subject, html });\n+  } catch {\n+    // ignore delivery failures\n+  }\n+}",
+      "added": 9,
+      "removed": 0,
+      "owner": "symbol:src/services/email/invite.ts#sendInviteEmail"
+    },
+    {
+      "id": "hunk:13",
+      "path": "src/services/email/invite.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 30,
+      "newLines": 6,
+      "patch": "@@ -0,0 +30,6 @@\n+function renderInviteTemplate(args: { link: string; role: string }) {\n+  return {\n+    subject: \"You have been invited to a workspace\",\n+    html: `<p>Join as <b>${args.role}</b>: <a href=\"${args.link}\">Accept invitation</a></p>`,\n+  };\n+}",
+      "added": 6,
+      "removed": 0,
+      "owner": "symbol:src/services/email/invite.ts#renderInviteTemplate"
+    },
+    {
+      "id": "hunk:14",
+      "path": "src/services/email/mailer.ts",
+      "oldStart": 14,
+      "oldLines": 3,
+      "newStart": 14,
+      "newLines": 3,
+      "patch": "@@ -14,3 +14,3 @@\n   async send(msg: Message) {\n-    return smtpTransport.sendMail({ from: FROM, ...msg, text: msg.text });\n+    return smtpTransport.sendMail({ from: FROM, ...msg });\n   }",
+      "added": 1,
+      "removed": 1,
+      "owner": "symbol:src/services/email/mailer.ts#Mailer.send"
+    },
+    {
+      "id": "hunk:15",
+      "path": "src/db/migrations/0042_create_invitations.sql",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 1,
+      "newLines": 12,
+      "patch": "@@ -0,0 +1,12 @@\n+CREATE TABLE invitations (\n+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),\n+  workspace_id uuid NOT NULL REFERENCES workspaces(id),\n+  email text NOT NULL,\n+  role text NOT NULL DEFAULT 'member',\n+  token text NOT NULL UNIQUE,\n+  invited_by uuid NOT NULL REFERENCES users(id),\n+  expires_at timestamptz NOT NULL,\n+  revoked_at timestamptz\n+);\n+CREATE INDEX invitations_workspace_idx ON invitations (workspace_id);\n+ALTER TABLE workspaces DROP COLUMN legacy_invite_code;",
+      "added": 12,
+      "removed": 0,
+      "owner": "file:src/db/migrations/0042_create_invitations.sql"
+    },
+    {
+      "id": "hunk:16",
+      "path": "src/db/models/invitation.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 1,
+      "newLines": 10,
+      "patch": "@@ -0,0 +1,10 @@\n+export interface Invitation {\n+  id: string;\n+  workspaceId: string;\n+  email: string;\n+  role: Role;\n+  token: string;\n+  invitedBy: string;\n+  expiresAt: Date;\n+  revokedAt: Date | null;\n+}",
+      "added": 10,
+      "removed": 0,
+      "owner": "symbol:src/db/models/invitation.ts#Invitation"
+    },
+    {
+      "id": "hunk:17",
+      "path": "src/db/repos/invitationRepo.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 6,
+      "newLines": 4,
+      "patch": "@@ -0,0 +6,4 @@\n+export async function insertInvitation(row: NewInvitation): Promise<Invitation> {\n+  const [created] = await db(\"invitations\").insert(toColumns(row)).returning(\"*\");\n+  return fromColumns(created);\n+}",
+      "added": 4,
+      "removed": 0,
+      "owner": "symbol:src/db/repos/invitationRepo.ts#insertInvitation"
+    },
+    {
+      "id": "hunk:18",
+      "path": "src/db/repos/invitationRepo.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 22,
+      "newLines": 4,
+      "patch": "@@ -0,0 +22,4 @@\n+export async function findInvitationByToken(token: string) {\n+  const row = await db(\"invitations\").where({ token }).whereNull(\"revoked_at\").first();\n+  return row ? fromColumns(row) : undefined;\n+}",
+      "added": 4,
+      "removed": 0,
+      "owner": "symbol:src/db/repos/invitationRepo.ts#findInvitationByToken"
+    },
+    {
+      "id": "hunk:19",
+      "path": "src/db/schema.ts",
+      "oldStart": 40,
+      "oldLines": 3,
+      "newStart": 40,
+      "newLines": 4,
+      "patch": "@@ -40,3 +40,4 @@\n   workspaces: workspaceTable,\n   members: memberTable,\n+  invitations: invitationTable,\n } as const;",
+      "added": 1,
+      "removed": 0,
+      "owner": "symbol:src/db/schema.ts#schema"
+    },
+    {
+      "id": "hunk:20",
+      "path": "web/src/components/InviteDialog.tsx",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 8,
+      "newLines": 12,
+      "patch": "@@ -0,0 +8,12 @@\n+export function InviteDialog({ workspaceId, onClose }: Props) {\n+  const { invite, pending, error } = useInvitations(workspaceId);\n+  const [email, setEmail] = useState(\"\");\n+  return (\n+    <dialog open aria-labelledby=\"invite-title\">\n+      <h2 id=\"invite-title\">Invite a teammate</h2>\n+      <input value={email} onChange={(e) => setEmail(e.target.value)} type=\"email\" />\n+      <Button disabled={pending} onClick={() => invite(email, \"member\").then(onClose)}>Send invite</Button>\n+      {error && <p role=\"alert\">{error.message}</p>}\n+    </dialog>\n+  );\n+}",
+      "added": 12,
+      "removed": 0,
+      "owner": "symbol:web/src/components/InviteDialog.tsx#InviteDialog"
+    },
+    {
+      "id": "hunk:21",
+      "path": "web/src/hooks/useInvitations.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 4,
+      "newLines": 10,
+      "patch": "@@ -0,0 +4,10 @@\n+export function useInvitations(workspaceId: string) {\n+  const [pending, setPending] = useState(false);\n+  const [error, setError] = useState<Error | null>(null);\n+  const invite = async (email: string, role: Role) => {\n+    setPending(true);\n+    try { await inviteMember(workspaceId, email, role); } catch (e) { setError(e as Error); }\n+    finally { setPending(false); }\n+  };\n+  return { invite, pending, error };\n+}",
+      "added": 10,
+      "removed": 0,
+      "owner": "symbol:web/src/hooks/useInvitations.ts#useInvitations"
+    },
+    {
+      "id": "hunk:22",
+      "path": "web/src/pages/MembersPage.tsx",
+      "oldStart": 20,
+      "oldLines": 5,
+      "newStart": 20,
+      "newLines": 8,
+      "patch": "@@ -20,5 +20,8 @@\n   const members = useMembers(workspaceId);\n+  const [inviting, setInviting] = useState(false);\n   return (\n     <Page title=\"Members\">\n+      <Button onClick={() => setInviting(true)}>Invite</Button>\n+      {inviting && <InviteDialog workspaceId={workspaceId} onClose={() => setInviting(false)} />}\n       <MemberList members={members} />\n     </Page>",
+      "added": 3,
+      "removed": 0,
+      "owner": "symbol:web/src/pages/MembersPage.tsx#MembersPage"
+    },
+    {
+      "id": "hunk:23",
+      "path": "web/src/pages/MembersPage.tsx",
+      "oldStart": 1,
+      "oldLines": 2,
+      "newStart": 1,
+      "newLines": 3,
+      "patch": "@@ -1,2 +1,3 @@\n import { MemberList } from \"../components/MemberList\";\n+import { InviteDialog } from \"../components/InviteDialog\";\n import { useMembers } from \"../hooks/useMembers\";",
+      "added": 1,
+      "removed": 0,
+      "owner": "symbol:web/src/pages/MembersPage.tsx#MembersPage"
+    },
+    {
+      "id": "hunk:24",
+      "path": "web/src/api/invitations.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 3,
+      "newLines": 3,
+      "patch": "@@ -0,0 +3,3 @@\n+export function inviteMember(workspaceId: string, email: string, role: Role) {\n+  return http(`/workspaces/${workspaceId}/invitations`, { method: \"POST\", body: { email, role } });\n+}",
+      "added": 3,
+      "removed": 0,
+      "owner": "symbol:web/src/api/invitations.ts#inviteMember"
+    },
+    {
+      "id": "hunk:25",
+      "path": "web/src/pages/AcceptInvitePage.tsx",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 6,
+      "newLines": 10,
+      "patch": "@@ -0,0 +6,10 @@\n+export function AcceptInvitePage() {\n+  const { token } = useParams();\n+  const [state, setState] = useState<\"idle\" | \"ok\" | \"failed\">(\"idle\");\n+  useEffect(() => {\n+    http(`/invitations/${token}/accept`, { method: \"POST\" })\n+      .then(() => setState(\"ok\"))\n+      .catch(() => setState(\"failed\"));\n+  }, [token]);\n+  return state === \"failed\" ? <p>This invitation has expired.</p> : <Spinner />;\n+}",
+      "added": 10,
+      "removed": 0,
+      "owner": "symbol:web/src/pages/AcceptInvitePage.tsx#AcceptInvitePage"
+    },
+    {
+      "id": "hunk:26",
+      "path": ".env.example",
+      "oldStart": 1,
+      "oldLines": 2,
+      "newStart": 1,
+      "newLines": 4,
+      "patch": "@@ -1,2 +1,4 @@\n DATABASE_URL=postgres://localhost/app\n+APP_URL=http://localhost:3000\n+INVITE_FROM=invites@example.com\n SESSION_SECRET=change-me",
+      "added": 2,
+      "removed": 0,
+      "owner": "file:.env.example"
+    },
+    {
+      "id": "hunk:27",
+      "path": "src/services/invitations/service.ts",
+      "oldStart": 0,
+      "oldLines": 0,
+      "newStart": 90,
+      "newLines": 1,
+      "patch": "@@ -0,0 +90,1 @@\n+}",
+      "added": 1,
+      "removed": 0,
+      "owner": "symbol:src/services/invitations/service.ts#InvitationService"
+    },
+    {
+      "id": "hunk:28",
+      "path": "package.json",
+      "oldStart": 12,
+      "oldLines": 3,
+      "newStart": 12,
+      "newLines": 4,
+      "patch": "@@ -12,3 +12,4 @@\n   \"dependencies\": {\n+    \"nodemailer\": \"^6.9.14\",\n     \"express\": \"^4.19.2\"\n   }",
+      "added": 1,
+      "removed": 0,
+      "owner": "file:package.json"
+    },
+    {
+      "id": "hunk:29",
+      "path": "package-lock.json",
+      "oldStart": 40,
+      "oldLines": 6,
+      "newStart": 40,
+      "newLines": 200,
+      "patch": "@@ -40,6 +40,200 @@\n-      \"resolved\": \"https://registry.npmjs.org/dep-0/-/dep-0-1.0.0.tgz\",\n-      \"resolved\": \"https://registry.npmjs.org/dep-1/-/dep-1-1.0.1.tgz\",\n-      \"resolved\": \"https://registry.npmjs.org/dep-2/-/dep-2-1.0.2.tgz\",\n-      \"resolved\": \"https://registry.npmjs.org/dep-3/-/dep-3-1.0.3.tgz\",\n-      \"resolved\": \"https://registry.npmjs.org/dep-4/-/dep-4-1.0.4.tgz\",\n-      \"resolved\": \"https://registry.npmjs.org/dep-5/-/dep-5-1.0.5.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-0/-/dep-0-2.0.0.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-1/-/dep-1-2.0.1.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-2/-/dep-2-2.0.2.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-3/-/dep-3-2.0.3.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-4/-/dep-4-2.0.4.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-5/-/dep-5-2.0.5.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-6/-/dep-6-2.0.6.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-7/-/dep-7-2.0.7.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-8/-/dep-8-2.0.8.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-9/-/dep-9-2.0.9.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-10/-/dep-10-2.0.10.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-11/-/dep-11-2.0.11.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-12/-/dep-12-2.0.12.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-13/-/dep-13-2.0.13.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-14/-/dep-14-2.0.14.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-15/-/dep-15-2.0.15.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-16/-/dep-16-2.0.16.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-17/-/dep-17-2.0.17.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-18/-/dep-18-2.0.18.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-19/-/dep-19-2.0.19.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-20/-/dep-20-2.0.20.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-21/-/dep-21-2.0.21.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-22/-/dep-22-2.0.22.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-23/-/dep-23-2.0.23.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-24/-/dep-24-2.0.24.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-25/-/dep-25-2.0.25.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-26/-/dep-26-2.0.26.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-27/-/dep-27-2.0.27.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-28/-/dep-28-2.0.28.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-29/-/dep-29-2.0.29.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-30/-/dep-30-2.0.30.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-31/-/dep-31-2.0.31.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-32/-/dep-32-2.0.32.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-33/-/dep-33-2.0.33.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-34/-/dep-34-2.0.34.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-35/-/dep-35-2.0.35.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-36/-/dep-36-2.0.36.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-37/-/dep-37-2.0.37.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-38/-/dep-38-2.0.38.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-39/-/dep-39-2.0.39.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-40/-/dep-40-2.0.40.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-41/-/dep-41-2.0.41.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-42/-/dep-42-2.0.42.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-43/-/dep-43-2.0.43.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-44/-/dep-44-2.0.44.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-45/-/dep-45-2.0.45.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-46/-/dep-46-2.0.46.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-47/-/dep-47-2.0.47.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-48/-/dep-48-2.0.48.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-49/-/dep-49-2.0.49.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-50/-/dep-50-2.0.50.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-51/-/dep-51-2.0.51.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-52/-/dep-52-2.0.52.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-53/-/dep-53-2.0.53.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-54/-/dep-54-2.0.54.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-55/-/dep-55-2.0.55.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-56/-/dep-56-2.0.56.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-57/-/dep-57-2.0.57.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-58/-/dep-58-2.0.58.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-59/-/dep-59-2.0.59.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-60/-/dep-60-2.0.60.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-61/-/dep-61-2.0.61.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-62/-/dep-62-2.0.62.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-63/-/dep-63-2.0.63.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-64/-/dep-64-2.0.64.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-65/-/dep-65-2.0.65.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-66/-/dep-66-2.0.66.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-67/-/dep-67-2.0.67.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-68/-/dep-68-2.0.68.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-69/-/dep-69-2.0.69.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-70/-/dep-70-2.0.70.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-71/-/dep-71-2.0.71.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-72/-/dep-72-2.0.72.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-73/-/dep-73-2.0.73.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-74/-/dep-74-2.0.74.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-75/-/dep-75-2.0.75.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-76/-/dep-76-2.0.76.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-77/-/dep-77-2.0.77.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-78/-/dep-78-2.0.78.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-79/-/dep-79-2.0.79.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-80/-/dep-80-2.0.80.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-81/-/dep-81-2.0.81.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-82/-/dep-82-2.0.82.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-83/-/dep-83-2.0.83.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-84/-/dep-84-2.0.84.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-85/-/dep-85-2.0.85.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-86/-/dep-86-2.0.86.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-87/-/dep-87-2.0.87.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-88/-/dep-88-2.0.88.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-89/-/dep-89-2.0.89.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-90/-/dep-90-2.0.90.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-91/-/dep-91-2.0.91.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-92/-/dep-92-2.0.92.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-93/-/dep-93-2.0.93.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-94/-/dep-94-2.0.94.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-95/-/dep-95-2.0.95.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-96/-/dep-96-2.0.96.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-97/-/dep-97-2.0.97.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-98/-/dep-98-2.0.98.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-99/-/dep-99-2.0.99.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-100/-/dep-100-2.0.100.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-101/-/dep-101-2.0.101.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-102/-/dep-102-2.0.102.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-103/-/dep-103-2.0.103.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-104/-/dep-104-2.0.104.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-105/-/dep-105-2.0.105.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-106/-/dep-106-2.0.106.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-107/-/dep-107-2.0.107.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-108/-/dep-108-2.0.108.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-109/-/dep-109-2.0.109.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-110/-/dep-110-2.0.110.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-111/-/dep-111-2.0.111.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-112/-/dep-112-2.0.112.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-113/-/dep-113-2.0.113.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-114/-/dep-114-2.0.114.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-115/-/dep-115-2.0.115.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-116/-/dep-116-2.0.116.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-117/-/dep-117-2.0.117.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-118/-/dep-118-2.0.118.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-119/-/dep-119-2.0.119.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-120/-/dep-120-2.0.120.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-121/-/dep-121-2.0.121.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-122/-/dep-122-2.0.122.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-123/-/dep-123-2.0.123.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-124/-/dep-124-2.0.124.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-125/-/dep-125-2.0.125.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-126/-/dep-126-2.0.126.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-127/-/dep-127-2.0.127.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-128/-/dep-128-2.0.128.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-129/-/dep-129-2.0.129.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-130/-/dep-130-2.0.130.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-131/-/dep-131-2.0.131.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-132/-/dep-132-2.0.132.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-133/-/dep-133-2.0.133.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-134/-/dep-134-2.0.134.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-135/-/dep-135-2.0.135.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-136/-/dep-136-2.0.136.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-137/-/dep-137-2.0.137.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-138/-/dep-138-2.0.138.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-139/-/dep-139-2.0.139.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-140/-/dep-140-2.0.140.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-141/-/dep-141-2.0.141.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-142/-/dep-142-2.0.142.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-143/-/dep-143-2.0.143.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-144/-/dep-144-2.0.144.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-145/-/dep-145-2.0.145.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-146/-/dep-146-2.0.146.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-147/-/dep-147-2.0.147.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-148/-/dep-148-2.0.148.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-149/-/dep-149-2.0.149.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-150/-/dep-150-2.0.150.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-151/-/dep-151-2.0.151.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-152/-/dep-152-2.0.152.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-153/-/dep-153-2.0.153.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-154/-/dep-154-2.0.154.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-155/-/dep-155-2.0.155.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-156/-/dep-156-2.0.156.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-157/-/dep-157-2.0.157.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-158/-/dep-158-2.0.158.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-159/-/dep-159-2.0.159.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-160/-/dep-160-2.0.160.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-161/-/dep-161-2.0.161.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-162/-/dep-162-2.0.162.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-163/-/dep-163-2.0.163.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-164/-/dep-164-2.0.164.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-165/-/dep-165-2.0.165.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-166/-/dep-166-2.0.166.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-167/-/dep-167-2.0.167.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-168/-/dep-168-2.0.168.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-169/-/dep-169-2.0.169.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-170/-/dep-170-2.0.170.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-171/-/dep-171-2.0.171.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-172/-/dep-172-2.0.172.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-173/-/dep-173-2.0.173.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-174/-/dep-174-2.0.174.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-175/-/dep-175-2.0.175.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-176/-/dep-176-2.0.176.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-177/-/dep-177-2.0.177.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-178/-/dep-178-2.0.178.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-179/-/dep-179-2.0.179.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-180/-/dep-180-2.0.180.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-181/-/dep-181-2.0.181.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-182/-/dep-182-2.0.182.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-183/-/dep-183-2.0.183.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-184/-/dep-184-2.0.184.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-185/-/dep-185-2.0.185.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-186/-/dep-186-2.0.186.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-187/-/dep-187-2.0.187.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-188/-/dep-188-2.0.188.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-189/-/dep-189-2.0.189.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-190/-/dep-190-2.0.190.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-191/-/dep-191-2.0.191.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-192/-/dep-192-2.0.192.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-193/-/dep-193-2.0.193.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-194/-/dep-194-2.0.194.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-195/-/dep-195-2.0.195.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-196/-/dep-196-2.0.196.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-197/-/dep-197-2.0.197.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-198/-/dep-198-2.0.198.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/dep-199/-/dep-199-2.0.199.tgz\",",
+      "added": 200,
+      "removed": 6,
+      "owner": "group:lockfile",
+      "noise": {
+        "kind": "lockfile"
+      }
+    },
+    {
+      "id": "hunk:30",
+      "path": "package-lock.json",
+      "oldStart": 900,
+      "oldLines": 6,
+      "newStart": 900,
+      "newLines": 140,
+      "patch": "@@ -900,6 +900,140 @@\n-      \"resolved\": \"https://registry.npmjs.org/pkg-0/-/pkg-0-1.0.0.tgz\",\n-      \"resolved\": \"https://registry.npmjs.org/pkg-1/-/pkg-1-1.0.1.tgz\",\n-      \"resolved\": \"https://registry.npmjs.org/pkg-2/-/pkg-2-1.0.2.tgz\",\n-      \"resolved\": \"https://registry.npmjs.org/pkg-3/-/pkg-3-1.0.3.tgz\",\n-      \"resolved\": \"https://registry.npmjs.org/pkg-4/-/pkg-4-1.0.4.tgz\",\n-      \"resolved\": \"https://registry.npmjs.org/pkg-5/-/pkg-5-1.0.5.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-0/-/pkg-0-2.0.0.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-1/-/pkg-1-2.0.1.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-2/-/pkg-2-2.0.2.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-3/-/pkg-3-2.0.3.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-4/-/pkg-4-2.0.4.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-5/-/pkg-5-2.0.5.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-6/-/pkg-6-2.0.6.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-7/-/pkg-7-2.0.7.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-8/-/pkg-8-2.0.8.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-9/-/pkg-9-2.0.9.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-10/-/pkg-10-2.0.10.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-11/-/pkg-11-2.0.11.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-12/-/pkg-12-2.0.12.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-13/-/pkg-13-2.0.13.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-14/-/pkg-14-2.0.14.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-15/-/pkg-15-2.0.15.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-16/-/pkg-16-2.0.16.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-17/-/pkg-17-2.0.17.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-18/-/pkg-18-2.0.18.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-19/-/pkg-19-2.0.19.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-20/-/pkg-20-2.0.20.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-21/-/pkg-21-2.0.21.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-22/-/pkg-22-2.0.22.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-23/-/pkg-23-2.0.23.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-24/-/pkg-24-2.0.24.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-25/-/pkg-25-2.0.25.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-26/-/pkg-26-2.0.26.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-27/-/pkg-27-2.0.27.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-28/-/pkg-28-2.0.28.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-29/-/pkg-29-2.0.29.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-30/-/pkg-30-2.0.30.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-31/-/pkg-31-2.0.31.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-32/-/pkg-32-2.0.32.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-33/-/pkg-33-2.0.33.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-34/-/pkg-34-2.0.34.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-35/-/pkg-35-2.0.35.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-36/-/pkg-36-2.0.36.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-37/-/pkg-37-2.0.37.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-38/-/pkg-38-2.0.38.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-39/-/pkg-39-2.0.39.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-40/-/pkg-40-2.0.40.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-41/-/pkg-41-2.0.41.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-42/-/pkg-42-2.0.42.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-43/-/pkg-43-2.0.43.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-44/-/pkg-44-2.0.44.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-45/-/pkg-45-2.0.45.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-46/-/pkg-46-2.0.46.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-47/-/pkg-47-2.0.47.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-48/-/pkg-48-2.0.48.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-49/-/pkg-49-2.0.49.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-50/-/pkg-50-2.0.50.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-51/-/pkg-51-2.0.51.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-52/-/pkg-52-2.0.52.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-53/-/pkg-53-2.0.53.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-54/-/pkg-54-2.0.54.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-55/-/pkg-55-2.0.55.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-56/-/pkg-56-2.0.56.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-57/-/pkg-57-2.0.57.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-58/-/pkg-58-2.0.58.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-59/-/pkg-59-2.0.59.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-60/-/pkg-60-2.0.60.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-61/-/pkg-61-2.0.61.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-62/-/pkg-62-2.0.62.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-63/-/pkg-63-2.0.63.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-64/-/pkg-64-2.0.64.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-65/-/pkg-65-2.0.65.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-66/-/pkg-66-2.0.66.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-67/-/pkg-67-2.0.67.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-68/-/pkg-68-2.0.68.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-69/-/pkg-69-2.0.69.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-70/-/pkg-70-2.0.70.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-71/-/pkg-71-2.0.71.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-72/-/pkg-72-2.0.72.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-73/-/pkg-73-2.0.73.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-74/-/pkg-74-2.0.74.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-75/-/pkg-75-2.0.75.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-76/-/pkg-76-2.0.76.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-77/-/pkg-77-2.0.77.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-78/-/pkg-78-2.0.78.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-79/-/pkg-79-2.0.79.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-80/-/pkg-80-2.0.80.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-81/-/pkg-81-2.0.81.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-82/-/pkg-82-2.0.82.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-83/-/pkg-83-2.0.83.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-84/-/pkg-84-2.0.84.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-85/-/pkg-85-2.0.85.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-86/-/pkg-86-2.0.86.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-87/-/pkg-87-2.0.87.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-88/-/pkg-88-2.0.88.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-89/-/pkg-89-2.0.89.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-90/-/pkg-90-2.0.90.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-91/-/pkg-91-2.0.91.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-92/-/pkg-92-2.0.92.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-93/-/pkg-93-2.0.93.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-94/-/pkg-94-2.0.94.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-95/-/pkg-95-2.0.95.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-96/-/pkg-96-2.0.96.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-97/-/pkg-97-2.0.97.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-98/-/pkg-98-2.0.98.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-99/-/pkg-99-2.0.99.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-100/-/pkg-100-2.0.100.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-101/-/pkg-101-2.0.101.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-102/-/pkg-102-2.0.102.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-103/-/pkg-103-2.0.103.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-104/-/pkg-104-2.0.104.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-105/-/pkg-105-2.0.105.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-106/-/pkg-106-2.0.106.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-107/-/pkg-107-2.0.107.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-108/-/pkg-108-2.0.108.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-109/-/pkg-109-2.0.109.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-110/-/pkg-110-2.0.110.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-111/-/pkg-111-2.0.111.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-112/-/pkg-112-2.0.112.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-113/-/pkg-113-2.0.113.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-114/-/pkg-114-2.0.114.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-115/-/pkg-115-2.0.115.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-116/-/pkg-116-2.0.116.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-117/-/pkg-117-2.0.117.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-118/-/pkg-118-2.0.118.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-119/-/pkg-119-2.0.119.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-120/-/pkg-120-2.0.120.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-121/-/pkg-121-2.0.121.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-122/-/pkg-122-2.0.122.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-123/-/pkg-123-2.0.123.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-124/-/pkg-124-2.0.124.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-125/-/pkg-125-2.0.125.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-126/-/pkg-126-2.0.126.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-127/-/pkg-127-2.0.127.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-128/-/pkg-128-2.0.128.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-129/-/pkg-129-2.0.129.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-130/-/pkg-130-2.0.130.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-131/-/pkg-131-2.0.131.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-132/-/pkg-132-2.0.132.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-133/-/pkg-133-2.0.133.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-134/-/pkg-134-2.0.134.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-135/-/pkg-135-2.0.135.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-136/-/pkg-136-2.0.136.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-137/-/pkg-137-2.0.137.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-138/-/pkg-138-2.0.138.tgz\",\n+      \"resolved\": \"https://registry.npmjs.org/pkg-139/-/pkg-139-2.0.139.tgz\",",
+      "added": 140,
+      "removed": 6,
+      "owner": "group:lockfile",
+      "noise": {
+        "kind": "lockfile"
+      }
+    },
+    {
+      "id": "hunk:31",
+      "path": "src/utils/format.ts",
+      "oldStart": 3,
+      "oldLines": 8,
+      "newStart": 3,
+      "newLines": 8,
+      "patch": "@@ -3,8 +3,8 @@\n-const f0 = {a:1,b:2}\n-const f1 = {a:1,b:2}\n-const f2 = {a:1,b:2}\n-const f3 = {a:1,b:2}\n-const f4 = {a:1,b:2}\n-const f5 = {a:1,b:2}\n-const f6 = {a:1,b:2}\n-const f7 = {a:1,b:2}\n+const f0 = { a: 1, b: 2 };\n+const f1 = { a: 1, b: 2 };\n+const f2 = { a: 1, b: 2 };\n+const f3 = { a: 1, b: 2 };\n+const f4 = { a: 1, b: 2 };\n+const f5 = { a: 1, b: 2 };\n+const f6 = { a: 1, b: 2 };\n+const f7 = { a: 1, b: 2 };",
+      "added": 8,
+      "removed": 8,
+      "owner": "group:formatting",
+      "noise": {
+        "kind": "formatting",
+        "detail": "prettier-style whitespace/semicolons"
+      }
+    },
+    {
+      "id": "hunk:32",
+      "path": "src/utils/format.ts",
+      "oldStart": 40,
+      "oldLines": 8,
+      "newStart": 40,
+      "newLines": 8,
+      "patch": "@@ -40,8 +40,8 @@\n-const g0 = {a:1,b:2}\n-const g1 = {a:1,b:2}\n-const g2 = {a:1,b:2}\n-const g3 = {a:1,b:2}\n-const g4 = {a:1,b:2}\n-const g5 = {a:1,b:2}\n-const g6 = {a:1,b:2}\n-const g7 = {a:1,b:2}\n+const g0 = { a: 1, b: 2 };\n+const g1 = { a: 1, b: 2 };\n+const g2 = { a: 1, b: 2 };\n+const g3 = { a: 1, b: 2 };\n+const g4 = { a: 1, b: 2 };\n+const g5 = { a: 1, b: 2 };\n+const g6 = { a: 1, b: 2 };\n+const g7 = { a: 1, b: 2 };",
+      "added": 8,
+      "removed": 8,
+      "owner": "group:formatting",
+      "noise": {
+        "kind": "formatting",
+        "detail": "prettier-style whitespace/semicolons"
+      }
+    },
+    {
+      "id": "hunk:33",
+      "path": "src/legacy/helpers.ts",
+      "oldStart": 5,
+      "oldLines": 8,
+      "newStart": 5,
+      "newLines": 8,
+      "patch": "@@ -5,8 +5,8 @@\n-const h0 = {a:1,b:2}\n-const h1 = {a:1,b:2}\n-const h2 = {a:1,b:2}\n-const h3 = {a:1,b:2}\n-const h4 = {a:1,b:2}\n-const h5 = {a:1,b:2}\n-const h6 = {a:1,b:2}\n-const h7 = {a:1,b:2}\n+const h0 = { a: 1, b: 2 };\n+const h1 = { a: 1, b: 2 };\n+const h2 = { a: 1, b: 2 };\n+const h3 = { a: 1, b: 2 };\n+const h4 = { a: 1, b: 2 };\n+const h5 = { a: 1, b: 2 };\n+const h6 = { a: 1, b: 2 };\n+const h7 = { a: 1, b: 2 };",
+      "added": 8,
+      "removed": 8,
+      "owner": "group:formatting",
+      "noise": {
+        "kind": "formatting",
+        "detail": "prettier-style whitespace/semicolons"
+      }
+    },
+    {
+      "id": "hunk:34",
+      "path": "src/jobs/cleanup.ts",
+      "oldStart": 12,
+      "oldLines": 1,
+      "newStart": 12,
+      "newLines": 1,
+      "patch": "@@ -12,1 +12,1 @@\n-  logger.log(`job done`);\n+  logger.info(`job done`);",
+      "added": 1,
+      "removed": 1,
+      "owner": "group:mechanical",
+      "noise": {
+        "kind": "mechanical",
+        "detail": "logger.log(x) -> logger.info(x)"
+      }
+    },
+    {
+      "id": "hunk:35",
+      "path": "src/jobs/digest.ts",
+      "oldStart": 31,
+      "oldLines": 1,
+      "newStart": 31,
+      "newLines": 1,
+      "patch": "@@ -31,1 +31,1 @@\n-  logger.log(`digest done`);\n+  logger.info(`digest done`);",
+      "added": 1,
+      "removed": 1,
+      "owner": "group:mechanical",
+      "noise": {
+        "kind": "mechanical",
+        "detail": "logger.log(x) -> logger.info(x)"
+      }
+    },
+    {
+      "id": "hunk:36",
+      "path": "src/services/billing/invoice.ts",
+      "oldStart": 77,
+      "oldLines": 1,
+      "newStart": 77,
+      "newLines": 1,
+      "patch": "@@ -77,1 +77,1 @@\n-  logger.log(`invoice done`);\n+  logger.info(`invoice done`);",
+      "added": 1,
+      "removed": 1,
+      "owner": "group:mechanical",
+      "noise": {
+        "kind": "mechanical",
+        "detail": "logger.log(x) -> logger.info(x)"
+      }
+    },
+    {
+      "id": "hunk:37",
+      "path": "src/services/billing/refund.ts",
+      "oldStart": 20,
+      "oldLines": 1,
+      "newStart": 20,
+      "newLines": 1,
+      "patch": "@@ -20,1 +20,1 @@\n-  logger.log(`refund done`);\n+  logger.info(`refund done`);",
+      "added": 1,
+      "removed": 1,
+      "owner": "group:mechanical",
+      "noise": {
+        "kind": "mechanical",
+        "detail": "logger.log(x) -> logger.info(x)"
+      }
+    },
+    {
+      "id": "hunk:38",
+      "path": "src/api/routes/health.ts",
+      "oldStart": 9,
+      "oldLines": 1,
+      "newStart": 9,
+      "newLines": 1,
+      "patch": "@@ -9,1 +9,1 @@\n-  logger.log(`health done`);\n+  logger.info(`health done`);",
+      "added": 1,
+      "removed": 1,
+      "owner": "group:mechanical",
+      "noise": {
+        "kind": "mechanical",
+        "detail": "logger.log(x) -> logger.info(x)"
+      }
+    },
+    {
+      "id": "hunk:39",
+      "path": "src/services/billing/webhook.ts",
+      "oldStart": 58,
+      "oldLines": 1,
+      "newStart": 58,
+      "newLines": 1,
+      "patch": "@@ -58,1 +58,1 @@\n-  logger.log(`webhook retry`, err);\n+  logger.info(`webhook retry`, err, { suppress: true });",
+      "added": 1,
+      "removed": 1,
+      "owner": "group:mechanical",
+      "noise": {
+        "kind": "mechanical",
+        "detail": "logger.log(x) -> logger.info(x)"
+      }
+    }
+  ],
+  "skippedFiles": [],
+  "limits": [
+    "External types not resolved (node_modules not installed in the sandbox)",
+    "Dynamic calls such as this.hooks[event] are shown as unresolved edges",
+    "Cross-service HTTP edges (web -> api) are inferred from URL patterns, not type-checked"
+  ],
+  "stats": {
+    "files": 28,
+    "added": 521,
+    "removed": 50,
+    "durationMs": 4210
+  },
+  "collapsed": [
+    {
+      "id": "collapsed:formatting",
+      "kind": "formatting",
+      "label": "Formatting only (prettier-style)",
+      "hunkIds": [
+        "hunk:31",
+        "hunk:32",
+        "hunk:33"
+      ],
+      "files": [
+        "src/legacy/helpers.ts",
+        "src/utils/format.ts"
+      ],
+      "added": 24,
+      "removed": 24,
+      "verified": true
+    },
+    {
+      "id": "collapsed:lockfile",
+      "kind": "lockfile",
+      "label": "Lockfile: package-lock.json",
+      "hunkIds": [
+        "hunk:29",
+        "hunk:30"
+      ],
+      "files": [
+        "package-lock.json"
+      ],
+      "added": 340,
+      "removed": 12,
+      "verified": false
+    },
+    {
+      "id": "collapsed:mechanical:a1b2c3",
+      "kind": "mechanical",
+      "label": "Replaced `logger.log(x)` with `logger.info(x)` at 6 sites",
+      "hunkIds": [
+        "hunk:34",
+        "hunk:35",
+        "hunk:36",
+        "hunk:37",
+        "hunk:38",
+        "hunk:39"
+      ],
+      "files": [
+        "src/api/routes/health.ts",
+        "src/jobs/cleanup.ts",
+        "src/jobs/digest.ts",
+        "src/services/billing/invoice.ts",
+        "src/services/billing/refund.ts",
+        "src/services/billing/webhook.ts"
+      ],
+      "added": 6,
+      "removed": 6,
+      "verified": false,
+      "exemplarHunkId": "hunk:34",
+      "outlierHunkIds": [
+        "hunk:39"
+      ]
+    }
+  ],
+  "policy": {
+    "source": "repo",
+    "path": ".lens/policy.yml",
+    "changedInPr": false,
+    "errors": []
+  }
+}

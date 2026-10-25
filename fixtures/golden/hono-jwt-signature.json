@@ -1,0 +1,242 @@
+{
+  "schema": 1,
+  "pr": {
+    "provider": "github",
+    "host": "github.com",
+    "owner": "honojs",
+    "repo": "hono",
+    "number": 5379,
+    "url": "https://github.com/honojs/hono/pull/5379",
+    "title": "fix(jwt): throw JwtTokenInvalid when the signature is not valid base64url",
+    "body": "### The author should do the following, if applicable\n\n- [x] Add tests\n- [x] Run tests\n- [x] `bun run format:fix && bun run lint:fix` to format the code\n- [x] Add [TSDoc](https://tsdoc.org)/[JSDoc](https://jsdoc.app/about-getting-started) to document the code (no API changes; existing JSDoc remains accurate)\n\n## Problem\n\n`JWT.verify()` decoded the signature part with `decodeBase64Url()` outside any `try`/`catch`, so a token whose third part contains characters outside the base64url alphabet (e.g. `header.payload.@@@@`) rejected with a raw `InvalidCharacterError` `DOMException` instead of a Hono JWT error:\n\n```ts\nawait JWT.verify('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZXNzYWdlIjoiaGVsbG8gd29ybGQifQ.@@@@', secret, 'HS256')\n// Uncaught DOMException: Failed to execute 'atob'...\n```\n\nThe header and payload parts already throw `JwtTokenInvalid` for unparseable input (see `decode()`), so the signature part was inconsistent. Code that branches on `e instanceof JwtTokenInvalid` (or on Hono JWT error types generally) misses this failure mode. `verifyWithJwks()` is affected through its call to `verify()`. The `jwt` middleware itself maps any error to a 401, so it is unaffected.\n\n## Fix\n\nDecode the signature inside `verify()` in a `try`/`catch` and throw `JwtTokenInvalid(token)`, matching the precedent in `decode()`. `verifying()` remains outside the `try`, so crypto errors and the signature-mismatch path are untouched. An empty signature part still produces `JwtTokenSignatureMismatched` (unchanged).\n\n## Tests\n\nTwo cases in `src/utils/jwt/jwt.test.ts`. A signature that is not valid base64url must reject with a `JwtTokenInvalid` carrying the documented message; this fails on `main` (the thrown error is a `DOMException`) and passes with this change. A control asserts an empty signature still reports `JwtTokenSignatureMismatched`; it passes on both, documenting the unchanged behavior.\n\n`bun run test`, `bun run lint`, `bun run build`, `bun run test:node`, `bun run test:bun`, `bun run test:workerd`, `bun run test:lambda`, `bun run test:lambda-edge`, and `bun run test:fastly` pass locally. In `bun run test:deno`, the two `deno-jsx` suites pass (12/12 each); the main Deno suite has one pre-existing failure in `Serve Static middleware` caused by this Windows checkout's CRLF line endings in a static fixture (reproduced on unmodified `main`; CI's Linux LF checkout is unaffected).\n\nFollow-up maintenance run (2026-09-13, Windows 11, Node 24.18.0, bun 1.3.14): on head `68c9509b`, `bun run test` (including `tsc`), `bun run lint` (0 errors), `bun run build`, `bun run test:bun` (26/26), and the `node`, `workerd`, `lambda`, `lambda-edge`, and `fastly` vitest projects all pass. `bun run test:deno` passes 12/12 in all three parts on an LF checkout, as does `jsr publish --dry-run`; on this Windows CRLF working tree the main Deno suite's `Serve Static` fixture assertion and the jsr dirty-check still fail, both reproduced on unmodified `main` (EOL artifacts, not code).\n\n---\n\nThis change was produced with AI assistance, and was reviewed, tested, and validated before submission.\n",
+    "author": "ndycode",
+    "baseSha": "edd138ee3049749190de3dcd7e32d7bcbf224e41",
+    "headSha": "68c9509b76930c60715f8a7c3f818759d4023f7a",
+    "baseRef": "main",
+    "headRef": "fix/jwt-invalid-signature-error"
+  },
+  "generatedAt": "2026-10-22T18:03:28.734Z",
+  "pipelineVersion": "m1-0.1.0",
+  "nodes": [
+    {
+      "id": "cluster:src/utils:src-utils-jwt-jwt.ts-verify",
+      "kind": "cluster",
+      "level": 1,
+      "label": "verify (+1)",
+      "parent": "module:src/utils",
+      "state": "modified",
+      "stats": {
+        "added": 21,
+        "removed": 6
+      },
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "symbol:src/utils/jwt/jwt.ts#verify"
+        ]
+      }
+    },
+    {
+      "id": "file:src/utils/jwt/jwt.test.ts",
+      "level": 2,
+      "state": "modified",
+      "path": "src/utils/jwt/jwt.test.ts",
+      "parent": "cluster:src/utils:src-utils-jwt-jwt.ts-verify",
+      "stats": {
+        "added": 14,
+        "removed": 0
+      },
+      "kind": "file",
+      "label": "src/utils/jwt/jwt.test.ts",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "module:src/utils",
+      "kind": "module",
+      "level": 0,
+      "label": "src/utils",
+      "path": "src/utils",
+      "state": "modified",
+      "stats": {
+        "added": 21,
+        "removed": 6
+      },
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [],
+        "inheritedFrom": [
+          "symbol:src/utils/jwt/jwt.ts#verify"
+        ]
+      }
+    },
+    {
+      "id": "symbol:src/utils/encode.ts#decodeBase64Url",
+      "kind": "symbol",
+      "level": 2,
+      "label": "decodeBase64Url",
+      "parent": "module:src/utils",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "src/utils/encode.ts",
+      "range": {
+        "start": 1,
+        "end": 8
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/utils/jwt/index.ts#Jwt",
+      "kind": "symbol",
+      "level": 2,
+      "label": "Jwt",
+      "parent": "module:src/utils",
+      "state": "unchanged",
+      "symbolKind": "variable",
+      "path": "src/utils/jwt/index.ts",
+      "range": {
+        "start": 7,
+        "end": 7
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/utils/jwt/jwa.ts#SignatureAlgorithm",
+      "kind": "symbol",
+      "level": 2,
+      "label": "SignatureAlgorithm",
+      "parent": "module:src/utils",
+      "state": "unchanged",
+      "symbolKind": "type",
+      "path": "src/utils/jwt/jwa.ts",
+      "range": {
+        "start": 23,
+        "end": 23
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:src/utils/jwt/jwt.ts#verify",
+      "level": 2,
+      "state": "modified",
+      "path": "src/utils/jwt/jwt.ts",
+      "parent": "cluster:src/utils:src-utils-jwt-jwt.ts-verify",
+      "stats": {
+        "added": 7,
+        "removed": 6
+      },
+      "notes": [
+        "calls 3 unresolved targets: aud.includes(), aud.test(), iss.test()"
+      ],
+      "kind": "symbol",
+      "label": "verify",
+      "symbolKind": "function",
+      "range": {
+        "start": 96,
+        "end": 189
+      },
+      "exported": true,
+      "risk": {
+        "level": "high",
+        "mustReview": true,
+        "reasons": [
+          {
+            "ruleId": "auth",
+            "message": "Changes authentication or authorization code",
+            "level": "high",
+            "hunkIds": [
+              "hunk:src/utils/jwt/jwt.ts:0"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "calls:file:src/utils/jwt/jwt.test.ts->symbol:src/utils/jwt/jwt.ts#verify",
+      "kind": "calls",
+      "from": "file:src/utils/jwt/jwt.test.ts",
+      "to": "symbol:src/utils/jwt/jwt.ts#verify",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:src/utils/jwt/jwt.ts#verify->symbol:src/utils/encode.ts#decodeBase64Url",
+      "kind": "calls",
+      "from": "symbol:src/utils/jwt/jwt.ts#verify",
+      "to": "symbol:src/utils/encode.ts#decodeBase64Url",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/utils/jwt/index.ts#Jwt->symbol:src/utils/jwt/jwt.ts#verify",
+      "kind": "references",
+      "from": "symbol:src/utils/jwt/index.ts#Jwt",
+      "to": "symbol:src/utils/jwt/jwt.ts#verify",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:src/utils/jwt/jwt.ts#verify->symbol:src/utils/jwt/jwa.ts#SignatureAlgorithm",
+      "kind": "references",
+      "from": "symbol:src/utils/jwt/jwt.ts#verify",
+      "to": "symbol:src/utils/jwt/jwa.ts#SignatureAlgorithm",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    }
+  ],
+  "hunks": [
+    {
+      "id": "hunk:src/utils/jwt/jwt.test.ts:0",
+      "path": "src/utils/jwt/jwt.test.ts",
+      "oldStart": 92,
+      "oldLines": 6,
+      "newStart": 92,
+      "newLines": 20,
+      "patch": "@@ -92,6 +92,20 @@ describe('JWT', () => {\n     expect(authorized).toBeUndefined()\n   })\n \n+  it('JwtTokenInvalid for a signature that is not valid base64url', async () => {\n+    const tok = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZXNzYWdlIjoiaGVsbG8gd29ybGQifQ.@@@@'\n+    const err = await JWT.verify(tok, 'a-secret', AlgorithmTypes.HS256).catch((e: unknown) => e)\n+    expect(err).toBeInstanceOf(JwtTokenInvalid)\n+    expect(err).toHaveProperty('message', `invalid JWT token: ${tok}`)\n+  })\n+\n+  it('JwtTokenSignatureMismatched for an empty signature', async () => {\n+    const tok = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtZXNzYWdlIjoiaGVsbG8gd29ybGQifQ.'\n+    const err = await JWT.verify(tok, 'a-secret', AlgorithmTypes.HS256).catch((e: unknown) => e)\n+    expect(err).toBeInstanceOf(JwtTokenSignatureMismatched)\n+    expect(err).toHaveProperty('message', `token(${tok}) signature mismatched`)\n+  })\n+\n   it('JwtTokenNotBefore', async () => {\n     const tok =\n       'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE2NjQ2MDYzMzQsImV4cCI6MTY2NDYwOTkzNCwibmJmIjoiMzEwNDYwNjI2NCJ9.hpSDT_cfkxeiLWEpWVT8TDxFP3dFi27q1K7CcMcLXHc'",
+      "added": 14,
+      "removed": 0,
+      "owner": "file:src/utils/jwt/jwt.test.ts"
+    },
+    {
+      "id": "hunk:src/utils/jwt/jwt.ts:0",
+      "path": "src/utils/jwt/jwt.ts",
+      "oldStart": 174,
+      "oldLines": 12,
+      "newStart": 174,
+      "newLines": 13,
+      "patch": "@@ -174,12 +174,13 @@ export const verify = async (\n   }\n \n   const headerPayload = token.substring(0, token.lastIndexOf('.'))\n-  const verified = await verifying(\n-    publicKey,\n-    alg,\n-    decodeBase64Url(tokenParts[2]),\n-    utf8Encoder.encode(headerPayload)\n-  )\n+  let signature: Uint8Array<ArrayBuffer>\n+  try {\n+    signature = decodeBase64Url(tokenParts[2])\n+  } catch {\n+    throw new JwtTokenInvalid(token)\n+  }\n+  const verified = await verifying(publicKey, alg, signature, utf8Encoder.encode(headerPayload))\n   if (!verified) {\n     throw new JwtTokenSignatureMismatched(token)\n   }",
+      "added": 7,
+      "removed": 6,
+      "owner": "symbol:src/utils/jwt/jwt.ts#verify"
+    }
+  ],
+  "skippedFiles": [],
+  "limits": [
+    "Callers outside this repository snapshot are not shown.",
+    "External packages are not resolved (no node_modules); edges to them are omitted."
+  ],
+  "collapsed": [],
+  "stats": {
+    "files": 2,
+    "added": 21,
+    "removed": 6,
+    "durationMs": 7358
+  },
+  "policy": {
+    "source": "default",
+    "changedInPr": false,
+    "errors": []
+  }
+}

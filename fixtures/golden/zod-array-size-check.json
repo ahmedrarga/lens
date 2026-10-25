@@ -1,0 +1,1406 @@
+{
+  "schema": 1,
+  "pr": {
+    "provider": "github",
+    "owner": "colinhacks",
+    "repo": "zod",
+    "number": 6652,
+    "url": "https://github.com/colinhacks/zod/pull/6652",
+    "title": "fix(v4): check array, set and map size bounds before parsing elements",
+    "body": "`.max()`, `.length()` and `.size()` on arrays, sets and maps now reject an oversized input before any element is parsed. The bound used to run after the walk, so it bounded nothing: `z.array(z.string().uuid()).max(100)` given a million numbers built 1,000,001 issues before it reported `too_big`.\n\n```ts\nz.array(z.string().uuid()).max(100).safeParse(Array(1_000_000).fill(0));\n// one too_big issue in under a millisecond, was 1,000,001 issues in ~450 ms\n```\n\nOnly size checks that come before every other check take part, since something like `.overwrite()` can shrink the value first. The early rejection aborts, so a later `.refine()` never sees elements that weren't parsed, and an oversized input reports just the `too_big` issue rather than its element issues too. The compiled path gets the same check ahead of its loop. Unbounded containers are unchanged.\n\n| axis | result |\n| --- | --- |\n| runtime | The check wraps `parse` only on schemas that carry an upper bound, so an unbounded container runs the same code as before. `z.array(z.string()).max(100)` over 10 items: 65.9 → 67.4 ns (+1–3%, interleaved, but taken at load 10–20). Construction within noise. |\n| memory | Unbounded: unchanged. Bounded: +121 B per schema (3421 → 3542) for the wrapper closure. |\n| bundle | `zod/mini` array fixture +243 B gzipped (3311 → 3554, +7.3%), +227 with a `maxLength` check. Classic array +215 (+1.0%). Bundles without an array, set or map pay nothing (`zod-mini-object` unchanged). |\n\nPutting the check inside the existing parse closure was smaller (~190 B) but pushed it past V8's inlining budget: `z.array(z.string()).max(n)` parses went 58 → 71 ns.\n\nFixes #6643\n",
+    "author": "colinhacks",
+    "baseSha": "0b216ef674e297ebe41d8bf902262e56f8755822",
+    "headSha": "89faa2f9f286d1ac431cbf999efcadc6990bb48b",
+    "baseRef": "main",
+    "headRef": "fix/size-cap-before-walk"
+  },
+  "generatedAt": "2026-10-22T17:58:49.965Z",
+  "pipelineVersion": "m1-0.1.0",
+  "nodes": [
+    {
+      "id": "cluster:packages/zod:packages-zod-src-v4-core-compile.ts",
+      "kind": "cluster",
+      "level": 1,
+      "label": "compile.ts (+1)",
+      "parent": "module:packages/zod",
+      "state": "modified",
+      "stats": {
+        "added": 2,
+        "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:packages/zod:packages-zod-src-v4-core-schemas.ts-capSize",
+      "kind": "cluster",
+      "level": 1,
+      "label": "capSize (+11)",
+      "parent": "module:packages/zod",
+      "state": "modified",
+      "stats": {
+        "added": 51,
+        "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "cluster:packages/zod:tests-packages-zod-src-v4-classic-tests",
+      "kind": "cluster",
+      "level": 1,
+      "label": "Tests: packages/zod/src/v4/classic/tests",
+      "parent": "module:packages/zod",
+      "state": "modified",
+      "stats": {
+        "added": 40,
+        "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:packages/zod/src/v4/classic/tests/array.test.ts",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/zod/src/v4/classic/tests/array.test.ts",
+      "parent": "cluster:packages/zod:tests-packages-zod-src-v4-classic-tests",
+      "stats": {
+        "added": 27,
+        "removed": 0
+      },
+      "notes": [
+        "calls 4 unresolved targets: a.slice(), schema.element.parse(), schema.parse(), …"
+      ],
+      "kind": "file",
+      "label": "packages/zod/src/v4/classic/tests/array.test.ts",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:packages/zod/src/v4/classic/tests/map.test.ts",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/zod/src/v4/classic/tests/map.test.ts",
+      "parent": "cluster:packages/zod:tests-packages-zod-src-v4-classic-tests",
+      "stats": {
+        "added": 7,
+        "removed": 0
+      },
+      "notes": [
+        "calls 18 unresolved targets: asyncMap.safeParseAsync(), capped.safeParse(), justTwo.parse(), …"
+      ],
+      "kind": "file",
+      "label": "packages/zod/src/v4/classic/tests/map.test.ts",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:packages/zod/src/v4/classic/tests/set.test.ts",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/zod/src/v4/classic/tests/set.test.ts",
+      "parent": "cluster:packages/zod:tests-packages-zod-src-v4-classic-tests",
+      "stats": {
+        "added": 6,
+        "removed": 0
+      },
+      "notes": [
+        "calls 15 unresolved targets: asyncResult.data!.has(), justTwo.parse(), justTwo.safeParse(), …"
+      ],
+      "kind": "file",
+      "label": "packages/zod/src/v4/classic/tests/set.test.ts",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:packages/zod/src/v4/core/compile.ts",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/zod/src/v4/core/compile.ts",
+      "parent": "cluster:packages/zod:packages-zod-src-v4-core-compile.ts",
+      "stats": {
+        "added": 1,
+        "removed": 0
+      },
+      "kind": "file",
+      "label": "packages/zod/src/v4/core/compile.ts",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "file:packages/zod/src/v4/core/util.ts",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/zod/src/v4/core/util.ts",
+      "parent": "cluster:packages/zod:packages-zod-src-v4-core-compile.ts",
+      "stats": {
+        "added": 1,
+        "removed": 0
+      },
+      "kind": "file",
+      "label": "packages/zod/src/v4/core/util.ts",
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "module:packages/zod",
+      "kind": "module",
+      "level": 0,
+      "label": "packages/zod",
+      "path": "packages/zod",
+      "state": "modified",
+      "stats": {
+        "added": 93,
+        "removed": 0
+      },
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/api.ts#$ZodArrayParams",
+      "kind": "symbol",
+      "level": 2,
+      "label": "$ZodArrayParams",
+      "parent": "module:packages/zod",
+      "state": "unchanged",
+      "symbolKind": "type",
+      "path": "packages/zod/src/v4/core/api.ts",
+      "range": {
+        "start": 1202,
+        "end": 1202
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/api.ts#$ZodMapParams",
+      "kind": "symbol",
+      "level": 2,
+      "label": "$ZodMapParams",
+      "parent": "module:packages/zod",
+      "state": "unchanged",
+      "symbolKind": "type",
+      "path": "packages/zod/src/v4/core/api.ts",
+      "range": {
+        "start": 1358,
+        "end": 1358
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/api.ts#$ZodSetParams",
+      "kind": "symbol",
+      "level": 2,
+      "label": "$ZodSetParams",
+      "parent": "module:packages/zod",
+      "state": "unchanged",
+      "symbolKind": "type",
+      "path": "packages/zod/src/v4/core/api.ts",
+      "range": {
+        "start": 1375,
+        "end": 1375
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/api.ts#_array",
+      "kind": "symbol",
+      "level": 2,
+      "label": "_array",
+      "parent": "module:packages/zod",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "packages/zod/src/v4/core/api.ts",
+      "range": {
+        "start": 1204,
+        "end": 1217
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/api.ts#_set",
+      "kind": "symbol",
+      "level": 2,
+      "label": "_set",
+      "parent": "module:packages/zod",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "packages/zod/src/v4/core/api.ts",
+      "range": {
+        "start": 1377,
+        "end": 1387
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/checks.ts#$ZodCheck",
+      "kind": "symbol",
+      "level": 2,
+      "label": "$ZodCheck",
+      "parent": "module:packages/zod",
+      "state": "unchanged",
+      "symbolKind": "interface",
+      "path": "packages/zod/src/v4/core/checks.ts",
+      "range": {
+        "start": 28,
+        "end": 39
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/compile.ts#CompileContext",
+      "kind": "symbol",
+      "level": 2,
+      "label": "CompileContext",
+      "parent": "module:packages/zod",
+      "state": "unchanged",
+      "symbolKind": "interface",
+      "path": "packages/zod/src/v4/core/compile.ts",
+      "range": {
+        "start": 69,
+        "end": 75
+      },
+      "exported": false
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/compile.ts#compileChild",
+      "kind": "symbol",
+      "level": 2,
+      "label": "compileChild",
+      "parent": "module:packages/zod",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "packages/zod/src/v4/core/compile.ts",
+      "range": {
+        "start": 323,
+        "end": 356
+      },
+      "exported": false
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/compile.ts#generateArrayCheck",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/zod/src/v4/core/compile.ts",
+      "parent": "cluster:packages/zod:packages-zod-src-v4-core-schemas.ts-capSize",
+      "stats": {
+        "added": 1,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "generateArrayCheck",
+      "symbolKind": "function",
+      "range": {
+        "start": 1560,
+        "end": 1586
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/compile.ts#generateCheck",
+      "kind": "symbol",
+      "level": 2,
+      "label": "generateCheck",
+      "parent": "module:packages/zod",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "packages/zod/src/v4/core/compile.ts",
+      "range": {
+        "start": 950,
+        "end": 1108
+      },
+      "exported": false
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/compile.ts#generateMapCheck",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/zod/src/v4/core/compile.ts",
+      "parent": "cluster:packages/zod:packages-zod-src-v4-core-schemas.ts-capSize",
+      "stats": {
+        "added": 1,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "generateMapCheck",
+      "symbolKind": "function",
+      "range": {
+        "start": 2100,
+        "end": 2120
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/compile.ts#generateSetCheck",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/zod/src/v4/core/compile.ts",
+      "parent": "cluster:packages/zod:packages-zod-src-v4-core-schemas.ts-capSize",
+      "stats": {
+        "added": 1,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "generateSetCheck",
+      "symbolKind": "function",
+      "range": {
+        "start": 2122,
+        "end": 2140
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/compile.ts#generateSizeGate",
+      "level": 2,
+      "state": "added",
+      "path": "packages/zod/src/v4/core/compile.ts",
+      "parent": "cluster:packages/zod:packages-zod-src-v4-core-schemas.ts-capSize",
+      "stats": {
+        "added": 5,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "generateSizeGate",
+      "symbolKind": "function",
+      "range": {
+        "start": 1554,
+        "end": 1558
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/compile.ts#newVar",
+      "kind": "symbol",
+      "level": 2,
+      "label": "newVar",
+      "parent": "module:packages/zod",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "packages/zod/src/v4/core/compile.ts",
+      "range": {
+        "start": 303,
+        "end": 305
+      },
+      "exported": false
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/compile.ts#numericOperand",
+      "kind": "symbol",
+      "level": 2,
+      "label": "numericOperand",
+      "parent": "module:packages/zod",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "packages/zod/src/v4/core/compile.ts",
+      "range": {
+        "start": 486,
+        "end": 498
+      },
+      "exported": false
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/core.ts#$constructor",
+      "kind": "symbol",
+      "level": 2,
+      "label": "$constructor",
+      "parent": "module:packages/zod",
+      "state": "unchanged",
+      "symbolKind": "interface",
+      "path": "packages/zod/src/v4/core/core.ts",
+      "range": {
+        "start": 8,
+        "end": 145
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/doc.ts#Doc",
+      "kind": "symbol",
+      "level": 2,
+      "label": "Doc",
+      "parent": "module:packages/zod",
+      "state": "unchanged",
+      "symbolKind": "class",
+      "path": "packages/zod/src/v4/core/doc.ts",
+      "range": {
+        "start": 3,
+        "end": 52
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/doc.ts#Doc.write",
+      "kind": "symbol",
+      "level": 2,
+      "label": "Doc.write",
+      "parent": "module:packages/zod",
+      "state": "unchanged",
+      "symbolKind": "method",
+      "path": "packages/zod/src/v4/core/doc.ts",
+      "range": {
+        "start": 25,
+        "end": 41
+      },
+      "exported": false
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodArray",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/zod/src/v4/core/schemas.ts",
+      "parent": "cluster:packages/zod:packages-zod-src-v4-core-schemas.ts-capSize",
+      "stats": {
+        "added": 4,
+        "removed": 0
+      },
+      "notes": [
+        "calls 1 unresolved target: result.then()"
+      ],
+      "kind": "symbol",
+      "label": "$ZodArray",
+      "symbolKind": "interface",
+      "range": {
+        "start": 1845,
+        "end": 1931
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodMap",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/zod/src/v4/core/schemas.ts",
+      "parent": "cluster:packages/zod:packages-zod-src-v4-core-schemas.ts-capSize",
+      "stats": {
+        "added": 1,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "$ZodMap",
+      "symbolKind": "interface",
+      "range": {
+        "start": 3466,
+        "end": 3516
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodSet",
+      "level": 2,
+      "state": "modified",
+      "path": "packages/zod/src/v4/core/schemas.ts",
+      "parent": "cluster:packages/zod:packages-zod-src-v4-core-schemas.ts-capSize",
+      "stats": {
+        "added": 1,
+        "removed": 0
+      },
+      "notes": [
+        "calls 1 unresolved target: result.then()"
+      ],
+      "kind": "symbol",
+      "label": "$ZodSet",
+      "symbolKind": "interface",
+      "range": {
+        "start": 3579,
+        "end": 3619
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodType",
+      "kind": "symbol",
+      "level": 2,
+      "label": "$ZodType",
+      "parent": "module:packages/zod",
+      "state": "unchanged",
+      "symbolKind": "interface",
+      "path": "packages/zod/src/v4/core/schemas.ts",
+      "range": {
+        "start": 192,
+        "end": 334
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/schemas.ts#ParsePayload",
+      "kind": "symbol",
+      "level": 2,
+      "label": "ParsePayload",
+      "parent": "module:packages/zod",
+      "state": "unchanged",
+      "symbolKind": "interface",
+      "path": "packages/zod/src/v4/core/schemas.ts",
+      "range": {
+        "start": 44,
+        "end": 52
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/schemas.ts#arraySize",
+      "level": 2,
+      "state": "added",
+      "path": "packages/zod/src/v4/core/schemas.ts",
+      "parent": "cluster:packages/zod:packages-zod-src-v4-core-schemas.ts-capSize",
+      "stats": {
+        "added": 1,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "arraySize",
+      "symbolKind": "function",
+      "range": {
+        "start": 1871,
+        "end": 1871
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/schemas.ts#capSize",
+      "level": 2,
+      "state": "added",
+      "path": "packages/zod/src/v4/core/schemas.ts",
+      "parent": "cluster:packages/zod:packages-zod-src-v4-core-schemas.ts-capSize",
+      "stats": {
+        "added": 22,
+        "removed": 0
+      },
+      "notes": [
+        "calls 2 unresolved targets: ch._zod.check(), ch._zod.def.when()"
+      ],
+      "kind": "symbol",
+      "label": "capSize",
+      "symbolKind": "function",
+      "range": {
+        "start": 1848,
+        "end": 1869
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/schemas.ts#handleMapResult",
+      "kind": "symbol",
+      "level": 2,
+      "label": "handleMapResult",
+      "parent": "module:packages/zod",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "packages/zod/src/v4/core/schemas.ts",
+      "range": {
+        "start": 3518,
+        "end": 3557
+      },
+      "exported": false
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/schemas.ts#mapSize",
+      "level": 2,
+      "state": "added",
+      "path": "packages/zod/src/v4/core/schemas.ts",
+      "parent": "cluster:packages/zod:packages-zod-src-v4-core-schemas.ts-capSize",
+      "stats": {
+        "added": 1,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "mapSize",
+      "symbolKind": "function",
+      "range": {
+        "start": 1872,
+        "end": 1872
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/schemas.ts#setSize",
+      "level": 2,
+      "state": "added",
+      "path": "packages/zod/src/v4/core/schemas.ts",
+      "parent": "cluster:packages/zod:packages-zod-src-v4-core-schemas.ts-capSize",
+      "stats": {
+        "added": 1,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "setSize",
+      "symbolKind": "function",
+      "range": {
+        "start": 1873,
+        "end": 1873
+      },
+      "exported": false,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/util.ts#attachSchema",
+      "kind": "symbol",
+      "level": 2,
+      "label": "attachSchema",
+      "parent": "module:packages/zod",
+      "state": "unchanged",
+      "symbolKind": "function",
+      "path": "packages/zod/src/v4/core/util.ts",
+      "range": {
+        "start": 951,
+        "end": 955
+      },
+      "exported": true
+    },
+    {
+      "id": "symbol:packages/zod/src/v4/core/util.ts#sizeCaps",
+      "level": 2,
+      "state": "added",
+      "path": "packages/zod/src/v4/core/util.ts",
+      "parent": "cluster:packages/zod:packages-zod-src-v4-core-schemas.ts-capSize",
+      "stats": {
+        "added": 12,
+        "removed": 0
+      },
+      "kind": "symbol",
+      "label": "sizeCaps",
+      "symbolKind": "function",
+      "range": {
+        "start": 938,
+        "end": 949
+      },
+      "exported": true,
+      "risk": {
+        "level": "low",
+        "mustReview": false,
+        "reasons": []
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/compile.ts#generateArrayCheck->symbol:packages/zod/src/v4/core/compile.ts#compileChild",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/compile.ts#generateArrayCheck",
+      "to": "symbol:packages/zod/src/v4/core/compile.ts#compileChild",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/compile.ts#generateArrayCheck->symbol:packages/zod/src/v4/core/compile.ts#generateSizeGate",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/compile.ts#generateArrayCheck",
+      "to": "symbol:packages/zod/src/v4/core/compile.ts#generateSizeGate",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/compile.ts#generateArrayCheck->symbol:packages/zod/src/v4/core/compile.ts#newVar",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/compile.ts#generateArrayCheck",
+      "to": "symbol:packages/zod/src/v4/core/compile.ts#newVar",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/compile.ts#generateArrayCheck->symbol:packages/zod/src/v4/core/doc.ts#Doc.write",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/compile.ts#generateArrayCheck",
+      "to": "symbol:packages/zod/src/v4/core/doc.ts#Doc.write",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/compile.ts#generateCheck->symbol:packages/zod/src/v4/core/compile.ts#generateArrayCheck",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/compile.ts#generateCheck",
+      "to": "symbol:packages/zod/src/v4/core/compile.ts#generateArrayCheck",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/compile.ts#generateCheck->symbol:packages/zod/src/v4/core/compile.ts#generateMapCheck",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/compile.ts#generateCheck",
+      "to": "symbol:packages/zod/src/v4/core/compile.ts#generateMapCheck",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/compile.ts#generateCheck->symbol:packages/zod/src/v4/core/compile.ts#generateSetCheck",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/compile.ts#generateCheck",
+      "to": "symbol:packages/zod/src/v4/core/compile.ts#generateSetCheck",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/compile.ts#generateMapCheck->symbol:packages/zod/src/v4/core/compile.ts#generateCheck",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/compile.ts#generateMapCheck",
+      "to": "symbol:packages/zod/src/v4/core/compile.ts#generateCheck",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/compile.ts#generateMapCheck->symbol:packages/zod/src/v4/core/compile.ts#generateSizeGate",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/compile.ts#generateMapCheck",
+      "to": "symbol:packages/zod/src/v4/core/compile.ts#generateSizeGate",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/compile.ts#generateMapCheck->symbol:packages/zod/src/v4/core/compile.ts#newVar",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/compile.ts#generateMapCheck",
+      "to": "symbol:packages/zod/src/v4/core/compile.ts#newVar",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/compile.ts#generateMapCheck->symbol:packages/zod/src/v4/core/doc.ts#Doc.write",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/compile.ts#generateMapCheck",
+      "to": "symbol:packages/zod/src/v4/core/doc.ts#Doc.write",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/compile.ts#generateSetCheck->symbol:packages/zod/src/v4/core/compile.ts#generateCheck",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/compile.ts#generateSetCheck",
+      "to": "symbol:packages/zod/src/v4/core/compile.ts#generateCheck",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/compile.ts#generateSetCheck->symbol:packages/zod/src/v4/core/compile.ts#generateSizeGate",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/compile.ts#generateSetCheck",
+      "to": "symbol:packages/zod/src/v4/core/compile.ts#generateSizeGate",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/compile.ts#generateSetCheck->symbol:packages/zod/src/v4/core/compile.ts#newVar",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/compile.ts#generateSetCheck",
+      "to": "symbol:packages/zod/src/v4/core/compile.ts#newVar",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/compile.ts#generateSetCheck->symbol:packages/zod/src/v4/core/doc.ts#Doc.write",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/compile.ts#generateSetCheck",
+      "to": "symbol:packages/zod/src/v4/core/doc.ts#Doc.write",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/compile.ts#generateSizeGate->symbol:packages/zod/src/v4/core/compile.ts#numericOperand",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/compile.ts#generateSizeGate",
+      "to": "symbol:packages/zod/src/v4/core/compile.ts#numericOperand",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/compile.ts#generateSizeGate->symbol:packages/zod/src/v4/core/doc.ts#Doc.write",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/compile.ts#generateSizeGate",
+      "to": "symbol:packages/zod/src/v4/core/doc.ts#Doc.write",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/compile.ts#generateSizeGate->symbol:packages/zod/src/v4/core/util.ts#sizeCaps",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/compile.ts#generateSizeGate",
+      "to": "symbol:packages/zod/src/v4/core/util.ts#sizeCaps",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/schemas.ts#$ZodArray->symbol:packages/zod/src/v4/core/core.ts#$constructor",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodArray",
+      "to": "symbol:packages/zod/src/v4/core/core.ts#$constructor",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/schemas.ts#$ZodArray->symbol:packages/zod/src/v4/core/schemas.ts#capSize",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodArray",
+      "to": "symbol:packages/zod/src/v4/core/schemas.ts#capSize",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/schemas.ts#$ZodMap->symbol:packages/zod/src/v4/core/core.ts#$constructor",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodMap",
+      "to": "symbol:packages/zod/src/v4/core/core.ts#$constructor",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/schemas.ts#$ZodMap->symbol:packages/zod/src/v4/core/schemas.ts#capSize",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodMap",
+      "to": "symbol:packages/zod/src/v4/core/schemas.ts#capSize",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/schemas.ts#$ZodMap->symbol:packages/zod/src/v4/core/schemas.ts#handleMapResult",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodMap",
+      "to": "symbol:packages/zod/src/v4/core/schemas.ts#handleMapResult",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/schemas.ts#$ZodSet->symbol:packages/zod/src/v4/core/core.ts#$constructor",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodSet",
+      "to": "symbol:packages/zod/src/v4/core/core.ts#$constructor",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/schemas.ts#$ZodSet->symbol:packages/zod/src/v4/core/schemas.ts#capSize",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodSet",
+      "to": "symbol:packages/zod/src/v4/core/schemas.ts#capSize",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/schemas.ts#capSize->symbol:packages/zod/src/v4/core/util.ts#attachSchema",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/schemas.ts#capSize",
+      "to": "symbol:packages/zod/src/v4/core/util.ts#attachSchema",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "calls:symbol:packages/zod/src/v4/core/schemas.ts#capSize->symbol:packages/zod/src/v4/core/util.ts#sizeCaps",
+      "kind": "calls",
+      "from": "symbol:packages/zod/src/v4/core/schemas.ts#capSize",
+      "to": "symbol:packages/zod/src/v4/core/util.ts#sizeCaps",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "imports:file:packages/zod/src/v4/core/compile.ts->file:packages/zod/src/v4/core/util.ts",
+      "kind": "imports",
+      "from": "file:packages/zod/src/v4/core/compile.ts",
+      "to": "file:packages/zod/src/v4/core/util.ts",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/api.ts#$ZodArrayParams->symbol:packages/zod/src/v4/core/schemas.ts#$ZodArray",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/api.ts#$ZodArrayParams",
+      "to": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodArray",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/api.ts#$ZodMapParams->symbol:packages/zod/src/v4/core/schemas.ts#$ZodMap",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/api.ts#$ZodMapParams",
+      "to": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodMap",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/api.ts#$ZodSetParams->symbol:packages/zod/src/v4/core/schemas.ts#$ZodSet",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/api.ts#$ZodSetParams",
+      "to": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodSet",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/api.ts#_array->symbol:packages/zod/src/v4/core/schemas.ts#$ZodArray",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/api.ts#_array",
+      "to": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodArray",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/api.ts#_set->symbol:packages/zod/src/v4/core/schemas.ts#$ZodSet",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/api.ts#_set",
+      "to": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodSet",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/compile.ts#generateArrayCheck->symbol:packages/zod/src/v4/core/compile.ts#CompileContext",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/compile.ts#generateArrayCheck",
+      "to": "symbol:packages/zod/src/v4/core/compile.ts#CompileContext",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/compile.ts#generateArrayCheck->symbol:packages/zod/src/v4/core/doc.ts#Doc",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/compile.ts#generateArrayCheck",
+      "to": "symbol:packages/zod/src/v4/core/doc.ts#Doc",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/compile.ts#generateMapCheck->symbol:packages/zod/src/v4/core/compile.ts#CompileContext",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/compile.ts#generateMapCheck",
+      "to": "symbol:packages/zod/src/v4/core/compile.ts#CompileContext",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/compile.ts#generateMapCheck->symbol:packages/zod/src/v4/core/doc.ts#Doc",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/compile.ts#generateMapCheck",
+      "to": "symbol:packages/zod/src/v4/core/doc.ts#Doc",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/compile.ts#generateSetCheck->symbol:packages/zod/src/v4/core/compile.ts#CompileContext",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/compile.ts#generateSetCheck",
+      "to": "symbol:packages/zod/src/v4/core/compile.ts#CompileContext",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/compile.ts#generateSetCheck->symbol:packages/zod/src/v4/core/doc.ts#Doc",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/compile.ts#generateSetCheck",
+      "to": "symbol:packages/zod/src/v4/core/doc.ts#Doc",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/compile.ts#generateSizeGate->symbol:packages/zod/src/v4/core/doc.ts#Doc",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/compile.ts#generateSizeGate",
+      "to": "symbol:packages/zod/src/v4/core/doc.ts#Doc",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/schemas.ts#$ZodArray->symbol:packages/zod/src/v4/core/core.ts#$constructor",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodArray",
+      "to": "symbol:packages/zod/src/v4/core/core.ts#$constructor",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/schemas.ts#$ZodArray->symbol:packages/zod/src/v4/core/schemas.ts#$ZodType",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodArray",
+      "to": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodType",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/schemas.ts#$ZodArray->symbol:packages/zod/src/v4/core/schemas.ts#arraySize",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodArray",
+      "to": "symbol:packages/zod/src/v4/core/schemas.ts#arraySize",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/schemas.ts#$ZodMap->symbol:packages/zod/src/v4/core/core.ts#$constructor",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodMap",
+      "to": "symbol:packages/zod/src/v4/core/core.ts#$constructor",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/schemas.ts#$ZodMap->symbol:packages/zod/src/v4/core/schemas.ts#$ZodType",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodMap",
+      "to": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodType",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/schemas.ts#$ZodMap->symbol:packages/zod/src/v4/core/schemas.ts#ParsePayload",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodMap",
+      "to": "symbol:packages/zod/src/v4/core/schemas.ts#ParsePayload",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/schemas.ts#$ZodMap->symbol:packages/zod/src/v4/core/schemas.ts#mapSize",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodMap",
+      "to": "symbol:packages/zod/src/v4/core/schemas.ts#mapSize",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/schemas.ts#$ZodSet->symbol:packages/zod/src/v4/core/core.ts#$constructor",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodSet",
+      "to": "symbol:packages/zod/src/v4/core/core.ts#$constructor",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/schemas.ts#$ZodSet->symbol:packages/zod/src/v4/core/schemas.ts#$ZodType",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodSet",
+      "to": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodType",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/schemas.ts#$ZodSet->symbol:packages/zod/src/v4/core/schemas.ts#setSize",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodSet",
+      "to": "symbol:packages/zod/src/v4/core/schemas.ts#setSize",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/schemas.ts#capSize->symbol:packages/zod/src/v4/core/schemas.ts#$ZodType",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/schemas.ts#capSize",
+      "to": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodType",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/schemas.ts#capSize->symbol:packages/zod/src/v4/core/schemas.ts#ParsePayload",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/schemas.ts#capSize",
+      "to": "symbol:packages/zod/src/v4/core/schemas.ts#ParsePayload",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/schemas.ts#handleMapResult->symbol:packages/zod/src/v4/core/schemas.ts#$ZodMap",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/schemas.ts#handleMapResult",
+      "to": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodMap",
+      "state": "unchanged",
+      "provenance": "static",
+      "weight": 1
+    },
+    {
+      "id": "references:symbol:packages/zod/src/v4/core/util.ts#sizeCaps->symbol:packages/zod/src/v4/core/checks.ts#$ZodCheck",
+      "kind": "references",
+      "from": "symbol:packages/zod/src/v4/core/util.ts#sizeCaps",
+      "to": "symbol:packages/zod/src/v4/core/checks.ts#$ZodCheck",
+      "state": "added",
+      "provenance": "static",
+      "weight": 1
+    }
+  ],
+  "hunks": [
+    {
+      "id": "hunk:packages/zod/src/v4/classic/tests/array.test.ts:0",
+      "path": "packages/zod/src/v4/classic/tests/array.test.ts",
+      "oldStart": 140,
+      "oldLines": 6,
+      "newStart": 140,
+      "newLines": 33,
+      "patch": "@@ -140,6 +140,33 @@ test(\"continue parsing despite array size error\", () => {\n   `);\n });\n \n+test(\"an upper size bound fails before any element is parsed\", () => {\n+  let parsed = 0;\n+  const el = z.string().refine(() => ++parsed);\n+  let refined = 0;\n+  const schema = z\n+    .array(el)\n+    .max(2, \"too many\")\n+    .refine(() => ++refined);\n+  expect(schema.safeParse([1, 2, 3]).error!.issues).toMatchObject([{ code: \"too_big\", path: [], message: \"too many\" }]);\n+  expect(z.array(el).length(2).safeParse([\"a\", \"b\", \"c\"]).error!.issues).toMatchObject([\n+    { code: \"too_big\", exact: true },\n+  ]);\n+  expect(z.object({ a: z.array(el).max(1) }).safeParse({ a: [1, 2] }).error!.issues).toMatchObject([\n+    { code: \"too_big\", path: [\"a\"] },\n+  ]);\n+  expect([parsed, refined]).toEqual([0, 0]);\n+\n+  // a check that may rewrite the value ends the gate\n+  expect(\n+    z\n+      .array(z.number())\n+      .overwrite((a) => a.slice(0, 2))\n+      .max(2)\n+      .parse([1, 2, 3])\n+  ).toEqual([1, 2]);\n+});\n+\n test(\"parse should fail given sparse array\", () => {\n   const schema = z.array(z.string()).nonempty().min(1).max(3);\n   const result = schema.safeParse(new Array(3));",
+      "added": 27,
+      "removed": 0,
+      "owner": "file:packages/zod/src/v4/classic/tests/array.test.ts"
+    },
+    {
+      "id": "hunk:packages/zod/src/v4/classic/tests/map.test.ts:0",
+      "path": "packages/zod/src/v4/classic/tests/map.test.ts",
+      "oldStart": 97,
+      "oldLines": 6,
+      "newStart": 97,
+      "newLines": 13,
+      "patch": "@@ -97,6 +97,13 @@ test(\"failing when map is bigger than max() \", () => {\n   expect(result.success).toEqual(false);\n   expect(result.error!.issues.length).toEqual(1);\n   expect(result.error!.issues[0].code).toEqual(\"too_big\");\n+  const bad = new Map([\n+    [1, 1],\n+    [2, 2],\n+  ]);\n+  const capped = z.map(z.string(), z.string()).max(1);\n+  expect(capped.safeParse(bad).error!.issues).toMatchObject([{ code: \"too_big\" }]);\n+  expect(capped.safeParse(new Set([1, 2])).error!.issues[0]).toMatchObject({ code: \"invalid_type\", expected: \"map\" });\n });\n \n test(\"failing when map does not match size() \", () => {",
+      "added": 7,
+      "removed": 0,
+      "owner": "file:packages/zod/src/v4/classic/tests/map.test.ts"
+    },
+    {
+      "id": "hunk:packages/zod/src/v4/classic/tests/set.test.ts:0",
+      "path": "packages/zod/src/v4/classic/tests/set.test.ts",
+      "oldStart": 83,
+      "oldLines": 6,
+      "newStart": 83,
+      "newLines": 12,
+      "patch": "@@ -83,6 +83,12 @@ test(\"failing when set is bigger than max() \", () => {\n   expect(result.success).toEqual(false);\n   expect(result.error!.issues.length).toEqual(1);\n   expect(result.error!.issues[0].code).toEqual(\"too_big\");\n+  expect(\n+    z\n+      .set(z.string())\n+      .max(1)\n+      .safeParse(new Set([1, 2])).error!.issues\n+  ).toMatchObject([{ code: \"too_big\" }]);\n });\n \n test(\"failing when set does not match size() \", () => {",
+      "added": 6,
+      "removed": 0,
+      "owner": "file:packages/zod/src/v4/classic/tests/set.test.ts"
+    },
+    {
+      "id": "hunk:packages/zod/src/v4/core/compile.ts:0",
+      "path": "packages/zod/src/v4/core/compile.ts",
+      "oldStart": 1551,
+      "oldLines": 6,
+      "newStart": 1551,
+      "newLines": 12,
+      "patch": "@@ -1551,6 +1551,12 @@ function generateNullableCheck(\n   return outputVar;\n }\n \n+function generateSizeGate(doc: Doc, schema: SomeType, size: string): void {\n+  for (const [max, check] of util.sizeCaps(schema._zod.def.checks)) {\n+    doc.write(`if (${size} > ${numericOperand(max, check._zod.def.check)}) return INVALID;`);\n+  }\n+}\n+\n function generateArrayCheck(\n   doc: Doc,\n   ctx: CompileContext,",
+      "added": 6,
+      "removed": 0,
+      "owner": "symbol:packages/zod/src/v4/core/compile.ts#generateSizeGate"
+    },
+    {
+      "id": "hunk:packages/zod/src/v4/core/compile.ts:1",
+      "path": "packages/zod/src/v4/core/compile.ts",
+      "oldStart": 1560,
+      "oldLines": 6,
+      "newStart": 1566,
+      "newLines": 7,
+      "patch": "@@ -1560,6 +1566,7 @@ function generateArrayCheck(\n ): string | null {\n   const def = schema._zod.def as unknown as { element: SomeType };\n   doc.write(`if (!Array.isArray(${accessor})) return INVALID;`);\n+  generateSizeGate(doc, schema, `${accessor}.length`);\n \n   // Build a new array with validated/transformed elements.\n   const outputVar = buildsValue ? newVar(ctx) : null;",
+      "added": 1,
+      "removed": 0,
+      "owner": "symbol:packages/zod/src/v4/core/compile.ts#generateArrayCheck"
+    },
+    {
+      "id": "hunk:packages/zod/src/v4/core/compile.ts:2",
+      "path": "packages/zod/src/v4/core/compile.ts",
+      "oldStart": 2094,
+      "oldLines": 6,
+      "newStart": 2101,
+      "newLines": 7,
+      "patch": "@@ -2094,6 +2101,7 @@ function generateMapCheck(doc: Doc, ctx: CompileContext, schema: SomeType, acces\n   const def = schema._zod.def as unknown as { keyType: SomeType; valueType: SomeType };\n \n   doc.write(`if (!(${accessor} instanceof Map)) return INVALID;`);\n+  generateSizeGate(doc, schema, `${accessor}.size`);\n \n   const outputVar = newVar(ctx);\n   const kVar = newVar(ctx);",
+      "added": 1,
+      "removed": 0,
+      "owner": "symbol:packages/zod/src/v4/core/compile.ts#generateMapCheck"
+    },
+    {
+      "id": "hunk:packages/zod/src/v4/core/compile.ts:3",
+      "path": "packages/zod/src/v4/core/compile.ts",
+      "oldStart": 2115,
+      "oldLines": 6,
+      "newStart": 2123,
+      "newLines": 7,
+      "patch": "@@ -2115,6 +2123,7 @@ function generateSetCheck(doc: Doc, ctx: CompileContext, schema: SomeType, acces\n   const def = schema._zod.def as unknown as { valueType: SomeType };\n \n   doc.write(`if (!(${accessor} instanceof Set)) return INVALID;`);\n+  generateSizeGate(doc, schema, `${accessor}.size`);\n \n   const outputVar = newVar(ctx);\n   const valVar = newVar(ctx);",
+      "added": 1,
+      "removed": 0,
+      "owner": "symbol:packages/zod/src/v4/core/compile.ts#generateSetCheck"
+    },
+    {
+      "id": "hunk:packages/zod/src/v4/core/schemas.ts:0",
+      "path": "packages/zod/src/v4/core/schemas.ts",
+      "oldStart": 1844,
+      "oldLines": 6,
+      "newStart": 1844,
+      "newLines": 34,
+      "patch": "@@ -1844,6 +1844,34 @@ export interface $ZodArrayInternals<T extends SomeType = $ZodType> extends _$Zod\n \n export interface $ZodArray<T extends SomeType = $ZodType> extends $ZodType<any, any, $ZodArrayInternals<T>> {}\n \n+// an oversized container fails its leading size checks before any element is parsed\n+function capSize(inst: $ZodType, size: (input: any) => number): void {\n+  const caps = util.sizeCaps(inst._zod.def.checks);\n+  if (!caps.length) return;\n+  const cap = Math.min(...caps.map((c) => c[0]));\n+  const parse = inst._zod.parse;\n+  inst._zod.parse = (payload, ctx) => {\n+    const n = size(payload.value);\n+    if (n > cap && !ctx?.skipChecks && ctx?.direction !== \"backward\") {\n+      for (const [max, ch] of util.sizeCaps(inst._zod.def.checks)) {\n+        if (n > max && ch._zod.def.when!(payload)) {\n+          const start = payload.issues.length;\n+          ch._zod.check(payload as ParsePayload<never>);\n+          // the value is still the raw input, so no later check may read it\n+          (payload.issues[start] as { continue?: boolean }).continue = false;\n+          util.attachSchema(payload.issues, start, inst);\n+          return payload;\n+        }\n+      }\n+    }\n+    return parse(payload, ctx);\n+  };\n+}\n+\n+const arraySize = (input: unknown): number => (Array.isArray(input) ? input.length : -1);\n+const mapSize = (input: unknown): number => (input instanceof Map ? input.size : -1);\n+const setSize = (input: unknown): number => (input instanceof Set ? input.size : -1);\n+\n function handleArrayResult(result: ParsePayload<any>, final: ParsePayload<any[]>, index: number) {\n   if (result.issues.length) {\n     final.issues.push(...util.prefixIssues(index, result.issues));",
+      "added": 28,
+      "removed": 0,
+      "owner": "symbol:packages/zod/src/v4/core/schemas.ts#capSize"
+    },
+    {
+      "id": "hunk:packages/zod/src/v4/core/schemas.ts:1",
+      "path": "packages/zod/src/v4/core/schemas.ts",
+      "oldStart": 1899,
+      "oldLines": 6,
+      "newStart": 1927,
+      "newLines": 7,
+      "patch": "@@ -1899,6 +1927,7 @@ export const $ZodArray: core.$constructor<$ZodArray> = /*@__PURE__*/ core.$const\n \n     return payload; //handleArrayResultsAsync(parseResults, final);\n   };\n+  capSize(inst, arraySize);\n });\n \n //////////////////////////////////////////",
+      "added": 1,
+      "removed": 0,
+      "owner": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodArray"
+    },
+    {
+      "id": "hunk:packages/zod/src/v4/core/schemas.ts:2",
+      "path": "packages/zod/src/v4/core/schemas.ts",
+      "oldStart": 3483,
+      "oldLines": 6,
+      "newStart": 3512,
+      "newLines": 7,
+      "patch": "@@ -3483,6 +3512,7 @@ export const $ZodMap: core.$constructor<$ZodMap> = /*@__PURE__*/ core.$construct\n     if (proms.length) return Promise.all(proms).then(() => payload);\n     return payload;\n   };\n+  capSize(inst, mapSize);\n });\n \n function handleMapResult(",
+      "added": 1,
+      "removed": 0,
+      "owner": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodMap"
+    },
+    {
+      "id": "hunk:packages/zod/src/v4/core/schemas.ts:3",
+      "path": "packages/zod/src/v4/core/schemas.ts",
+      "oldStart": 3585,
+      "oldLines": 6,
+      "newStart": 3615,
+      "newLines": 7,
+      "patch": "@@ -3585,6 +3615,7 @@ export const $ZodSet: core.$constructor<$ZodSet> = /*@__PURE__*/ core.$construct\n     if (proms.length) return Promise.all(proms).then(() => payload);\n     return payload;\n   };\n+  capSize(inst, setSize);\n });\n \n function handleSetResult(result: ParsePayload, final: ParsePayload<Set<any>>) {",
+      "added": 1,
+      "removed": 0,
+      "owner": "symbol:packages/zod/src/v4/core/schemas.ts#$ZodSet"
+    },
+    {
+      "id": "hunk:packages/zod/src/v4/core/util.ts:0",
+      "path": "packages/zod/src/v4/core/util.ts",
+      "oldStart": 935,
+      "oldLines": 6,
+      "newStart": 935,
+      "newLines": 19,
+      "patch": "@@ -935,6 +935,19 @@ export function unwrapMessage(message: string | { message: string } | undefined\n }\n \n /* A check holds no link back to the schema it is attached to — the same check instance is shared by every clone of that schema — so the owner is stamped onto the issues a check just raised, at the only point where both are in scope. Runs on the failure path only; `start` is the issue count from before the check ran. */\n+/** The leading size checks of `defChecks` that set an upper bound, each paired with it. */\n+export function sizeCaps(defChecks: checks.$ZodCheck<never>[] | undefined): [number, checks.$ZodCheck<never>][] {\n+  const caps: [number, checks.$ZodCheck<never>][] = [];\n+  for (const ch of defChecks ?? []) {\n+    const d = ch._zod.def as any;\n+    // a later check may rewrite the value\n+    if (!/_(length|size)$|_equals$/.test(d.check)) break;\n+    const max = d.maximum ?? d.length ?? d.size;\n+    if (max >= 0) caps.push([max, ch]);\n+  }\n+  return caps;\n+}\n+\n export function attachSchema(issues: errors.$ZodRawIssue[], start: number, inst: schemas.$ZodType): void {\n   for (let i = start; i < issues.length; i++) {\n     (issues[i] as any).schema ??= inst;",
+      "added": 13,
+      "removed": 0,
+      "owner": "symbol:packages/zod/src/v4/core/util.ts#sizeCaps"
+    }
+  ],
+  "skippedFiles": [],
+  "limits": [
+    "Callers outside this repository snapshot are not shown.",
+    "External packages are not resolved (no node_modules); edges to them are omitted."
+  ],
+  "collapsed": [],
+  "stats": {
+    "files": 6,
+    "added": 93,
+    "removed": 0,
+    "durationMs": 11663
+  },
+  "policy": {
+    "source": "default",
+    "changedInPr": false,
+    "errors": []
+  }
+}
