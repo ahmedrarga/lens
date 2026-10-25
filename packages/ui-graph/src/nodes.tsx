@@ -1,7 +1,9 @@
-import { memo } from 'react';
+import { memo, useMemo, useState } from 'react';
 import { Handle, Position, type Node, type NodeProps } from '@xyflow/react';
 import type { ProjNode } from './project.js';
 import { RISK_ICON, RISK_LABEL } from './risk.js';
+import { BIG_DIFF_LINES, BIG_DIFF_PREVIEW, parsePatch, type LeafDiff } from './diff.js';
+import { HunkView } from './HunkView.js';
 
 export type LensNodeData = {
   p: ProjNode;
@@ -10,6 +12,13 @@ export type LensNodeData = {
   reviewed?: boolean;
   /** Review-queue mode: everything that is not must-review is dimmed. */
   dim?: boolean;
+  /** Can show its diff in place (symbols, files, groups; not modules/clusters/ghosts). */
+  expandable?: boolean;
+  expanded?: boolean;
+  /** Hunks to show when expanded (same filter as the inspector). */
+  diff?: LeafDiff;
+  onToggleCode?: (id: string) => void;
+  onJump?: (id: string) => void;
   [k: string]: unknown;
 };
 export type LensFlowNode = Node<LensNodeData, 'lens'>;
@@ -70,11 +79,44 @@ function RiskPill({ p, pending, reviewed }: { p: ProjNode; pending?: boolean; re
   );
 }
 
+/** The node's diff hunks: line numbers, +/- colouring, own scroll area. */
+function CodeArea({ p, diff, onJump }: { p: ProjNode; diff: LeafDiff; onJump?: (id: string) => void }) {
+  const [all, setAll] = useState(false);
+  const parsed = useMemo(() => diff.own.map((h) => ({ h, rows: parsePatch(h.patch) })), [diff]);
+  const total = parsed.reduce((s, x) => s + x.rows.length, 0);
+  const cut = total > BIG_DIFF_LINES && !all;
+  let budget = cut ? BIG_DIFF_PREVIEW : Infinity;
+  return (
+    <div className="lens-code nodrag nowheel nopan" tabIndex={0} role="region" aria-label={`Code changes in ${p.name}`}
+      onDoubleClick={(e) => e.stopPropagation()}>
+      {parsed.map(({ h, rows }) => {
+        const limit = budget; budget = Math.max(0, budget - rows.length);
+        return limit > 0 ? (
+          <div key={h.id}>
+            {diff.own.length > 1 || h.path !== p.path ? <div className="lens-code__path">{h.path}</div> : null}
+            <HunkView hunk={h} rows={rows} limit={limit} />
+          </div>
+        ) : null;
+      })}
+      {cut && <button type="button" className="lens-code__more nodrag" onClick={() => setAll(true)}>Show all {total} lines</button>}
+      {!parsed.length && !diff.alsoTouches.length && <p className="lens-code__empty">No diff hunks for this box.</p>}
+      {diff.alsoTouches.length > 0 && (
+        <ul className="lens-code__also">
+          {diff.alsoTouches.map(({ hunk, owner }) => (
+            <li key={hunk.id}>also touches <button type="button" className="lens-link nodrag" onClick={() => onJump?.(owner.id)}>{owner.label}</button>
+              <span className="lens-code__muted"> (lines {hunk.newStart}–{hunk.newStart + Math.max(hunk.newLines, 1) - 1})</span></li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 function LensNodeImpl({ data, selected }: NodeProps<LensFlowNode>) {
-  const { p, pending, reviewed, dim } = data;
+  const { p, pending, reviewed, dim, expandable, expanded, diff, onToggleCode, onJump } = data;
   const risky = !!p.risk && p.risk.level !== 'low';
   const cls = ['lens-node', `lens-node--${p.state}`, `lens-node--${p.kind}`, p.ghost && 'is-ghost', p.context && !p.ghost && 'is-context', selected && 'is-selected', p.drill && 'is-drillable',
-    p.collapsed && 'is-collapsed', p.collapsed && risky && 'is-collapsed-risky', risky && `has-risk risk-${p.risk!.level}`, reviewed && 'is-reviewed', dim && 'is-dimmed']
+    expanded && 'is-expanded', p.collapsed && 'is-collapsed', p.collapsed && risky && 'is-collapsed-risky', risky && `has-risk risk-${p.risk!.level}`, reviewed && 'is-reviewed', dim && 'is-dimmed']
     .filter(Boolean).join(' ');
   if (p.kind === 'more') {
     return (
@@ -96,6 +138,12 @@ function LensNodeImpl({ data, selected }: NodeProps<LensFlowNode>) {
       <div className="lens-node__head">
         <span className="lens-node__icon" aria-hidden="true">{p.collapsed ? <FoldIcon /> : nodeIcon(p)}</span>
         <span className="lens-node__title" title={p.label}><span className="lens-node__noun">{p.noun}</span> <b>{p.name}</b></span>
+        {expandable && (
+          <button type="button" className="lens-expand nodrag nopan" aria-expanded={!!expanded} title="Show or hide this box's code (E)"
+            onClick={(e) => { e.stopPropagation(); onToggleCode?.(p.id); }} onDoubleClick={(e) => e.stopPropagation()}>
+            {expanded ? 'Hide code' : 'Show code'}
+          </button>
+        )}
       </div>
       <div className="lens-node__sentence" title={p.sentence}>{p.sentence}</div>
       <div className="lens-node__sub" title={line3}>{line3}</div>
@@ -109,6 +157,7 @@ function LensNodeImpl({ data, selected }: NodeProps<LensFlowNode>) {
           {p.childCount > 0 && <span className="lens-badge" title="Double-click or press Enter to open">{p.childCount} inside</span>}
         </span>
       </div>
+      {expanded && diff && <CodeArea p={p} diff={diff} onJump={onJump} />}
       <Handle type="source" position={Position.Right} className="lens-handle" />
     </div>
   );

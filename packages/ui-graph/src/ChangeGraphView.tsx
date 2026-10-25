@@ -7,7 +7,8 @@ import type { ChangeGraph, EdgeKind, GraphNode } from '@lens/core';
 import { breadcrumbs, filterEdgeKinds, focusFor, focusKey, parentFocus, project, DEFAULT_BUDGET, type Focus, type ProjNode } from './project.js';
 import { reviewQueue } from './risk.js';
 import { startHere } from './guide.js';
-import { layoutProjection, NODE_H, NODE_W, type Positions } from './layout.js';
+import { layoutProjection, NODE_H, NODE_W, type Positions, type Sizes } from './layout.js';
+import { canExpand, countRows, diffForLeaf, expandedSize, type LeafDiff } from './diff.js';
 import { LensNode, nodeAriaLabel, type LensFlowNode } from './nodes.js';
 import { LensEdge, edgeTitle, type LensFlowEdge } from './edges.js';
 import './styles.css';
@@ -38,6 +39,9 @@ export interface ChangeGraphViewProps {
   onReviewModeChange?: (on: boolean) => void;
   /** Ask the view to pan/zoom to a node (change `key` to re-trigger). */
   centerRequest?: { id: string; key: string } | null;
+  /** Ids of boxes showing their code in place. Controlled when given (pair with onExpandedChange); else internal. */
+  expanded?: readonly string[];
+  onExpandedChange?: (ids: string[]) => void;
 }
 
 const EMPTY: ReadonlySet<string> = new Set();
@@ -57,7 +61,7 @@ export function ChangeGraphView(props: ChangeGraphViewProps) {
 
 const LEVELS = [{ level: 0, label: 'Modules' }, { level: 1, label: 'Clusters' }, { level: 2, label: 'Symbols' }] as const;
 
-function Inner({ graph, initialFocus, focus: focusProp, onFocusChange, selectedId: selectedProp, onSelect, budget = DEFAULT_BUDGET, reviewed = EMPTY, reviewMode = false, onReviewModeChange, centerRequest }: ChangeGraphViewProps) {
+function Inner({ graph, initialFocus, focus: focusProp, onFocusChange, selectedId: selectedProp, onSelect, budget = DEFAULT_BUDGET, reviewed = EMPTY, reviewMode = false, onReviewModeChange, centerRequest, expanded: expandedProp, onExpandedChange }: ChangeGraphViewProps) {
   const [focusState, setFocusState] = useState<Focus>(initialFocus ?? { level: 0 });
   const focus = focusProp ?? focusState;
   const [selectedState, setSelectedState] = useState<string | null>(null);
@@ -87,15 +91,39 @@ function Inner({ graph, initialFocus, focus: focusProp, onFocusChange, selectedI
     go(focusFor(graph, id)); setSelectedState(id); onSelect?.(n);
     setCenterReq({ id, key: `${id}:${Date.now()}` });
   }, [graph, go, onSelect]);
-  const [layout, setLayout] = useState<{ proj: typeof projection; pos: Positions } | null>(null);
+
+  // Expanded boxes: which ones can show code here, their diff and real size (deterministic, so the layout is too).
+  const [expandedState, setExpandedState] = useState<string[]>([]);
+  const expandedIds = expandedProp ?? expandedState;
+  const byId = useMemo(() => new Map(graph.nodes.map((n) => [n.id, n])), [graph]);
+  const { diffs, sizes } = useMemo(() => {
+    const diffs = new Map<string, LeafDiff>(); const sizes = new Map<string, { w: number; h: number }>();
+    const want = new Set(expandedIds);
+    for (const p of projection.nodes) {
+      if (!want.has(p.id) || !canExpand(p)) continue;
+      const d = diffForLeaf(graph, { byId }, p.node!);
+      diffs.set(p.id, d); sizes.set(p.id, expandedSize(NODE_H, countRows(d.own), d.alsoTouches.length));
+    }
+    return { diffs, sizes: sizes as Sizes };
+  }, [graph, byId, projection, expandedIds]);
+  const setExpanded = useCallback((ids: string[]) => { setExpandedState(ids); onExpandedChange?.(ids); }, [onExpandedChange]);
+  const [reveal, setReveal] = useState<{ id: string; key: string } | null>(null);
+  const toggleCode = useCallback((id: string) => {
+    if (expandedIds.includes(id)) setExpanded(expandedIds.filter((x) => x !== id));
+    else { setExpanded([...expandedIds, id]); setReveal({ id, key: `${id}:${Date.now()}` }); }
+  }, [expandedIds, setExpanded]);
+
+  // The previous layout stays on screen while a new one (e.g. after expanding a box) is computed.
+  const [layout, setLayout] = useState<{ proj: typeof projection; sizes: Sizes; pos: Positions } | null>(null);
   const [layoutError, setLayoutError] = useState<string | null>(null);
   useEffect(() => {
     let alive = true;
     setLayoutError(null);
-    layoutProjection(projection).then((pos) => alive && setLayout({ proj: projection, pos })).catch((e) => alive && setLayoutError(String(e)));
+    layoutProjection(projection, sizes).then((pos) => alive && setLayout({ proj: projection, sizes, pos })).catch((e) => alive && setLayoutError(String(e)));
     return () => { alive = false; };
-  }, [projection]);
+  }, [projection, sizes]);
   const ready = layout && layout.proj === projection ? layout.pos : null;
+  const laidOut = layout && layout.proj === projection ? layout.sizes : null;
 
   const nodes = useMemo<LensFlowNode[]>(() => !ready ? [] : projection.nodes.map((p) => ({
     id: p.id, type: 'lens', position: ready.get(p.id) ?? { x: 0, y: 0 }, selected: p.id === selectedId,
@@ -103,10 +131,12 @@ function Inner({ graph, initialFocus, focus: focusProp, onFocusChange, selectedI
       p, reviewed: !!p.risk?.mustReview && reviewed.has(p.id),
       pending: p.riskInside > 0 && p.risk?.mustReview ? (p.risk.inheritedFrom ?? []).some((i) => queueIds.has(i) && !reviewed.has(i)) : !!p.risk?.mustReview && !reviewed.has(p.id),
       dim: reviewMode && !p.risk?.mustReview,
+      expandable: canExpand(p), expanded: laidOut?.has(p.id) ?? false, diff: laidOut?.has(p.id) ? diffs.get(p.id) : undefined,
+      onToggleCode: toggleCode, onJump: jumpTo,
     },
-    width: NODE_W, height: NODE_H, draggable: false, connectable: false,
+    width: laidOut?.get(p.id)?.w ?? NODE_W, height: laidOut?.get(p.id)?.h ?? NODE_H, draggable: false, connectable: false,
     ariaLabel: nodeAriaLabel(p),
-  })), [ready, projection, selectedId, reviewed, reviewMode, queueIds]);
+  })), [ready, laidOut, diffs, projection, selectedId, reviewed, reviewMode, queueIds, toggleCode, jumpTo]);
 
   const edges = useMemo<LensFlowEdge[]>(() => {
     const shown = filterEdgeKinds(projection.edges, kinds);
@@ -149,6 +179,13 @@ function Inner({ graph, initialFocus, focus: focusProp, onFocusChange, selectedI
   const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
     const t = e.target as HTMLElement;
     if (/^(INPUT|SELECT|TEXTAREA)$/.test(t.tagName)) return;
+    if ((e.key === 'e' || e.key === 'E') && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      const id = t.closest('.react-flow__node')?.getAttribute('data-id') ?? selectedId;
+      const p = projection.nodes.find((n) => n.id === id);
+      if (p && canExpand(p)) { e.preventDefault(); toggleCode(p.id); }
+      return;
+    }
+    if (t.closest('.lens-code')) return; // inside the code: Backspace/Enter are for the code, not the graph
     if (e.key === 'Backspace') { e.preventDefault(); up(); return; }
     if (e.key === 'Enter') {
       const id = t.closest('.react-flow__node')?.getAttribute('data-id');
@@ -195,6 +232,9 @@ function Inner({ graph, initialFocus, focus: focusProp, onFocusChange, selectedI
             Review queue · {left} left
           </button>
         )}
+        {laidOut && laidOut.size > 0 && (
+          <button type="button" className="lens-queue-btn lens-collapse-all" onClick={() => setExpanded([])} title="Hide the code in every open box">Collapse all ({laidOut.size})</button>
+        )}
         <label className="lens-kind" title="Zoom far out to go up a level, far in to open the nearest node">
           <input type="checkbox" checked={autoZoom} onChange={(e) => setAutoZoom(e.target.checked)} />auto-zoom levels
         </label>
@@ -237,7 +277,7 @@ function Inner({ graph, initialFocus, focus: focusProp, onFocusChange, selectedI
             <Controls showInteractive={false} />
             <MiniMap pannable zoomable ariaLabel="Graph minimap" nodeColor={(n) => { const p = (n.data as { p: ProjNode }).p; return (p.risk && p.risk.level !== 'low' ? RISK_COLOR[p.risk.level] : STATE_COLOR[p.state]) ?? '#999'; }} nodeStrokeWidth={2} />
             <Panel position="top-right"><Legend /></Panel>
-            <ViewHelper nodes={projection.nodes} ready={ready} req={centerReq} selectedId={selectedId} />
+            <ViewHelper nodes={projection.nodes} ready={ready} req={centerReq} selectedId={selectedId} reveal={reveal} sizes={laidOut} />
           </ReactFlow>
         )}
       </div>
@@ -246,11 +286,26 @@ function Inner({ graph, initialFocus, focus: focusProp, onFocusChange, selectedI
 }
 
 /** Runs inside <ReactFlow>: keeps boxes readable on load and honours "center on node" requests. */
-function ViewHelper({ nodes, ready, req, selectedId }: { nodes: ProjNode[]; ready: Map<string, { x: number; y: number }>; req: { id: string; key: string } | null; selectedId?: string | null }) {
+function ViewHelper({ nodes, ready, req, selectedId, reveal, sizes }: { nodes: ProjNode[]; ready: Map<string, { x: number; y: number }>; req: { id: string; key: string } | null; selectedId?: string | null; reveal: { id: string; key: string } | null; sizes: Sizes | null }) {
   const rf = useReactFlow();
   const size = useStore((st) => ({ w: st.width, h: st.height }), (a, b) => a.w === b.w && a.h === b.h);
   const handled = useRef<string | null>(null);
   const initial = useRef(selectedId);
+  // After a box expands (and the layout with its real size arrived): pan so it is visible, keep zoom readable.
+  const revealed = useRef<string | null>(null);
+  useEffect(() => {
+    const pos = reveal && ready.get(reveal.id); const box = reveal && sizes?.get(reveal.id);
+    if (!reveal || !pos || !box || revealed.current === reveal.key) return;
+    revealed.current = reveal.key;
+    const vp = rf.getViewport();
+    const inView = pos.x * vp.zoom + vp.x >= 8 && pos.y * vp.zoom + vp.y >= 8
+      && (pos.x + box.w) * vp.zoom + vp.x <= size.w - 8 && (pos.y + box.h) * vp.zoom + vp.y <= size.h - 8;
+    if (inView) return;
+    const z = Math.min(1, Math.max(vp.zoom, MIN_READABLE_ZOOM));
+    const x = box.w * z + 80 <= size.w ? size.w / 2 - (pos.x + box.w / 2) * z : 40 - pos.x * z;
+    const y = box.h * z + 80 <= size.h ? (size.h - box.h * z) / 2 - pos.y * z : 40 - pos.y * z;
+    void rf.setViewport({ x, y, zoom: z }, { duration: 250 });
+  }, [rf, reveal, ready, sizes, size]);
   useEffect(() => {
     const t = setTimeout(() => {
       if (req && req.key !== handled.current && ready.has(req.id)) {

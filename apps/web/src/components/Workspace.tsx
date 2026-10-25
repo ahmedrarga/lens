@@ -1,13 +1,14 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import type { ChangeGraph, GraphNode } from '@lens/core';
-import { focusFor, reviewQueue, RISK_ICON, RISK_LABEL, stepQueue, suggestedFocus, type Focus } from '@lens/ui-graph/model';
+import { focusFor, formatExpanded, parseExpanded, reviewQueue, RISK_ICON, RISK_LABEL, stepQueue, suggestedFocus, type Focus } from '@lens/ui-graph/model';
 import { groupByFile, indexGraph } from '../graphUtils.js';
 import { AuthBadge } from '../auth.js';
 import { useReviewed } from '../reviewed.js';
 import { Inspector } from './Inspector.js';
 import { FileGroups, Stat } from './DiffView.js';
 import { LimitsDialog } from './LimitsDialog.js';
+import { PanelResizer, useResizablePanel } from './PanelResizer.js';
 
 // React Flow + ELK live in their own chunk, loaded when a graph is first shown.
 const ChangeGraphView = lazy(() => import('@lens/ui-graph').then((m) => ({ default: m.ChangeGraphView })));
@@ -28,6 +29,8 @@ function useUrlState(graph: ChangeGraph) {
   const node = sp.get('node');
   const tab: Tab = sp.get('tab') === 'raw' ? 'raw' : sp.get('tab') === 'queue' ? 'queue' : 'inspect';
   const reviewMode = sp.get('queue') === '1';
+  const expandedRaw = sp.get('expanded');
+  const expanded = useMemo(() => parseExpanded(expandedRaw), [expandedRaw]);
   const update = useCallback((patch: Record<string, string | null>) => {
     setSp((prev) => {
       const n = new URLSearchParams(prev);
@@ -36,7 +39,8 @@ function useUrlState(graph: ChangeGraph) {
     }, { replace: true });
   }, [setSp]);
   const setFocus = useCallback((f: Focus) => update({ level: String(f.level), parent: f.parentId ?? null }), [update]);
-  return { focus, node, tab, reviewMode, setFocus, update };
+  const setExpanded = useCallback((ids: string[]) => update({ expanded: formatExpanded(ids) }), [update]);
+  return { focus, node, tab, reviewMode, expanded, setExpanded, setFocus, update };
 }
 
 function isTyping(t: EventTarget | null) {
@@ -46,8 +50,9 @@ function isTyping(t: EventTarget | null) {
 
 export function Workspace({ graph, banner, storageKey = 'default' }: { graph: ChangeGraph; banner?: string; storageKey?: string }) {
   const idx = useMemo(() => indexGraph(graph), [graph]);
-  const { focus, node, tab, reviewMode, setFocus, update } = useUrlState(graph);
+  const { focus, node, tab, reviewMode, expanded, setExpanded, setFocus, update } = useUrlState(graph);
   const { reviewed, toggle } = useReviewed(storageKey);
+  const panel = useResizablePanel();
   const [limitsOpen, setLimitsOpen] = useState(false);
   const [center, setCenter] = useState<{ id: string; key: string } | null>(null);
   const selected = node ? idx.byId.get(node) ?? null : null;
@@ -116,7 +121,7 @@ export function Workspace({ graph, banner, storageKey = 'default' }: { graph: Ch
         </div>
       </header>
 
-      <main className="ws-main">
+      <main className="ws-main" style={{ gridTemplateColumns: `minmax(0, 1fr) ${panel.width}px` }}>
         <section className="ws-graph" aria-label="Change graph">
           {graph.nodes.length === 0
             ? <div className="center-page"><h2>Nothing to graph</h2><p className="muted">This PR produced no analyzable changes. Check the limits chip, or open the raw diff.</p></div>
@@ -125,11 +130,13 @@ export function Workspace({ graph, banner, storageKey = 'default' }: { graph: Ch
                 <ChangeGraphView
                   graph={graph} focus={focus} onFocusChange={setFocus} selectedId={node} onSelect={onSelect}
                   reviewed={reviewed} reviewMode={reviewMode} onReviewModeChange={setReviewMode} centerRequest={center}
+                  expanded={expanded} onExpandedChange={setExpanded}
                 />
               </Suspense>
             )}
         </section>
         <aside className="ws-panel" aria-label="Inspector">
+          <PanelResizer {...panel} />
           <div className="tabs" role="tablist">
             <button role="tab" aria-selected={tab === 'inspect'} onClick={() => update({ tab: null })}>Inspector</button>
             {queue.length > 0 && <button role="tab" aria-selected={tab === 'queue'} onClick={() => update({ tab: 'queue' })}>Queue ({queue.length - done})</button>}

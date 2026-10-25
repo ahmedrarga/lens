@@ -5,6 +5,8 @@ import type { Projection } from './project.js';
 export const NODE_W = 264;
 export const NODE_H = 120;
 export type Positions = Map<string, { x: number; y: number }>;
+/** Real size for nodes that differ from NODE_W x NODE_H (expanded code boxes). */
+export type Sizes = ReadonlyMap<string, { w: number; h: number }>;
 
 // elkjs is ~1.4MB: load it on first layout, not at startup.
 let elkPromise: Promise<ELK> | undefined;
@@ -12,12 +14,16 @@ const getElk = () => (elkPromise ??= import('elkjs/lib/elk.bundled.js').then((m)
 const cache = new Map<string, Promise<Positions>>();
 
 /** Cache key: identical node/edge sets always yield identical layouts. */
-export function layoutKey(p: Projection): string {
-  return [p.nodes.map((n) => n.id).join('|'), p.edges.map((e) => e.id).join('|')].join('##');
+export function layoutKey(p: Projection, sizes?: Sizes): string {
+  const sz = p.nodes.filter((n) => sizes?.has(n.id)).map((n) => `${n.id}@${sizes!.get(n.id)!.w}x${sizes!.get(n.id)!.h}`).join('|');
+  return [p.nodes.map((n) => n.id).join('|'), p.edges.map((e) => e.id).join('|'), sz].join('##');
 }
 
-export function layoutProjection(p: Projection): Promise<Positions> {
-  const key = layoutKey(p);
+/** The box ELK should reserve for a node. */
+export const sizeOf = (id: string, sizes?: Sizes) => { const s = sizes?.get(id); return { w: s?.w ?? NODE_W, h: s?.h ?? NODE_H }; };
+
+export function layoutProjection(p: Projection, sizes?: Sizes): Promise<Positions> {
+  const key = layoutKey(p, sizes);
   const hit = cache.get(key);
   if (hit) return hit;
   const nodes = [...p.nodes].sort((a, b) => (a.id < b.id ? -1 : 1));
@@ -34,7 +40,7 @@ export function layoutProjection(p: Projection): Promise<Positions> {
         'elk.separateConnectedComponents': 'true',
         'elk.spacing.componentComponent': '48',
       },
-      children: nodes.map((n) => ({ id: n.id, width: NODE_W, height: NODE_H })),
+      children: nodes.map((n) => { const { w, h } = sizeOf(n.id, sizes); return { id: n.id, width: w, height: h }; }),
       edges: edges.map((e) => ({ id: e.id, sources: [e.from], targets: [e.to] })),
     }))
     .then((res) => {

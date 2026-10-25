@@ -49,14 +49,14 @@ code, .mono, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; 
 .ws-title { flex: 1; min-width: 200px; } .ws-title h1 { font-size: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ws-title p { margin: 0; color: var(--muted); font-size: 12.5px; }
 .ws-meta { display: flex; align-items: center; gap: 12px; font-size: 13px; }
-.ws-main { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) clamp(300px, 30vw, 440px); }
+.ws-main { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) clamp(320px, 30vw, 440px); }
 .ws-graph { min-width: 0; min-height: 0; }
-.ws-panel { border-left: 1px solid var(--border); background: var(--surface); display: flex; flex-direction: column; min-height: 0; }
+.ws-panel { position: relative; min-width: 0; border-left: 1px solid var(--border); background: var(--surface); display: flex; flex-direction: column; min-height: 0; }
 .tabs { display: flex; border-bottom: 1px solid var(--border); }
 .tabs button { flex: 1; padding: 8px; background: none; border: 0; border-bottom: 2px solid transparent; color: var(--muted); cursor: pointer; font: inherit; }
 .tabs button[aria-selected='true'] { color: var(--text); border-bottom-color: var(--accent); font-weight: 600; }
 .ws-panel__body { overflow: auto; flex: 1; padding: 12px; }
-@media (max-width: 1000px) { .ws-main { grid-template-columns: minmax(0, 1fr) 300px; } .ws-header { gap: 8px; padding: 6px 10px; } }
+@media (max-width: 1000px) { .ws-header { gap: 8px; padding: 6px 10px; } }
 
 /* Inspector */
 .inspector { display: grid; gap: 14px; } .inspector header { display: grid; gap: 6px; } .inspector h3 { font-size: 16px; word-break: break-word; }
@@ -109,3 +109,10 @@ kbd { font: 11px ui-monospace, monospace; border: 1px solid var(--border); borde
 .plain { list-style: none; margin: 0; padding: 0; } .warn-h { color: var(--warn); }
 .outlier { border: 1px dashed var(--warn); border-radius: 6px; padding: 6px; margin-bottom: 8px; }
 .howto { padding-left: 18px; display: grid; gap: 8px; margin: 8px 0; }
+
+/* Resizable side panel */
+.ws-resizer { position: absolute; left: -4px; top: 0; bottom: 0; width: 9px; cursor: col-resize; z-index: 5; touch-action: none; }
+.ws-resizer::after { content: ''; position: absolute; left: 4px; top: 0; bottom: 0; width: 1px; background: transparent; transition: background .12s, width .12s; }
+.ws-resizer:hover::after, .ws-resizer:focus-visible::after, .ws-resizer.is-dragging::after { background: var(--accent); width: 3px; left: 3px; }
+.ws-resizer:focus-visible { outline: none; }
+.ws-panel__body { min-width: 0; }
